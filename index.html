@@ -1,40 +1,517 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <title>设备运维平台 v5</title>
-  <meta charset="UTF-8">
-  <style>
-    body{font-family:"Microsoft YaHei",sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.6}
-    h1{color:#1a2736;border-bottom:2px solid #4fc3f7;padding-bottom:8px}
-    .btn{display:inline-block;background:#4fc3f7;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;margin:10px 5px;font-weight:500}
-    .btn:hover{opacity:0.85}
-    .note{padding:12px;background:#f0f9ff;border-left:4px solid #4fc3f7;margin:20px 0}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备运维学习平台</title>
+<style>
+:root{--bg:#0f1923;--bg2:#1a2736;--bg3:#213244;--bg4:#2a3d54;--text:#d0dce8;--text2:#8ba4be;--accent:#4fc3f7;--ok:#2ecc71;--warn:#f39c12;--err:#e74c3c;--border:#3a4d66;--radius:8px;--radius-sm:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.container{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:250px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-header{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.main-body{flex:1;padding:16px;overflow-y:auto}
+.collab-bar{padding:8px 16px;border-top:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;gap:10px;font-size:.8rem;flex-shrink:0;flex-wrap:wrap}
+.side-header{padding:14px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.side-nav{flex:1;padding:8px 0;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{text-align:left;background:transparent;color:var(--text);border:none;padding:10px 14px;cursor:pointer;font-size:.88rem;border-radius:0;transition:all .15s}
+.nav-item:hover{background:var(--bg3);color:var(--accent)}
+.nav-item.cur{background:var(--accent);color:var(--bg)}
+.btn{background:var(--accent);color:var(--bg);border:none;padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;font-weight:500;font-size:.88rem;transition:all .15s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{padding:4px 10px;font-size:.78rem}.btn-s{background:var(--bg3);color:var(--text)}.btn-r{background:var(--err);color:#fff}
+.card{background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid var(--border)}
+.card h3{margin-bottom:6px;color:var(--accent);font-size:.98rem}
+.fx{display:flex;gap:8px;align-items:center}.fxw{flex-wrap:wrap}.fc{display:flex;flex-direction:column;gap:8px}.f1{flex:1}
+.g12{gap:12px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mt8{margin-top:8px}.mt12{margin-top:12px}
+.ts{font-size:.8rem;color:var(--text2)}.tc{text-align:center}.hide{display:none!important}
+input,select,textarea{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px 10px;border-radius:var(--radius-sm);font-size:.88rem;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:500}
+.tag-ok{background:rgba(46,204,113,.2);color:var(--ok)}.tag-warn{background:rgba(243,156,18,.2);color:var(--warn)}.tag-err{background:rgba(231,76,60,.2);color:var(--err)}
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.upload-area:hover{border-color:var(--accent);background:var(--bg2)}.upload-area input[type=file]{display:none}
+.file-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:4px;border:1px solid var(--border)}
+.file-row .fn{flex:1;color:var(--accent);font-size:.88rem}
+.file-row .fn.ready{cursor:pointer;text-decoration:underline}.file-row .fn.ready:hover{color:#26a69a}
+.file-row .fi{color:var(--text2);font-size:.75rem;white-space:nowrap}
+.file-row .prog-bar{flex-shrink:0;width:60px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.file-row .prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.log-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px}
+.log-row .lm{display:flex;gap:10px;font-size:.75rem;color:var(--text2);margin-bottom:4px;flex-wrap:wrap;align-items:center}
+.log-row .lp{font-weight:500;margin-bottom:4px;font-size:.92rem}
+.pq{margin-bottom:16px}.pq .qt{margin-bottom:6px;font-weight:500}.po{display:flex;flex-direction:column;gap:5px}
+.popt{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;transition:all .15s;font-size:.88rem}
+.popt:hover{background:var(--bg3)}.popt.sel{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.sum-cards{display:flex;gap:10px;flex-wrap:wrap}.sum-cards .card{min-width:90px;flex:1;text-align:center}
+pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border);white-space:pre-wrap;font-size:.84rem;cursor:pointer}pre:hover{border-color:var(--accent)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+.batch-actions{display:flex;gap:8px;align-items:center;padding:8px 0}
+</style>
 </head>
 <body>
-  <h1>设备运维学习平台 v5</h1>
-  <p>由于 Netlify 部署额度已用尽，请手动部署到 Gitee Pages：</p>
-  <div class="note">
-    <strong>步骤：</strong><br>
-    1. 访问 <a href="https://gitee.com/" target="_blank">gitee.com</a> 并登录<br>
-    2. 新建仓库（例如命名为 device-maintenance）<br>
-    3. 将以下文件上传到仓库根目录：<br>
-    &nbsp;&nbsp;- index.html（即本页面）<br>
-    &nbsp;&nbsp;- netlify.toml（可删除）<br>
-    4. 进入仓库 → 服务 → Gitee Pages → 开启<br>
-    5. 等待几分钟，访问生成的 .gitee.io 链接即可
-  </div>
-  <p>或直接下载完整文件包：</p>
-  <a href="device_platform_v5.html" download class="btn">下载 HTML 文件</a>
-  <a href="https://gitee.com/help/articles/4136" target="_blank" class="btn">Gitee Pages 教程</a>
-  <hr>
-  <h3>v5 版本改进：</h3>
-  <ul>
-    <li>故障手册通过 MQTT 分块传输，所有人本地都有完整文件</li>
-    <li>点击文件在新窗口打开（PDF 浏览器原生渲染，Word 转 HTML）</li>
-    <li>工作日志增加删除按钮，删除操作实时同步</li>
-    <li>修复了之前其他人无法打开上传文件的问题</li>
-  </ul>
-  <p>部署后，任何人访问该链接即可实时协作。</p>
+<div class="container">
+<div class="sidebar">
+<div class="side-header"><h2 style="font-size:1.05rem">设备运维学习平台</h2><div class="ts">v11 维护日志</div></div>
+<div class="side-nav">
+<button class="nav-item cur" data-tab="today" onclick="switchTab('today')">今日学习</button>
+<button class="nav-item" data-tab="practice" onclick="switchTab('practice')">练习题</button>
+<button class="nav-item" data-tab="plan" onclick="switchTab('plan')">计划总览</button>
+<button class="nav-item" data-tab="manual" onclick="switchTab('manual')">故障手册</button>
+<button class="nav-item" data-tab="ai" onclick="switchTab('ai')">AI模板</button>
+<button class="nav-item" data-tab="log" onclick="switchTab('log')">工作日志</button>
+<button class="nav-item" data-tab="backup" onclick="switchTab('backup')">备份/导入</button>
+</div>
+</div>
+<div class="main">
+<div class="main-header"><div class="sum-cards"><div class="card"><div class="ts">上次学习</div><div id="lastStudy">-</div></div><div class="card"><div class="ts">总进度</div><div id="totalProgress">0%</div></div><div class="card"><div class="ts">今日任务</div><div id="todayTasks">0/3</div></div></div></div>
+<div class="main-body" id="mainContent"></div>
+<div class="collab-bar"><span class="dot" id="dot" style="background:var(--err)"></span><span>协同：<b id="onlineCount">0</b>人在线</span><span id="netStatus" class="ts">未连接</span><span style="font-size:.65rem;cursor:pointer;text-decoration:underline" onclick="switchBroker()">切换</span><span id="syncNote" class="ts" style="margin-left:auto">刷新不丢文件 | 分享链接即可协作</span></div>
+</div>
+</div>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script>
+// ====== 基础 ======
+function G(id){return document.getElementById(id)}
+function toast(msg){var d=document.createElement('div');d.style.cssText='position:fixed;top:16px;right:16px;background:var(--accent);color:var(--bg);padding:10px 20px;border-radius:var(--radius-sm);z-index:9999;font-weight:500;animation:toastIn 2.6s forwards;max-width:420px';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
+var tStyle=document.createElement('style');tStyle.textContent='@keyframes toastIn{0%,70%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}';document.head.appendChild(tStyle)
+
+// ====== 持久化架构 ======
+// 元数据 → localStorage（不存 data，刷新不丢）
+// 文件数据 → IndexedDB（无大小限制，刷新不丢）
+// 内存缓存 → dataCache（运行时快速访问）
+var dataCache={}  // fileId → dataUrl
+
+var INIT_LOGS=[{"id": "MP0180", "date": "2025-12-28", "dev": "一楼立库区", "problem": "2号堆垛机升降导向轮更换并调试，已完成", "detail": "2025.12.28 2号堆垛机升降导向轮更换并调试，已完成", "solution": "已完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0179", "date": "2025-12-27", "dev": "二楼立库区", "problem": "二楼三号巷道进行维修，故去进行调整，已完成", "detail": "2025.12.27 二楼三号巷道进行维修，故去进行调整，已完成", "solution": "已完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0178", "date": "2025-12-13", "dev": "布料分拣线", "problem": "布料分拣线打印机打印头的应急更换处理，已更换完成", "detail": "2025.12.13 布料分拣线打印机打印头的应急更换处理，已更换完成", "solution": "已更换完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0177", "date": "2025-12-11", "dev": "布料分拣线", "problem": "一楼布料分拣线读码器设备调试，已调试完成", "detail": "2025.12.11 一楼布料分拣线读码器设备调试，已调试完成", "solution": "已调试完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0176", "date": "2025-12-06", "dev": "一楼立库区", "problem": "辅助并学习宝开顾工进行堆垛机内部机械结构的检查,，以及二楼1号巷道立库输", "detail": "2025.12.6  辅助并学习宝开顾工进行堆垛机内部机械结构的检查,，以及二楼1号巷道立库输\n送线出现异响等问题的解觉", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0175", "date": "2025-12-05", "dev": "辅料仓输送线", "problem": "辅料仓输送出现辅料线缠入输送线滚筒内，故进行加急解决，已进行处理，并检查设备后续运行情况，设备正常", "detail": "2025.12.5   辅料仓输送出现辅料线缠入输送线滚筒内，故进行加急解决，已进行处理，并检查设备后续运行情况，设备正常", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0174", "date": "2025-12-02", "dev": "一楼立库区", "problem": "处理4号堆垛机导向轮偏移坏死异常问题，以及导致的堆垛机偏移等问题，故进", "detail": "2025.12.2   处理4号堆垛机导向轮偏移坏死异常问题，以及导致的堆垛机偏移等问题，故进\n行解决以及配合宝开厂家人员进行安装1号堆垛机接油板", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0173", "date": "2025-11-29", "dev": "四楼后整分拣线", "problem": "后整翻转机出现A面不能正常夹紧导致其衣服不能正常出翻转机，故进行观察解决，系磁性开关异常以及其压力开关异常导致，调试可以运行正常", "detail": "2025.11.29  后整翻转机出现A面不能正常夹紧导致其衣服不能正常出翻转机，故进行观察解决，系磁性开关异常以及其压力开关异常导致，调试可以运行正常", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0172", "date": "2025-11-28", "dev": "四楼立库区", "problem": "三号巷道立库输送线出现扫码器异常等情况，导致立库输送线不能正常运行，已进行调试读码器，设备已恢复正常", "detail": "2025.11.28   三号巷道立库输送线出现扫码器异常等情况，导致立库输送线不能正常运行，已进行调试读码器，设备已恢复正常", "solution": "已进行调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0170", "date": "2025-11-27", "dev": "布料分拣线", "problem": "布料分拣线设备8号输送线出现一直转动等情况，故去观察解决，系读码器任务异常导致，已进行恢复处理", "detail": "2025.11.27  布料分拣线设备8号输送线出现一直转动等情况，故去观察解决，系读码器任务异常导致，已进行恢复处理", "solution": "已进行恢复处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0171", "date": "2025-11-27", "dev": "二楼立库区", "problem": "四号巷道立库输送线在运行过程中出实际无货物却报输送超时，故进行观察解", "detail": "2025.11.27   四号巷道立库输送线在运行过程中出实际无货物却报输送超时，故进行观察解\n决，系传感器异常导致，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0169", "date": "2025-11-26", "dev": "四楼后整分拣线", "problem": "后整包装区出现扫码器异常，未能正常识别，故观察解决，系读码器位置异常导致，已进行处理", "detail": "2025.11.26    后整包装区出现扫码器异常，未能正常识别，故观察解决，系读码器位置异常导致，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0168", "date": "2025-11-24", "dev": "布料分拣线", "problem": "2号翻框机设备出现线槽脱轨，故进行解决，已进行重新安装处理，设备已恢复", "detail": "2025.11.24   2号翻框机设备出现线槽脱轨，故进行解决，已进行重新安装处理，设备已恢复", "solution": "已进行重新安装处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0167", "date": "2025-11-22", "dev": "二楼立库区", "problem": "二楼三号巷道立库输送线出现货物未能正常出库等情况，系输送线设备链条异常导致，已进行调整处理", "detail": "2025.11.22    二楼三号巷道立库输送线出现货物未能正常出库等情况，系输送线设备链条异常导致，已进行调整处理", "solution": "已进行调整处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0166", "date": "2025-11-21", "dev": "辅料仓输送线", "problem": "辅料仓输送线称重处皮带出现偏移导致皮带磨损，且不转动等情况，已进行调试，目前运行已正常", "detail": "2025.11.21   辅料仓输送线称重处皮带出现偏移导致皮带磨损，且不转动等情况，已进行调试，目前运行已正常", "solution": "已进行调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0163", "date": "2025-11-20", "dev": "布料分拣线", "problem": "一楼布料分拣线3号以及8号翻框机出现设备未能正常翻框，故进行解决，系传感器异常导致，已进行调试处理", "detail": "2025.11.20  一楼布料分拣线3号以及8号翻框机出现设备未能正常翻框，故进行解决，系传感器异常导致，已进行调试处理", "solution": "已进行调试处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0164", "date": "2025-11-20", "dev": "四楼后整分拣线", "problem": "四楼后整翻转机设备出现皮带不转动，导致其设备不能正常运行，已进行处理，已调整其皮带，设备已恢复正常", "detail": "2025.11.20  四楼后整翻转机设备出现皮带不转动，导致其设备不能正常运行，已进行处理，已调整其皮带，设备已恢复正常", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0165", "date": "2025-11-20", "dev": "四楼立库区", "problem": "四楼4号巷道出现，人为把需要出货的货架初始化，，导致其堆垛机出现重复入库", "detail": "2025.11.20   四楼4号巷道出现，人为把需要出货的货架初始化，，导致其堆垛机出现重复入库\n报警，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0162", "date": "2025-11-17", "dev": "布料分拣线", "problem": "布料分拣线设备出现未正常进行打码等问题，已进行解决。以及2号输送线出现将布翻出等问题，故进行调试，已调试完成，设备正常", "detail": "2025.11.17  布料分拣线设备出现未正常进行打码等问题，已进行解决。以及2号输送线出现将布翻出等问题，故进行调试，已调试完成，设备正常", "solution": "已进行解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0161", "date": "2025-11-15", "dev": "四楼立库区", "problem": "四楼三号巷道出现堆垛机未进行取货等情况，导致其后续任务未进行，故进行", "detail": "2025.11.15   四楼三号巷道出现堆垛机未进行取货等情况，导致其后续任务未进行，故进行\n处理，系传感器异常导致，已进行调试处理", "solution": "已进行调试处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0159", "date": "2025-11-14", "dev": "布料分拣线", "problem": "安装布料分拣线贴标机设备内部轴承，进行运行测试，运行正常，设备已恢复", "detail": "2025.11.14 安装布料分拣线贴标机设备内部轴承，进行运行测试，运行正常，设备已恢复", "solution": "已恢复", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0160", "date": "2025-11-14", "dev": "一楼立库区", "problem": "1号堆垛机出现报警无声音，故配合厂家进行检查调试，已调试完成，设备已恢复", "detail": "2025.11.14  1号堆垛机出现报警无声音，故配合厂家进行检查调试，已调试完成，设备已恢复", "solution": "已调试完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0158", "date": "2025-11-13", "dev": "布料分拣线", "problem": "操作人员反馈其一号输送线经常出现将布料侧翻在地上，故进行调试该输送线，暂且先停用该功能", "detail": "2025.11.13   操作人员反馈其一号输送线经常出现将布料侧翻在地上，故进行调试该输送线，暂且先停用该功能", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0156", "date": "2025-11-12", "dev": "一楼立库区", "problem": "二楼立库区频繁出现叉车不叉取货框以及叉车不放货框，故进行观察解决，已完成，目前发现其传感器异常导致，已进行调整还需要", "detail": "2025.11.12   二楼立库区频繁出现叉车不叉取货框以及叉车不放货框，故进行观察解决，已完成，目前发现其传感器异常导致，已进行调整还需要\n继续进行观察", "solution": "已完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0157", "date": "2025-11-12", "dev": "一楼立库区", "problem": "1楼后整出货口输送线出现挡板超出其输送线的高度，导致货物被挡板卡住,", "detail": "2025.11.12   1楼后整出货口输送线出现挡板超出其输送线的高度，导致货物被挡板卡住,\n故进行观察解决，已进行调试其挡板，已解决", "solution": "已进行调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0154", "date": "2025-11-11", "dev": "布料分拣线", "problem": "5号输送线的打印机设备出现皮带断裂等情况，故进行更换皮带处理皮带已更换，但在测试的过程中出现电机一直转动，导致其设备一直异响，皮带磨损严重，故配合打印机厂家进行", "detail": "2025.11.11   5号输送线的打印机设备出现皮带断裂等情况，故进行更换皮带处理皮带已更换，但在测试的过程中出现电机一直转动，导致其设备一直异响，皮带磨损严重，故配合打印机厂家进行检查，发现其轴承抱死，需要进行更换，已联系宝开人员，让其采购", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0155", "date": "2025-11-11", "dev": "一楼立库区", "problem": "3号堆垛机出现\"重复入库\"报警，故进行观察解决，已解决，系二楼人员未处理输送超时任务，并且直接进行复位，导致货框未能正常出库，故出现该报警，已进行处", "detail": "2025.11.11  3号堆垛机出现\"重复入库\"报警，故进行观察解决，已解决，系二楼人员未处理输送超时任务，并且直接进行复位，导致货框未能正常出库，故出现该报警，已进行处\n理", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0153", "date": "2025-11-09", "dev": "一楼立库区", "problem": "1号堆垛机出现因1楼立库输送线货框未能正常出库，导致其堆垛机撞上货框，造成了钢丝绳损伤，载货平台歪斜，防坠落装置触发，挡油板损坏，已配合厂家人员进行维修，堆垛机", "detail": "2025.11.9 1号堆垛机出现因1楼立库输送线货框未能正常出库，导致其堆垛机撞上货框，造成了钢丝绳损伤，载货平台歪斜，防坠落装置触发，挡油板损坏，已配合厂家人员进行维修，堆垛机已维修完成，并进行测试，目前运行无异\n常", "solution": "已配合厂家人员进行维修", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0152", "date": "2025-11-08", "dev": "一楼立库区", "problem": "2号堆垛机出现突然断电等情况，故去观察解决，系系统跳匝导致，已进行检查处理，已恢复。", "detail": "2025.11.8 2号堆垛机出现突然断电等情况，故去观察解决，系系统跳匝导致，已进行检查处理，已恢复。", "solution": "已进行检查处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0151", "date": "2025-11-05", "dev": "布料分拣线", "problem": "1楼布料分拣线贴标机设备出现气压太大导致其贴码被吹飞，故进行观察调整，已完成调试，现设备恢复正常", "detail": "2025.11.5 1楼布料分拣线贴标机设备出现气压太大导致其贴码被吹飞，故进行观察调整，已完成调试，现设备恢复正常", "solution": "已完成调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0150", "date": "2025-11-04", "dev": "四楼立库区", "problem": "四楼4号堆垛机输送线设备出现实际无货物，但系统显示有货物，导致堆垛机不", "detail": "2025.11.4 四楼4号堆垛机输送线设备出现实际无货物，但系统显示有货物，导致堆垛机不\n能正常进行取放货，故进行解决，系传感器异常导致，已进行调整。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0149", "date": "2025-11-02", "dev": "布料分拣线", "problem": "布料分拣线设备10号缓降机出现一直重复翻框,系传感器位置异常导致信号异常，已进行调试，已修复", "detail": "2025.11.2 布料分拣线设备10号缓降机出现一直重复翻框,系传感器位置异常导致信号异常，已进行调试，已修复", "solution": "已进行调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0147", "date": "2025-10-27", "dev": "布料分拣线", "problem": "因在收布过程中2号输送线翻框设备出现翻框不平行导致布料掉落和卡住等情", "detail": "2025.10.27 因在收布过程中2号输送线翻框设备出现翻框不平行导致布料掉落和卡住等情\n况，故进行调整，已进行调试完成，设备已恢复正常", "solution": "已进行调试完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0148", "date": "2025-10-27", "dev": "四楼后整区", "problem": "因四楼翻转机频繁出现皮带不转等情况，故进行拆卸，调整其传感器", "detail": "2025.10.27因四楼翻转机频繁出现皮带不转等情况，故进行拆卸，调整其传感器", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0146", "date": "2025-10-23", "dev": "布料分拣线", "problem": "布料分拣线设备2号输送线出现翻布爪未能正常进行翻布，故进行观察解决，系平衡杆断裂导致气缸掉落出来，导致未能正常运行，已进行维修处理", "detail": "2025.10.23 布料分拣线设备2号输送线出现翻布爪未能正常进行翻布，故进行观察解决，系平衡杆断裂导致气缸掉落出来，导致未能正常运行，已进行维修处理", "solution": "已进行维修处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0144", "date": "2025-10-22", "dev": "布料分拣线", "problem": "布料分检线设备验布机输送线出现挡板未能正常下降，故进行观察解决，系电磁阀异常导致，已进行处理", "detail": "2025.10.22  布料分检线设备验布机输送线出现挡板未能正常下降，故进行观察解决，系电磁阀异常导致，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0145", "date": "2025-10-22", "dev": "四楼后整区", "problem": "四楼后整分拣线打码机出现异常，导致设备未能正常打码，系系统问题已进行处理。", "detail": "2025.10.22 四楼后整分拣线打码机出现异常，导致设备未能正常打码，系系统问题已进行处理。", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0142", "date": "2025-10-20", "dev": "布料分拣线", "problem": "布料分检线翻框区出现设备复位后锁扣未能正常收回，导致货框卡住，故进行观察处理，已进行检查，目前检查未发现设备控制系统有问题，但已联系操作人员后续出现问题及时联系", "detail": "2025.10.20  布料分检线翻框区出现设备复位后锁扣未能正常收回，导致货框卡住，故进行观察处理，已进行检查，目前检查未发现设备控制系统有问题，但已联系操作人员后续出现问题及时联系我们，然后进行处理", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0143", "date": "2025-10-20", "dev": "四楼立库区", "problem": "四楼三号巷道出现货框长时间未取等情况，导致堆垛机输送线堵塞，系任务问题，已进行处理", "detail": "2025.10.20  四楼三号巷道出现货框长时间未取等情况，导致堆垛机输送线堵塞，系任务问题，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0141", "date": "2025-10-18", "dev": "二楼立库区", "problem": "二楼立库区出现堆垛机输送线上位机显示无任务，但实际有货物等情况，故去", "detail": "2025.10.18  二楼立库区出现堆垛机输送线上位机显示无任务，但实际有货物等情况，故去\n观察解决,系人员操作问题导致出现该情况，已对该人员进行培训", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0140", "date": "2025-10-16", "dev": "四楼立库区", "problem": "四楼堆垛机1号巷道堆垛机输送线设备扫码器异常，频故进行观察解决已进行调整读码器，并进行测试，目前测试正常，还需要", "detail": "2025.10.16   四楼堆垛机1号巷道堆垛机输送线设备扫码器异常，频故进行观察解决已进行调整读码器，并进行测试，目前测试正常，还需要\n持续进行观察", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0139", "date": "2025-10-14", "dev": "一楼立库区", "problem": "1号堆垛机出现设备运行就断电，故进行检查解决，以及2号堆垛机需要进行更换集电臂。一号堆垛机断电原因也是集电臂磨损严重导致，故进行更换1号以及2号堆垛机集电臂，并", "detail": "2025.10.14  1号堆垛机出现设备运行就断电，故进行检查解决，以及2号堆垛机需要进行更换集电臂。一号堆垛机断电原因也是集电臂磨损严重导致，故进行更换1号以及2号堆垛机集电臂，并观察设备后续运\n行情况。", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0137", "date": "2025-10-13", "dev": "布料分拣线", "problem": "布料分拣线设备14号输送线出现一直空转等情况，故进行观察解决，系传感器线路断裂导致其信号错误，以进行处理恢复。", "detail": "2025.10.13 布料分拣线设备14号输送线出现一直空转等情况，故进行观察解决，系传感器线路断裂导致其信号错误，以进行处理恢复。", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0138", "date": "2025-10-13", "dev": "一楼立库区", "problem": "1号巷道堆垛机输送线出现设备进入过程中出现任务异常，故去观察解决，系读码器异常导致，已进行调试处理", "detail": "2025.10.13 1号巷道堆垛机输送线出现设备进入过程中出现任务异常，故去观察解决，系读码器异常导致，已进行调试处理", "solution": "已进行调试处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0134", "date": "2025-10-10", "dev": "四楼后整分拣线", "problem": "四楼后整分拣线设备其中一个格口出现不能正常转动等情况，故进行观察解决，系伺服驱动器异常导致，并观察后续设备运行情", "detail": "2025.10.10 四楼后整分拣线设备其中一个格口出现不能正常转动等情况，故进行观察解决，系伺服驱动器异常导致，并观察后续设备运行情\n况，运行正常", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0135", "date": "2025-10-10", "dev": "辅料仓输送线", "problem": "1楼辅料输送线设备出现海康ctu机器人未能正常取货等问题，故进行观察解决,系传感器感应问题，已进行调试恢复", "detail": "2025.10.10 1楼辅料输送线设备出现海康ctu机器人未能正常取货等问题，故进行观察解决,系传感器感应问题，已进行调试恢复", "solution": "已进行调试恢复", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0136", "date": "2025-10-10", "dev": "2楼立库区", "problem": "2楼1号巷道堆垛机输送线出现实际无货物，但上位机却显示有货物，故进行观察解决，系传感器扫描到前方货框，且因为货架表面会反光，故导致传感器有信号，最后造成这种情况", "detail": "2025.10.10  2楼1号巷道堆垛机输送线出现实际无货物，但上位机却显示有货物，故进行观察解决，系传感器扫描到前方货框，且因为货架表面会反光，故导致传感器有信号，最后造成这种情况，已进行解\n决。", "solution": "已进行解", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0133", "date": "2025-10-08", "dev": "一楼立库区", "problem": "一楼4号巷道立库输送线出现扫码异常等情况，故观察解决，系扫码器异常导致，已进行处理", "detail": "2025.10.8 一楼4号巷道立库输送线出现扫码异常等情况，故观察解决，系扫码器异常导致，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0131", "date": "2025-10-07", "dev": "布料分拣线", "problem": "处理布料在分检线运行过程中出现，未能及时进行输送，导致其设备输送超时", "detail": "2025.10.7  处理布料在分检线运行过程中出现，未能及时进行输送，导致其设备输送超时\n报警等问题，已进行设备参数调试，减少该问题发生", "solution": "已进行设备参数调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0132", "date": "2025-10-07", "dev": "一楼立库区", "problem": "一楼堆垛机输送线出现输送异常，故进行观察并解决,已解决系传感器异常导致，已进行调试处理", "detail": "2025.10.7  一楼堆垛机输送线出现输送异常，故进行观察并解决,已解决系传感器异常导致，已进行调试处理", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0130", "date": "2025-10-04", "dev": "2号堆垛机", "problem": "因2号堆垛机集电臂问题，导致2号堆垛机频繁出现报警，故进行观察并询问厂家，是否有应急方法。根据厂家提醒，更换其集电臂的线路位置，调整其集电胃，并让黄经理将此设备", "detail": "2025.10.4 因2号堆垛机集电臂问题，导致2号堆垛机频繁出现报警，故进行观察并询问厂家，是否有应急方法。根据厂家提醒，更换其集电臂的线路位置，调整其集电胃，并让黄经理将此设备设置为只出不进，来缓解堆垛机的异常，目前运行正常。", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0128", "date": "2025-10-02", "dev": "2号堆垛机", "problem": "2号堆垛机出现问题导致设备需要入库的货箱未正常进入堆垛机输送线而出现任", "detail": "2025.10.2  2号堆垛机出现问题导致设备需要入库的货箱未正常进入堆垛机输送线而出现任\n务卡在堆垛机处，让堆垛机不能正常运行，已进行调整内部数据处理，已解决", "solution": "已进行调整内部数据处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0129", "date": "2025-10-02", "dev": "2号堆垛机", "problem": "2号堆垛机出现\"行走轴故障\"，故去观察解决，已检查出系集电臂磨损严重导致其供电不稳", "detail": "2025.10.2  2号堆垛机出现\"行走轴故障\"，故去观察解决，已检查出系集电臂磨损严重导致其供电不稳", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0127", "date": "2025-09-30", "dev": "辅料仓输送线", "problem": "辅料仓输送线出现称重输送线一直转动等情况，已解决，系传感器偏移导致，已进行调整，并观察设备后", "detail": "2025.9.30 辅料仓输送线出现称重输送线一直转动等情况，已解决，系传感器偏移导致，已进行调整，并观察设备后\n续运行情况，运行正常", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0126", "date": "2025-09-27", "dev": "2号堆垛机", "problem": "2号堆垛机出现\"货叉未居中\"报警，故去观察解决，系系统未能正常回中导致，已进行调试处理，设备已恢复正常", "detail": "2025.9.27  2号堆垛机出现\"货叉未居中\"报警，故去观察解决，系系统未能正常回中导致，已进行调试处理，设备已恢复正常", "solution": "已进行调试处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0124", "date": "2025-09-26", "dev": "布料分拣线", "problem": "41号输送线在运行过程中出现，前方无布料，但输送线未能正常运行，系程序问题，已联系厂家人员修改输送线设备程序，后续已进行测试，设备已恢复正常", "detail": "2025.9.26 41号输送线在运行过程中出现，前方无布料，但输送线未能正常运行，系程序问题，已联系厂家人员修改输送线设备程序，后续已进行测试，设备已恢复正常", "solution": "已联系厂家人员修", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0125", "date": "2025-09-26", "dev": "布料分拣线", "problem": "布料分检线设备操作人员发现输送线设备在运行过程中出现异响，故进行观", "detail": "2025.9.26 布料分检线设备操作人员发现输送线设备在运行过程中出现异响，故进行观\n察解决，系天气干燥导致设备润滑不足，已进行加注润滑油处理", "solution": "已进行加注润滑油处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0122", "date": "2025-09-25", "dev": "布料分拣线", "problem": "布料分拣线设备在扫码过程中出现扫码未分配等问题，故去观察解决，系人员操作错误导致其异常，已进行解决", "detail": "2025.9.25   布料分拣线设备在扫码过程中出现扫码未分配等问题，故去观察解决，系人员操作错误导致其异常，已进行解决", "solution": "已进行解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0123", "date": "2025-09-25", "dev": "二楼立库3号巷道输送线", "problem": "3号巷道堆垛机输送线设备出现无货物却自动运行最后导致输送超时报警等情况,", "detail": "2025.9.25 3号巷道堆垛机输送线设备出现无货物却自动运行最后导致输送超时报警等情况,\n系传感器异常导致，已进行调试传感器感应距离", "solution": "已进行调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0121", "date": "2025-09-24", "dev": "布料分拣线", "problem": "布料分拣线在运行过程中出现前面无货物但后续布料不能正常进行输送，且前", "detail": "2025.9.24  布料分拣线在运行过程中出现前面无货物但后续布料不能正常进行输送，且前\n面输送线一直在转动等情况，已进行处理，系统参数问题已进行调试处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0119", "date": "2025-09-23", "dev": "一楼立库区", "problem": "56号输送线滚筒防滑带损坏及居中辅助装置偏移，已进行更换及调整", "detail": "2025.9.23 56号输送线滚筒防滑带损坏及居中辅助装置偏移，已进行更换及调整", "solution": "已进行更换及调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0120", "date": "2025-09-23", "dev": "一楼立库区", "problem": "2号堆垛机出现“行走轴故障”报警，系滑触线异常导致，已进行处理", "detail": "2025.9.23 2号堆垛机出现“行走轴故障”报警，系滑触线异常导致，已进行处理", "solution": "已进行处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0118", "date": "2025-09-22", "dev": "一楼立库区", "problem": "6号缓降机设备传感器损坏，已进行更换", "detail": "2025.9.22 6号缓降机设备传感器损坏，已进行更换", "solution": "已进行更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0117", "date": "2025-09-13", "dev": "一楼立库区", "problem": "2号堆垛机出现钢丝绳脱落情况，已解决", "detail": "2025.9.13 2号堆垛机出现钢丝绳脱落情况，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0116", "date": "2025-09-10", "dev": "四楼后整区", "problem": "后整分拣线出现无法正常升降异常，检查系其接近开关故障导致异常，已解决", "detail": "2025.9.10后整分拣线出现无法正常升降异常，检查系其接近开关故障导致异常，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0115", "date": "2025-09-07", "dev": "一楼立库区", "problem": "1号堆垛机出现异常断电关机情况故去检查，检查发现因其三相电不稳定导致异常关机，已调整", "detail": "2025.9.7 1号堆垛机出现异常断电关机情况故去检查，检查发现因其三相电不稳定导致异常关机，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0114", "date": "2025-08-19", "dev": "一楼布料分拣线", "problem": "9号缓降机因输出模块故障导致故障，已更换输出模块", "detail": "2025.8.19 9号缓降机因输出模块故障导致故障，已更换输出模块", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0112", "date": "2025-08-13", "dev": "一楼立库区", "problem": "因2号堆垛机钢丝绳异响故去检查，已调整", "detail": "2025.8.13 因2号堆垛机钢丝绳异响故去检查，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0113", "date": "2025-08-13", "dev": "一楼立库区", "problem": "3号堆垛机导向轮磨损严重，已更换其导向轮", "detail": "2025.8.13 3号堆垛机导向轮磨损严重，已更换其导向轮", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0111", "date": "2025-08-12", "dev": "一楼立库区", "problem": "1号堆垛机出现异常断电关机情况故去检查，检查发现因其三相电不稳定导致异常关机，已调整", "detail": "2025.8.12 1号堆垛机出现异常断电关机情况故去检查，检查发现因其三相电不稳定导致异常关机，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0110", "date": "2025-08-11", "dev": "一楼立库区", "problem": "4号堆垛机出现异响，故去检查，已调整", "detail": "2025.8.11 4号堆垛机出现异响，故去检查，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0109", "date": "2025-08-09", "dev": "一楼立库区", "problem": "3号堆垛机出现异常，检查发现系其导向轮松动导致，已调整", "detail": "2025.8.9 3号堆垛机出现异常，检查发现系其导向轮松动导致，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0108", "date": "2025-08-08", "dev": "一楼立库区", "problem": "2号堆垛机出现钢丝绳滑落，已解决", "detail": "2025.8.8 2号堆垛机出现钢丝绳滑落，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0107", "date": "2025-08-05", "dev": "一楼布料分拣线", "problem": "观察布料分拣线时发现两处防滑带脱落，已解决", "detail": "2025.8.5 观察布料分拣线时发现两处防滑带脱落，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0106", "date": "2025-08-04", "dev": "四楼后整区", "problem": "因后整人员发现翻转机皮带不转动等情况及叠衣机翻转包装异常，已解决", "detail": "2025.8.4 因后整人员发现翻转机皮带不转动等情况及叠衣机翻转包装异常，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0105", "date": "2025-08-01", "dev": "二楼立库区", "problem": "检查发现三起传感器信号异常，已进行调整", "detail": "2025.8.1 检查发现三起传感器信号异常，已进行调整", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0104", "date": "2025-07-31", "dev": "四楼后整区", "problem": "因后整人员发现打印机打印尺码错误，故去进行检查，因系统异常导致，已解决", "detail": "2025.7.31 因后整人员发现打印机打印尺码错误，故去进行检查，因系统异常导致，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0103", "date": "2025-07-30", "dev": "一楼布料分拣线", "problem": "7号缓降机上极限位传感器异常，未能给到正确信号，导致上升过头导致跳闸，已解决", "detail": "2025.7.30 7号缓降机上极限位传感器异常，未能给到正确信号，导致上升过头导致跳闸，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0101", "date": "2025-07-29", "dev": "四楼后整区", "problem": "后整输送线衣服分拣口出现升降板不能正常提升情况，已解决", "detail": "2025.7.29后整输送线衣服分拣口出现升降板不能正常提升情况，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0102", "date": "2025-07-29", "dev": "一楼布料分拣线", "problem": "8号收布口出现货框到位后，缓降机不能正常下降到中限位等情况，已调整其设备传感器，已解决", "detail": "2025.7.29 8号收布口出现货框到位后，缓降机不能正常下降到中限位等情况，已调整其设备传感器，已解决", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0100", "date": "2025-07-27", "dev": "一楼布料分拣线", "problem": "因黄经理发现布料分拣线翻框机设备出现异响，系链条松动导致异响，已解决", "detail": "2025.7.27因黄经理发现布料分拣线翻框机设备出现异响，系链条松动导致异响，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0099", "date": "2025-07-24", "dev": "一楼布料分拣线", "problem": "检查发现布料分拣线中4条输送线电机链条松动，故去调整电机链条，已解决", "detail": "2025.7.24 检查发现布料分拣线中4条输送线电机链条松动，故去调整电机链条，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0098", "date": "2025-07-23", "dev": "四楼后整区", "problem": "因后整人员发现翻转机出现皮带不转动情况，故去解决，系皮带超出极限导致卡住，已解决", "detail": "2025.7.23因后整人员发现翻转机出现皮带不转动情况，故去解决，系皮带超出极限导致卡住，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0096", "date": "2025-07-18", "dev": "一楼立库4号巷道", "problem": "因4号堆垛机出现传感器位置异常导致出现据哦呜坍塌报警，已解决", "detail": "2025.7.18因4号堆垛机出现传感器位置异常导致出现据哦呜坍塌报警，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0097", "date": "2025-07-18", "dev": "一楼立库4号巷道", "problem": "4号堆垛机出现行走时货叉未居中报警，已解决", "detail": "2025.7.18 4号堆垛机出现行走时货叉未居中报警，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0095", "date": "2025-07-17", "dev": "一楼立库区", "problem": "因2号堆垛机出现异常报警，故去进行解决，系设备出现重复入库导致当前任务未完成，不能进行下一任务，已解决", "detail": "2025.7.17因2号堆垛机出现异常报警，故去进行解决，系设备出现重复入库导致当前任务未完成，不能进行下一任务，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0094", "date": "2025-07-16", "dev": "二楼立库区", "problem": "二楼立库区1号巷道出现传感器异常导致未能给到正确信号，已调整传感器", "detail": "2025.7.16 二楼立库区1号巷道出现传感器异常导致未能给到正确信号，已调整传感器", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0092", "date": "2025-07-14", "dev": "一楼布料分拣线", "problem": "因5号线扫描器出现异常导致输送线货物堵塞，已解决", "detail": "2025.7.14因5号线扫描器出现异常导致输送线货物堵塞，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0093", "date": "2025-07-14", "dev": "一楼辅料输送线", "problem": "输送线传感器螺丝脱落导致扫描方向出错，导致输送线出现堵塞等情况，已固定传感器，并调整", "detail": "2025.7.14输送线传感器螺丝脱落导致扫描方向出错，导致输送线出现堵塞等情况，已固定传感器，并调整", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0090", "date": "2025-07-13", "dev": "一楼布料分拣线", "problem": "因47号输送线一直异常报警，发现是48号输送线其传感器异常，一直给出错误信号导致收布过程异常，已更换传感器处理", "detail": "2025.7.13 因47号输送线一直异常报警，发现是48号输送线其传感器异常，一直给出错误信号导致收布过程异常，已更换传感器处理", "solution": "已更换传感器处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0091", "date": "2025-07-13", "dev": "一楼布料分拣线", "problem": "收布过程中出现异常卡顿，是匡位上的输送线气缸投放未能正常投入缓降机内导致，输送线光电一直被异常遮挡，已解决", "detail": "2025.7.13 收布过程中出现异常卡顿，是匡位上的输送线气缸投放未能正常投入缓降机内导致，输送线光电一直被异常遮挡，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0089", "date": "2025-07-12", "dev": "4号堆垛机", "problem": "4号堆垛机任务出现严重超时，已解决，是入库超宽报警，导致任务超时", "detail": "2025.7.12 4号堆垛机任务出现严重超时，已解决，是入库超宽报警，导致任务超时", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0087", "date": "2025-07-11", "dev": "一楼布料分拣线", "problem": "因36号线出现频繁跳闸，输送线不动等问题，是热继电器信号线连接异常，导致跳闸，已解决。", "detail": "2025.7.11 因36号线出现频繁跳闸，输送线不动等问题，是热继电器信号线连接异常，导致跳闸，已解决。", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0088", "date": "2025-07-11", "dev": "一楼辅料输送线", "problem": "因辅料掉入输送线皮带内，导致皮带磨损断裂，已更换", "detail": "2025.7.11 因辅料掉入输送线皮带内，导致皮带磨损断裂，已更换", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0086", "date": "2025-07-09", "dev": "一楼布料分拣线", "problem": "因挡板松动导致输送线磨损严重，已安装并调试38号输送线挡板固定套", "detail": "2025.7.9 因挡板松动导致输送线磨损严重，已安装并调试38号输送线挡板固定套", "solution": "已安装并调", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0085", "date": "2025-07-08", "dev": "一楼布料分拣线", "problem": "因布料分拣线传感器出现异常，是因为传感器短路导致，已重新接线", "detail": "2025.7.8 因布料分拣线传感器出现异常，是因为传感器短路导致，已重新接线", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0084", "date": "2025-07-01", "dev": "1号堆垛机", "problem": "1号堆垛机出现行走轴，导致不能正常运行，已解决。", "detail": "2025.7.1 1号堆垛机出现行走轴，导致不能正常运行，已解决。", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0083", "date": "2025-06-29", "dev": "布料分拣线", "problem": "2号输送线翻布板螺丝松松动，导致翘起来卡住布料，已进行调整。已解决", "detail": "2025.6.29  2号输送线翻布板螺丝松松动，导致翘起来卡住布料，已进行调整。已解决", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0082", "date": "2025-06-28", "dev": "布料分拣线", "problem": "输送线出现传感器信号接收异常，导致设备不能正常运行。已进行重新接线处理，已解决", "detail": "2025.6.28  输送线出现传感器信号接收异常，导致设备不能正常运行。已进行重新接线处理，已解决", "solution": "已进行重新接线处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0081", "date": "2025-06-27", "dev": "布料分拣线", "problem": "布料输送线4号缓降机因之前出现损坏情况，导致设备异常报警，不能正常运行已收到厂家寄出的配件并进行安装。已解决", "detail": "2025.6.27  布料输送线4号缓降机因之前出现损坏情况，导致设备异常报警，不能正常运行已收到厂家寄出的配件并进行安装。已解决", "solution": "已收到厂家寄出的配件并进行安装", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0079", "date": "2025-06-26", "dev": "4号堆垛机", "problem": "4号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "detail": "2025.6.26  4号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0080", "date": "2025-06-26", "dev": "布料分拣线", "problem": "36号输送线出现传感器信号接收异常，导致设备不能正常运行。已进行更换信号线处理，已解决", "detail": "2025.6.26  36号输送线出现传感器信号接收异常，导致设备不能正常运行。已进行更换信号线处理，已解决", "solution": "已进行更换信号线处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0078", "date": "2025-06-25", "dev": "四楼后整区", "problem": "后整输送线出现挡板不提升，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.25  后整输送线出现挡板不提升，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0077", "date": "2025-06-24", "dev": "布料分拣线", "problem": "布料输送线8号缓降机出现气缸螺丝松动等情况，导致设备后续使用异常。已解决", "detail": "2025.6.24  布料输送线8号缓降机出现气缸螺丝松动等情况，导致设备后续使用异常。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0076", "date": "2025-06-23", "dev": "布料分拣线", "problem": "布料输送线8号缓降机出现货框入库却未提升到上极限等情况，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.23  布料输送线8号缓降机出现货框入库却未提升到上极限等情况，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0075", "date": "2025-06-21", "dev": "2号堆垛机", "problem": "2号堆垛机出现“提升轴故障”报警，导致不能正常运行，已解决", "detail": "2025.6.21  2号堆垛机出现“提升轴故障”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0072", "date": "2025-06-20", "dev": "四楼后整区", "problem": "后整输送线出现传感器位置错误，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.20  后整输送线出现传感器位置错误，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0073", "date": "2025-06-20", "dev": "布料分拣线", "problem": "布料输送线6号缓降机出现重复投布等情况，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.20  布料输送线6号缓降机出现重复投布等情况，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0074", "date": "2025-06-20", "dev": "一楼立库3号巷道", "problem": "立库输送线在出库的过程中出现货框卡在输送线上，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.20  立库输送线在出库的过程中出现货框卡在输送线上，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0069", "date": "2025-06-19", "dev": "布料分拣线", "problem": "布料输送线出现传感器松动，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.19  布料输送线出现传感器松动，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0070", "date": "2025-06-19", "dev": "布料分拣线", "problem": "布料输送线7号缓降机出现未正常到中极限，导致设备异常报警，不能正常运行。已解决", "detail": "2025.6.19  布料输送线7号缓降机出现未正常到中极限，导致设备异常报警，不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0071", "date": "2025-06-19", "dev": "4号堆垛机", "problem": "4号堆垛机出现“电源缺相”报警，导致不能正常运行，已解决", "detail": "2025.6.19  4号堆垛机出现“电源缺相”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0068", "date": "2025-06-18", "dev": "布料分拣线", "problem": "布料输送线出现传感器位置异常，导致设备不能正常运行。已解决", "detail": "2025.6.18  布料输送线出现传感器位置异常，导致设备不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0061", "date": "2025-06-17", "dev": "布料输送线", "problem": "布料输送线出现布料不能正常传输等情况，导致设备不能正常运行。已解决", "detail": "2025.6.17  布料输送线出现布料不能正常传输等情况，导致设备不能正常运行。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0062", "date": "2025-06-17", "dev": "布料输送线", "problem": "布料输送线出现输送线布料不正常投入框内等情况，导致输送线一直循环，不能正常工作。已解决", "detail": "2025.6.17  布料输送线出现输送线布料不正常投入框内等情况，导致输送线一直循环，不能正常工作。已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0063", "date": "2025-06-17", "dev": "1号堆垛机", "problem": "1号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "detail": "2025.6.17  1号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0064", "date": "2025-06-17", "dev": "2号堆垛机", "problem": "2号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "detail": "2025.6.17  2号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0065", "date": "2025-06-17", "dev": "3号堆垛机", "problem": "3号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "detail": "2025.6.17  3号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0066", "date": "2025-06-17", "dev": "4号堆垛机", "problem": "4号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "detail": "2025.6.17  4号堆垛机出现“货物超宽”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0067", "date": "2025-06-17", "dev": "3号堆垛机", "problem": "3号堆垛机出现“货叉不居中，提升超出区间”报警，导致不能正常运行，已解决", "detail": "2025.6.17  3号堆垛机出现“货叉不居中，提升超出区间”报警，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0060", "date": "2025-06-16", "dev": "布料分拣线", "problem": "布料输送线出现空转，未能带动传送带等情况，导致不能正常运行，已解决", "detail": "2025.6.16 布料输送线出现空转，未能带动传送带等情况，导致不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0058", "date": "2025-06-13", "dev": "布料分拣线", "problem": "布料分拣线4号缓降机设备气缸掉落卡住，导致不能正常运行，已联系厂家发送配件", "detail": "2025.6.13 布料分拣线4号缓降机设备气缸掉落卡住，导致不能正常运行，已联系厂家发送配件", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0059", "date": "2025-06-13", "dev": "布料输送线", "problem": "布料分拣线滚筒防滑带掉落严重，导致布料运行无摩擦力，不能正常传送，已粘连新的防滑带", "detail": "2025.6.13 布料分拣线滚筒防滑带掉落严重，导致布料运行无摩擦力，不能正常传送，已粘连新的防滑带", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0055", "date": "2025-06-12", "dev": "布料输送线", "problem": "对布料分拣线9号缓降机处进行安装辅助装置，让其布料能正常输送，已安装完成，已解决", "detail": "2025.6.12 对布料分拣线9号缓降机处进行安装辅助装置，让其布料能正常输送，已安装完成，已解决", "solution": "已安装完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0056", "date": "2025-06-12", "dev": "布料输送线", "problem": "对布料分拣线16号输送线出现异常，导致不能正常进行收布等情况，系传感器问题，已解决", "detail": "2025.6.12 对布料分拣线16号输送线出现异常，导致不能正常进行收布等情况，系传感器问题，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0057", "date": "2025-06-12", "dev": "三楼立库1号巷道", "problem": "三楼立库1号巷道出现货物卡顿等情况，导致不能正常运行，已将挡板进行调整，已解决", "detail": "2025.6.12 三楼立库1号巷道出现货物卡顿等情况，导致不能正常运行，已将挡板进行调整，已解决", "solution": "已将挡板进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0052", "date": "2025-06-11", "dev": "布料输送线", "problem": "对布料分拣线验布机进行加装辅助装置，已安装完成一个，后续需要扩孔工具到了便能正常安装", "detail": "2025.6.11 对布料分拣线验布机进行加装辅助装置，已安装完成一个，后续需要扩孔工具到了便能正常安装", "solution": "已安装完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0053", "date": "2025-06-11", "dev": "辅料输送线", "problem": "配合陈工与王工进行检查阻挡电机故障原因，已完成", "detail": "2025.6.11 配合陈工与王工进行检查阻挡电机故障原因，已完成", "solution": "已完成", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0054", "date": "2025-06-11", "dev": "辅料输送线", "problem": "辅料输送线其电滚筒皮带交接处磨损严重，导致设备容易出现空转等情况，已进行更换电滚筒解决", "detail": "2025.6.11 辅料输送线其电滚筒皮带交接处磨损严重，导致设备容易出现空转等情况，已进行更换电滚筒解决", "solution": "已进行更换电滚筒解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0049", "date": "2025-06-10", "dev": "布料输送线", "problem": "布料分拣线1号缓降机出现下降超出中限位接近开关传感器，导致传感器未能正常识别缓降机，已解决", "detail": "2025.6.10 布料分拣线1号缓降机出现下降超出中限位接近开关传感器，导致传感器未能正常识别缓降机，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0050", "date": "2025-06-10", "dev": "四楼后整区", "problem": "对后整分拣线损坏皮带处进行整改，因其挡板过长导致其输送线皮带磨到挡板处故导致损坏，已将挡板切割，调整其大小，已解决", "detail": "2025.6.10 对后整分拣线损坏皮带处进行整改，因其挡板过长导致其输送线皮带磨到挡板处故导致损坏，已将挡板切割，调整其大小，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0051", "date": "2025-06-10", "dev": "布料输送线", "problem": "布料分拣线缓降机出现未下降到下极限便投放货物，导致导致布料位置超出货箱，系传感器问题，已解决", "detail": "2025.6.10 布料分拣线缓降机出现未下降到下极限便投放货物，导致导致布料位置超出货箱，系传感器问题，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0048", "date": "2025-06-09", "dev": "辅料输送线", "problem": "因黄经理反馈输送线有异响，检查发现其皮带过于偏左边导致皮带磨损故响声比较大 ，已调整皮带，已解决", "detail": "2025.6.9 因黄经理反馈输送线有异响，检查发现其皮带过于偏左边导致皮带磨损故响声比较大 ，已调整皮带，已解决", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0047", "date": "2025-06-07", "dev": "四楼立库区", "problem": "4楼2号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "detail": "2025.6.7 4楼2号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0046", "date": "2025-06-06", "dev": "五楼立库区", "problem": "5楼1号巷道出现AGV叉车举升但不放货等情况，系其叉车反光板未贴好，已进行调整，已解决。", "detail": "2025.6.6 5楼1号巷道出现AGV叉车举升但不放货等情况，系其叉车反光板未贴好，已进行调整，已解决。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0044", "date": "2025-06-04", "dev": "四楼后整区", "problem": "自动叠衣机设备吹袋处出现关闭不了吹气等情况，导致叠衣机异常，系其接线端子问题，已更换，已解决", "detail": "2025.6.4 自动叠衣机设备吹袋处出现关闭不了吹气等情况，导致叠衣机异常，系其接线端子问题，已更换，已解决", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0045", "date": "2025-06-04", "dev": "四楼立库区", "problem": "4楼3号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "detail": "2025.6.4 4楼3号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0041", "date": "2025-06-03", "dev": "辅料输送线", "problem": "辅料输送线出现4处挡板不提升等情况，导致输送线设备运行异常，2处更换驱动器，一处卸掉刹车，一处线路松动，已解决", "detail": "2025.6.3 辅料输送线出现4处挡板不提升等情况，导致输送线设备运行异常，2处更换驱动器，一处卸掉刹车，一处线路松动，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0042", "date": "2025-06-03", "dev": "五楼立库区", "problem": "五楼1号巷道出现链条转但其货箱不移动等情况，导致设备报警，系其挡板过高导致，已进行调整，已解决。", "detail": "2025.6.3 五楼1号巷道出现链条转但其货箱不移动等情况，导致设备报警，系其挡板过高导致，已进行调整，已解决。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0043", "date": "2025-06-03", "dev": "四楼立库区", "problem": "4楼4号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "detail": "2025.6.3 4楼4号巷道出现AGV叉车举升但不放货等情况，系传感器问题，已进行调整，已解决。", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0039", "date": "2025-06-02", "dev": "一楼立库区", "problem": "一楼1号巷道堆垛机输送线出现“扫码异常”，导致输送线不能正常运行，已解决", "detail": "2025.6.2 一楼1号巷道堆垛机输送线出现“扫码异常”，导致输送线不能正常运行，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0040", "date": "2025-06-02", "dev": "辅料输送线", "problem": "辅料输送线因其货物卡住滚筒皮带处，故操作人员将其皮带剪掉，导致输送线运行异常，已更换新皮带，已解决", "detail": "2025.6.2 辅料输送线因其货物卡住滚筒皮带处，故操作人员将其皮带剪掉，导致输送线运行异常，已更换新皮带，已解决", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0038", "date": "2025-06-01", "dev": "布料输送线", "problem": "布料分拣线出现扫描成功但输送线未能正常运行等情况，已解决，系其上位机系统未打开导致", "detail": "2025.6.1 布料分拣线出现扫描成功但输送线未能正常运行等情况，已解决，系其上位机系统未打开导致", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0027", "date": "2025-05-30", "dev": "2楼立库区", "problem": "二楼1号巷道出现输送线设备异常，显示有货实际无货等情况，已解决", "detail": "2025.5.30 二楼1号巷道出现输送线设备异常，显示有货实际无货等情况，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0028", "date": "2025-05-30", "dev": "2号堆垛机", "problem": "2号堆垛机出现举升货物，但不动等情况，已解决", "detail": "2025.5.30 2号堆垛机出现举升货物，但不动等情况，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0034", "date": "2025-05-30", "dev": "布料分拣线", "problem": "布料分拣线出现布料包装塑料袋卡在滚筒内，导致滚筒运行异常。已对滚筒卡住塑料进行清理", "detail": "2025.5.30 布料分拣线出现布料包装塑料袋卡在滚筒内，导致滚筒运行异常。已对滚筒卡住塑料进行清理", "solution": "已对滚筒卡住塑料进行清理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0035", "date": "2025-05-30", "dev": "布料分拣线", "problem": "布料分拣线5号缓降机异常，导致不能正常下降。系传感器问题，已调整", "detail": "2025.5.30 布料分拣线5号缓降机异常，导致不能正常下降。系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0036", "date": "2025-05-30", "dev": "布料分拣线", "problem": "布料分拣线7号缓降机异常，导致其布料未能通过缓降机进行投放。系传感器问题，已调整", "detail": "2025.5.30 布料分拣线7号缓降机异常，导致其布料未能通过缓降机进行投放。系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0037", "date": "2025-05-30", "dev": "二楼立库1号巷道输送线", "problem": "二楼立库1号巷道出现异常，系统显示有货实际无货等情况，导致堆垛机输送线不能正常运行。系传感器问题，已调整。", "detail": "2025.5.30 二楼立库1号巷道出现异常，系统显示有货实际无货等情况，导致堆垛机输送线不能正常运行。系传感器问题，已调整。", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0033", "date": "2025-05-29", "dev": "布料分拣线", "problem": "布料分拣线的1号收货口的电磁阀接触不良，导致布料在下放过程中没有进行正常的翻框动作。已对电磁阀线路进行调整", "detail": "2025.5.29 布料分拣线的1号收货口的电磁阀接触不良，导致布料在下放过程中没有进行正常的翻框动作。已对电磁阀线路进行调整", "solution": "已对电磁阀线路进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0024", "date": "2025-05-27", "dev": "三楼立库区", "problem": "三楼2号巷道出现agv叉车举升不放货等情况，系传感器问题，已调整", "detail": "2025.5.27 三楼2号巷道出现agv叉车举升不放货等情况，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0031", "date": "2025-05-27", "dev": "布料分拣线", "problem": "布料分拣线传输带出现电机挡板松动卡住传输带，导致传输带损坏，传输带掉落出来等情况，已配合设备工程部将传输带装回，已联系厂家发配件", "detail": "2025.5.27 布料分拣线传输带出现电机挡板松动卡住传输带，导致传输带损坏，传输带掉落出来等情况，已配合设备工程部将传输带装回，已联系厂家发配件", "solution": "已配合设备工程部将传输带装", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0023", "date": "2025-05-26", "dev": "三楼立库3号巷道", "problem": "三楼三号巷道出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "detail": "2025.5.26 三楼三号巷道出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0029", "date": "2025-05-26", "dev": "布料分拣线", "problem": "布料分拣线9号输送线热继电器故障，导致输送线不能正常运行，已更换新的热继电器", "detail": "2025.5.26 布料分拣线9号输送线热继电器故障，导致输送线不能正常运行，已更换新的热继电器", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0030", "date": "2025-05-26", "dev": "布料分拣线", "problem": "布料分拣线滚筒出现防滑带掉落等情况，导致布料不能正常的传输，已用胶水将防滑带进行粘连", "detail": "2025.5.26 布料分拣线滚筒出现防滑带掉落等情况，导致布料不能正常的传输，已用胶水将防滑带进行粘连", "solution": "已处理", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0032", "date": "2025-05-26", "dev": "三楼立库3号巷道", "problem": "输送线的超宽感应传感器异常，导致每次传输都会超宽报警。已调整传感器，已解决", "detail": "2025.5.26 输送线的超宽感应传感器异常，导致每次传输都会超宽报警。已调整传感器，已解决", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0022", "date": "2025-05-24", "dev": "三楼立库1号巷道", "problem": "3楼1号巷道输送线出现叉车接近传感器异常，导致叉车未能正常放货，系传感器问题，已调整", "detail": "2025.5.24 3楼1号巷道输送线出现叉车接近传感器异常，导致叉车未能正常放货，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0020", "date": "2025-05-23", "dev": "辅料仓输送线", "problem": "辅料输送线出现传感器异常，导致CTU机器人不能正常取货，系传感器问题，已调整", "detail": "2025.5.23 辅料输送线出现传感器异常，导致CTU机器人不能正常取货，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0019", "date": "2025-05-22", "dev": "一楼后整输送线", "problem": "对后整输送线进行拆卸调整，但导致设备运行异常，已找到原因，系传感器问题，已调整", "detail": "2025.5.22 对后整输送线进行拆卸调整，但导致设备运行异常，已找到原因，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0026", "date": "2025-05-22", "dev": "布料分拣线", "problem": "布料分拣线出现传感器异常，导致布料分拣线不能正常运行，已找到其问题原因，其分拣线传感器线路出现短路。已配合王工解决", "detail": "2025.5.22 布料分拣线出现传感器异常，导致布料分拣线不能正常运行，已找到其问题原因，其分拣线传感器线路出现短路。已配合王工解决", "solution": "已配合王工解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0017", "date": "2025-05-20", "dev": "3号堆垛机", "problem": "3号堆垛机出现无任务，无运行等情况，导致货物不能正常出入库，系传感器问题，已调整", "detail": "2025.5.20 3号堆垛机出现无任务，无运行等情况，导致货物不能正常出入库，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0018", "date": "2025-05-20", "dev": "全厂", "problem": "配合厂家王工对全厂堆垛机输送线传感器进行调试，已调整，已完成", "detail": "2025.5.20 配合厂家王工对全厂堆垛机输送线传感器进行调试，已调整，已完成", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0025", "date": "2025-05-20", "dev": "二楼立库3号巷道输送线", "problem": "因输送线控制系统一直显示有货，导致叉车不能正常下货，已配合王工解决", "detail": "2025.5.20 因输送线控制系统一直显示有货，导致叉车不能正常下货，已配合王工解决", "solution": "已配合王工解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0016", "date": "2025-05-19", "dev": "2楼立库区", "problem": "2楼3号巷道输送线处叉车到位传感器异常，导致叉车未放下货物，却显示已放下货物等情况，系传感器问题，已调整", "detail": "2025.5.19 2楼3号巷道输送线处叉车到位传感器异常，导致叉车未放下货物，却显示已放下货物等情况，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0011", "date": "2025-05-16", "dev": "1号堆垛机", "problem": "1号堆垛机出现报警“取二深度，一深度有货”，导致堆垛机不能正常运行，系传感器问题，已解决", "detail": "2025.5.16 1号堆垛机出现报警“取二深度，一深度有货”，导致堆垛机不能正常运行，系传感器问题，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0012", "date": "2025-05-16", "dev": "2楼立库区", "problem": "2楼3号巷道输送线出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "detail": "2025.5.16 2楼3号巷道输送线出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0013", "date": "2025-05-16", "dev": "3楼立库区", "problem": "3楼1号巷道输送线出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "detail": "2025.5.16 3楼1号巷道输送线出现超宽传感器异常，导致货物一进入就报超宽，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0014", "date": "2025-05-16", "dev": "4楼立库区", "problem": "4楼3号巷道输送线出现超高传感器异常，导致货物一进入就报超高，系传感器问题，已调整", "detail": "2025.5.16 4楼3号巷道输送线出现超高传感器异常，导致货物一进入就报超高，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0015", "date": "2025-05-16", "dev": "5楼立库区", "problem": "5楼1号巷道输送线出现货物进入传感器异常，导致输送线一直显示有货，叉车不能正常放货，系传感器问题，已调整", "detail": "2025.5.16 5楼1号巷道输送线出现货物进入传感器异常，导致输送线一直显示有货，叉车不能正常放货，系传感器问题，已调整", "solution": "已调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0010", "date": "2025-05-15", "dev": "1号堆垛机", "problem": "1号堆垛机出现螺母掉落等情况，导致后续运行会有风险，已联系厂家发配件，已安装。", "detail": "2025.5.15 1号堆垛机出现螺母掉落等情况，导致后续运行会有风险，已联系厂家发配件，已安装。", "solution": "已安装", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0021", "date": "2025-05-14", "dev": "辅料仓输送线", "problem": "海柔段输送线出库口挡板异常已修复， 刹车线路接触不良原因，因接触不良导致电机抱死，然后驱动器闪烁，红灯报警。已配合陈工解决", "detail": "2025.5.14  海柔段输送线出库口挡板异常已修复， 刹车线路接触不良原因，因接触不良导致电机抱死，然后驱动器闪烁，红灯报警。已配合陈工解决", "solution": "已修复", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0009", "date": "2025-05-12", "dev": "布料分拣线", "problem": "布料分拣线4号框位出现货满但还进行投入布料等情况，导致货框过满，不能正常运行，系传感器问题，已进行调整", "detail": "2025.5.12 布料分拣线4号框位出现货满但还进行投入布料等情况，导致货框过满，不能正常运行，系传感器问题，已进行调整", "solution": "已进行调整", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0008", "date": "2025-05-09", "dev": "2号堆垛机", "problem": "2号堆垛机出现运行过程中异响严重且后续直接抱死等情况，导致不能正常运行，系地轨导向轮磨损严重导致，已更换", "detail": "2025.5.9 2号堆垛机出现运行过程中异响严重且后续直接抱死等情况，导致不能正常运行，系地轨导向轮磨损严重导致，已更换", "solution": "已更换", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0007", "date": "2025-05-06", "dev": "布料输送线", "problem": "布料分拣线发现12处链条松动等情况，导致运行有异响，已解决", "detail": "2025.5.6  布料分拣线发现12处链条松动等情况，导致运行有异响，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0006", "date": "2025-05-04", "dev": "辅料仓输送线", "problem": "辅料仓输送线出现挡板不提升，导致输送线运行异常，已解决", "detail": "2025.5.4  辅料仓输送线出现挡板不提升，导致输送线运行异常，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0005", "date": "2025-04-30", "dev": "一楼后整输送线", "problem": "对后整输送线进行问题检查，发现其皮带掉落以及螺丝松动，滚筒位置异常等情况，已解决", "detail": "2025.4.30 对后整输送线进行问题检查，发现其皮带掉落以及螺丝松动，滚筒位置异常等情况，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0004", "date": "2025-04-28", "dev": "布料输送线", "problem": "布料输送线打标机使用异常，导致打印不成功，系传感器问题，已解决", "detail": "2025.4.28 布料输送线打标机使用异常，导致打印不成功，系传感器问题，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0003", "date": "2025-04-26", "dev": "布料分拣线", "problem": "布料输送线出现卡顿，导致设备运行异常，系其电机处被布料塑料口袋卡住，已解决", "detail": "2025.4.26 布料输送线出现卡顿，导致设备运行异常，系其电机处被布料塑料口袋卡住，已解决", "solution": "已解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0001", "date": "2025-04-24", "dev": "2号堆垛机", "problem": "2号堆垛机出现升降钢丝绳从其滚筒掉出，导致堆垛机不能正常运行，已配合厂家解决", "detail": "2025.4.24 2号堆垛机出现升降钢丝绳从其滚筒掉出，导致堆垛机不能正常运行，已配合厂家解决", "solution": "已配合厂家解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}, {"id": "MP0002", "date": "2025-04-24", "dev": "4号堆垛机", "problem": "4号堆垛机出现升降钢丝绳从其滚筒掉出，导致堆垛机不能正常运行，已配合厂家解决", "detail": "2025.4.24 4号堆垛机出现升降钢丝绳从其滚筒掉出，导致堆垛机不能正常运行，已配合厂家解决", "solution": "已配合厂家解决", "status": "resolved", "author": "冉爽", "uid": "system", "time": 0}];
+var DB=localStorage.getItem('dm_v10'),S=DB?JSON.parse(DB):{curWeek:1,doneDays:[],manualFiles:[],logs:[]};
+if(!DB){S.logs=INIT_LOGS;saveS()}else{var ex=[];S.logs=S.logs||[];S.logs.forEach(function(l){ex.push(l.id)});INIT_LOGS.forEach(function(l){if(ex.indexOf(l.id)<0)S.logs.push(l)});if(ex.length===0||S.logs.length>ex.length)saveS()}
+function saveS(){
+  // 保存时不带 data 字段，data 只存 IndexedDB
+  var slim={curWeek:S.curWeek,doneDays:S.doneDays,logs:S.logs}
+  slim.manualFiles=(S.manualFiles||[]).map(function(f){return{fileId:f.fileId,name:f.name,size:f.size,type:f.type,from:f.from,time:f.time}})
+  try{localStorage.setItem('dm_v10',JSON.stringify(slim))}catch(e){toast('存储不足')}
+}
+var MY_UID=localStorage.getItem('dm_uid10')||(function(){var u='u'+Date.now()+Math.random().toString(36).slice(2,8);localStorage.setItem('dm_uid10',u);return u})()
+var MY_NAME=localStorage.getItem('dm_un10')||(function(){var n=prompt('请输入显示名称（用于协同标识）:','运维员');n=(n||'未命名').trim()||'未命名';localStorage.setItem('dm_un10',n);return n})()
+
+// ====== IndexedDB ======
+function openIDB(){
+  return new Promise(function(resolve,reject){
+    var req=indexedDB.open('dm_files_v10',1)
+    req.onupgradeneeded=function(e){e.target.result.createObjectStore('files',{keyPath:'fileId'})}
+    req.onsuccess=function(e){resolve(e.target.result)}
+    req.onerror=function(){reject(req.error)}
+  })
+}
+function saveFileToIDB(fileId,data){
+  return openIDB().then(function(db){
+    return new Promise(function(resolve,reject){
+      var tx=db.transaction('files','readwrite')
+      tx.objectStore('files').put({fileId:fileId,data:data})
+      tx.oncomplete=resolve;tx.onerror=reject
+    })
+  })
+}
+function getFileFromIDB(fileId){
+  return openIDB().then(function(db){
+    return new Promise(function(resolve,reject){
+      var tx=db.transaction('files','readonly')
+      var req=tx.objectStore('files').get(fileId)
+      req.onsuccess=function(){resolve(req.result?req.result.data:null)}
+      req.onerror=reject
+    })
+  })
+}
+function loadAllFromIDB(){
+  return openIDB().then(function(db){
+    return new Promise(function(resolve,reject){
+      var tx=db.transaction('files','readonly')
+      var req=tx.objectStore('files').getAll()
+      req.onsuccess=function(){resolve(req.result||[])}
+      req.onerror=reject
+    })
+  })
+}
+function deleteFromIDB(fileId){
+  return openIDB().then(function(db){
+    return new Promise(function(resolve,reject){
+      var tx=db.transaction('files','readwrite')
+      tx.objectStore('files').delete(fileId)
+      tx.oncomplete=resolve;tx.onerror=reject
+    })
+  })
+}
+
+// 判断文件是否本地已就绪
+function hasFileData(fileId){return !!dataCache[fileId]}
+
+// ====== 学习数据 ======
+var LDATA={w1:{t:'第1周：通信排障',d:['RS232协议基础与接线','RS485总线拓扑与终端电阻','Modbus RTU报文解析','Modbus TCP网络抓包','串口通信常见故障排查','网络通信故障定位','综合实战：产线通信中断']},w2:{t:'第2周：PLC调试',d:['S7-1200硬件组态','TIA Portal编程基础','三菱FX指令系统','PLC与HMI通信配置','模拟量/数字量处理','故障诊断与程序备份','综合实战：设备启停控制']},w3:{t:'第3周：海康AGV运维',d:['AGV系统组成与导航原理','磁条/二维码导航配置','调度系统RCS基础','常见故障代码解析','电池管理与充电维护','安全传感器校准','综合实战：AGV路径优化']},w4:{t:'第4周：系统集成',d:['MES系统对接基础','OPC UA通信协议','数据库读写与日志','上位机监控画面设计','报警管理与通知机制','系统备份与恢复','综合实战：产线数据看板']}}
+var PDATA={choice:[{q:'RS485总线需要终端电阻吗？',opt:['需要','不需要'],a:'需要'},{q:'Modbus RTU校验方式？',opt:['CRC16','奇校验','偶校验','无校验'],a:'CRC16'},{q:'S7-1200编程软件？',opt:['TIA Portal','STEP 7','GX Works','Codesys'],a:'TIA Portal'},{q:'AGV导航精度最高的是？',opt:['激光SLAM','磁条导航','二维码导航','惯性导航'],a:'激光SLAM'},{q:'PLC输入模块最常见故障？',opt:['电源故障','接线松动','程序错误','通信中断'],a:'接线松动'}],bool:[{q:'Modbus TCP端口502。',a:'true'},{q:'三菱FX可用TIA Portal编程。',a:'false'},{q:'AGV电池应完全放电后再充电。',a:'false'},{q:'RS232通信最长1200米。',a:'false'},{q:'PLC扫描周期三个步骤。',a:'true'}],scene:[{q:'产线停止，PLC输入灯正常、输出灯不亮，原因？',hint:'检查PLC运行状态、程序逻辑、输出模块电源'},{q:'AGV在B区频繁报定位丢失，排查？',hint:'检查地面二维码/磁条、导航传感器、站点坐标'},{q:'Modbus通信时断时续，定位？',hint:'检查接线与终端电阻、波特率、干扰、主从站地址'}]}
+var AIDATA=[{t:'故障排查提问',c:'设备类型：[PLC/AGV/传感器]\n故障现象：[具体描述]\n已排查步骤：[列出]\n当前状态：[运行/停止/报警]\n期望：'},{t:'学习计划提问',c:'当前水平：[新手/有经验/熟练]\n学习目标：[掌握XX]\n可用时间：[每天X小时]\n偏好方式：[理论+实操/纯实操/案例]'},{t:'代码调试提问',c:'编程环境：[TIA Portal/GX Works]\n问题描述：[程序不执行/报警/逻辑错误]\n相关代码：[粘贴]\n已尝试：'},{t:'设备选型提问',c:'应用场景：[产线搬运/仓储分拣]\n负载：[重量/尺寸]\n精度：[定位精度]\n环境：[室内/室外]\n预算：'},{t:'系统集成提问',c:'现有系统：[PLC型号/AGV品牌]\n需集成：[MES/WMS]\n通信协议：[Modbus TCP/OPC UA]\n问题：[连接失败/不同步]'}]
+var FAULTS=[{t:'PLC输入无信号',c:'PLC',s:'检查输入接线、电源、输入模块指示灯，万用表测量端子电压'},{t:'AGV定位丢失',c:'AGV',s:'检查地面二维码/磁条是否脏污损坏，清洁导航传感器'},{t:'通信时断时续',c:'通信',s:'检查终端电阻(120Ω)、波特率一致、屏蔽层接地'},{t:'电机过热报警',c:'电机',s:'检查负载、散热风扇、驱动器过载参数'},{t:'传感器误触发',c:'传感器',s:'调整灵敏度，检查安装位置，排除串扰'},{t:'PLC程序丢失',c:'PLC',s:'检查电池/超级电容，确认程序存储卡状态'},{t:'AGV无法充电',c:'AGV',s:'检查充电电极接触，测量电池电压，确认充电桩通信'},{t:'HMI触摸失灵',c:'HMI',s:'校准触摸屏，清除油污/水渍，检查排线'}]
+
+// ====== 导航 ======
+var CURTAB='today'
+function switchTab(tab){
+  CURTAB=tab;document.querySelectorAll('.nav-item').forEach(function(el){el.classList.toggle('cur',el.dataset.tab===tab)})
+  if(tab==='today')renderToday();else if(tab==='practice')renderPractice();else if(tab==='plan')renderPlan();else if(tab==='manual')renderManual();else if(tab==='ai')renderAI();else if(tab==='log')renderLog();else if(tab==='backup')renderBackup()
+}
+function renderToday(){
+  var wk=LDATA['w'+S.curWeek],h='<h2>'+wk.t+'</h2><div class="fc mt12">'
+  wk.d.forEach(function(d,i){var k='w'+S.curWeek+'d'+(i+1),done=S.doneDays.indexOf(k)>=0;h+='<div class="card"><div class="fx"><div class="f1">'+d+'</div>'+(done?'<span class="tag tag-ok">已完成</span>':'<button class="btn btn-sm" onclick="markDone(\''+k+'\')">标记完成</button>')+'</div></div>'})
+  h+='<div class="fx g12 mt12">';for(var i=1;i<=4;i++)h+='<button class="btn btn-s'+(S.curWeek===i?'':'" style="opacity:0.6')+'" onclick="setWeek('+i+')">第'+i+'周</button>';h+='</div></div>';G('mainContent').innerHTML=h
+}
+function markDone(k){if(S.doneDays.indexOf(k)<0){S.doneDays.push(k);saveS();renderToday();updateSummary()}}
+function setWeek(w){S.curWeek=w;saveS();renderToday();updateSummary()}
+// ====== 练习题 ======
+var pracType='choice',pracAnswers={}
+function renderPractice(){G('mainContent').innerHTML='<h2>练习题</h2><div class="fx g12 mb12"><button class="btn btn-s" onclick="switchPrac(\'choice\')">选择题</button><button class="btn btn-s" onclick="switchPrac(\'bool\')">判断题</button><button class="btn btn-s" onclick="switchPrac(\'scene\')">场景题</button></div><div id="pracContent"></div>';switchPrac('choice')}
+function switchPrac(t){pracType=t;pracAnswers={};var qs=PDATA[t],h='';qs.forEach(function(q,i){h+='<div class="pq" id="pq'+i+'"><div class="qt">Q'+(i+1)+': '+q.q+'</div>';if(t==='choice'){h+='<div class="po">';q.opt.forEach(function(o){h+='<div class="popt" onclick="pickAns('+i+',\''+o.replace(/'/g,"\\'")+'\')">'+o+'</div>'});h+='</div>'}else if(t==='bool')h+='<div class="po"><div class="popt" onclick="pickAns('+i+',\'true\')">正确</div><div class="popt" onclick="pickAns('+i+',\'false\')">错误</div></div>';else h+='<textarea id="scene'+i+'" style="height:80px;margin-top:6px" placeholder="输入分析..."></textarea><div class="ts mt8">提示：'+q.hint+'</div>';h+='</div>'});h+='<button class="btn mt12" onclick="checkPrac()">提交并查看得分</button><div id="scoreR" class="tc mt12" style="font-size:1.1rem;font-weight:bold;color:var(--accent)"></div>';document.getElementById('pracContent').innerHTML=h}
+function pickAns(i,ans){var pq=G('pq'+i),opts=pq.querySelectorAll('.popt');pracAnswers[i]=ans;if(pracType==='bool'){opts[0].classList.toggle('sel',ans==='true');opts[1].classList.toggle('sel',ans==='false')}else{opts.forEach(function(o){o.classList.toggle('sel',o.textContent===ans)})}}
+function checkPrac(){var qs=PDATA[pracType],s=0,t=0;qs.forEach(function(q,i){if(pracType=='scene')return;t++;if(pracAnswers[i]===q.a)s++});if(pracType==='scene'){var a=0;qs.forEach(function(q,i){if(G('scene'+i)&&G('scene'+i).value.trim())a++});G('scoreR').textContent='已作答：'+a+'/'+qs.length;return}var p=t?Math.round(s/t*100):0;G('scoreR').textContent='得分：'+s+'/'+t+' ('+p+'%)'}
+// ====== 计划总览 ======
+function renderPlan(){var h='<h2>计划总览</h2>';for(var i=1;i<=4;i++){var wk=LDATA['w'+i],d=0;wk.d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)d++});h+='<div class="card"><div class="fx"><div class="f1"><h3>'+wk.t+'</h3><div class="ts">完成 '+d+'/7</div></div><div style="font-size:1.2rem;font-weight:bold;color:var(--accent)">'+Math.round(d/7*100)+'%</div></div></div>'}var t=0;for(var i=1;i<=4;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});h+='<div class="card tc"><div class="ts">总完成度</div><div style="font-size:1.4rem;font-weight:bold;color:var(--accent)">'+Math.round(t/28*100)+'%</div></div>';G('mainContent').innerHTML=h}
+// ====== AI模板 ======
+function renderAI(){var h='<h2>AI提问模板</h2><div class="ts mb12">点击模板复制到剪贴板</div>';AIDATA.forEach(function(t){h+='<div class="card"><h3>'+t.t+'</h3><pre onclick="copyText(\''+t.c.replace(/'/g,"\\'").replace(/\n/g,'\\n')+'\')">'+t.c+'</pre></div>'});G('mainContent').innerHTML=h}
+function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('已复制')}).catch(function(){toast('复制失败')})}
+// ====== 工作日志 ======
+var logFilter='all'
+function renderLog(){var h='<h2>工作日志</h2><div class="card"><h3>新增日志</h3><div class="fc"><div class="fx g12"><input type="date" id="ldate" value="'+new Date().toISOString().slice(0,10)+'" style="width:auto"><select id="ldev" style="width:auto"><option>PLC(S7-1200)</option><option>PLC(S7-1500)</option><option>PLC(三菱FX)</option><option>海康AGV</option><option>读码器</option><option>变频器</option><option>传感器</option><option>其他</option></select></div><input type="text" id="lprob" placeholder="故障现象（必填）"><textarea id="ldet" placeholder="排查过程" style="height:70px"></textarea><textarea id="lsol" placeholder="解决方案" style="height:60px"></textarea><div class="fx g12"><select id="lstat" style="width:auto"><option value="pending">待跟进</option><option value="resolved">已解决</option><option value="help">需协助</option></select><button class="btn" onclick="addLog()">记录日志</button></div></div></div><div class="fx g12 mb12"><input type="text" id="lsearch" placeholder="搜索日志..." oninput="showLogs()" style="max-width:200px"><button class="btn btn-sm btn-s" onclick="setLogF(\'all\')">全部</button><button class="btn btn-sm btn-s" onclick="setLogF(\'mine\')">我的</button><button class="btn btn-sm btn-s" onclick="setLogF(\'urgent\')">紧急</button><button class="btn btn-sm btn-s" onclick="exportCSV()">导出CSV</button></div><div id="logList"></div>';G('mainContent').innerHTML=h;showLogs()}
+function addLog(){var prob=G('lprob').value.trim();if(!prob){toast('请填写故障现象');return}var log={id:'L'+Date.now()+Math.random().toString(36).slice(2,6),date:G('ldate').value,dev:G('ldev').value,problem:prob,detail:G('ldet').value.trim(),solution:G('lsol').value.trim(),status:G('lstat').value,author:MY_NAME,uid:MY_UID,time:Date.now()};S.logs.unshift(log);saveS();showLogs();G('lprob').value='';G('ldet').value='';G('lsol').value='';if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'add',log:log}),{qos:1});toast('日志已记录')}
+function delLog(id){if(!confirm('确定删除？'))return;S.logs=S.logs.filter(function(l){return l.id!==id});saveS();showLogs();if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'del',id:id}),{qos:1})}
+function setLogF(f){logFilter=f;showLogs()}
+function exportCSV(){var csv='\uFEFF日期,设备类型,故障现象,排查过程,解决方案,状态,记录人\n';S.logs.forEach(function(l){csv+=l.date+','+l.dev+',"'+l.problem+'","'+(l.detail||'')+'","'+(l.solution||'')+'",'+l.status+','+l.author+'\n'});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='日志_'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
+function showLogs(){var logs=S.logs||[],q=(G('lsearch')?G('lsearch').value:'').toLowerCase();if(logFilter==='mine')logs=logs.filter(function(l){return l.uid===MY_UID});else if(logFilter==='urgent')logs=logs.filter(function(l){return l.status==='help'||l.status==='pending'});if(q)logs=logs.filter(function(l){return l.problem.toLowerCase().indexOf(q)>=0||l.dev.toLowerCase().indexOf(q)>=0||(l.detail||'').toLowerCase().indexOf(q)>=0});if(!logs.length){G('logList').innerHTML='<p class="tc ts">暂无日志</p>';return}G('logList').innerHTML=logs.slice(0,80).map(function(l){var sc=l.status==='resolved'?'tag-ok':l.status==='help'?'tag-err':'tag-warn',st={pending:'待跟进',resolved:'已解决',help:'需协助'}[l.status];return '<div class="log-row"><div class="lm"><span>'+l.date+'</span><span>'+l.dev+'</span><span class="tag '+sc+'">'+st+'</span><span>'+l.author+'</span><button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delLog(\''+l.id+'\')">删除</button></div><div class="lp">'+l.problem+'</div>'+(l.detail?'<div class="ts">排查：'+l.detail+'</div>':'')+(l.solution?'<div class="ts mt4">方案：'+l.solution+'</div>':'')+'</div>'}).join('')}
+// ====== 备份/导入 ======
+function renderBackup(){G('mainContent').innerHTML='<h2>备份/导入</h2><div class="card"><h3>备份数据</h3><p class="ts mb8">学习进度、日志导出为JSON（文件数据存储于浏览器IndexedDB，备份不含文件本体）</p><button class="btn" onclick="exportB()">导出备份</button></div><div class="card"><h3>导入数据</h3><p class="ts mb8">从JSON恢复数据</p><input type="file" id="bimport" accept=".json" class="hide" onchange="importB(this.files)"><button class="btn btn-s" onclick="G(\'bimport\').click()">选择文件导入</button></div><div class="card"><h3>数据统计</h3><p class="ts">学习进度：'+S.doneDays.length+'/28 | 日志：'+(S.logs||[]).length+' | 手册：'+(S.manualFiles||[]).length+'（已就绪：'+Object.keys(dataCache).length+'）</p></div>'}
+function exportB(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='运维备份_'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('备份已导出')}
+function importB(files){if(!files||!files.length)return;var r=new FileReader();r.onload=function(e){try{S=JSON.parse(e.target.result);saveS();toast('导入成功！');switchTab(CURTAB)}catch(err){toast('文件格式错误')}};r.readAsText(files[0])}
+// ====== 辅助 ======
+function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'}
+function updateSummary(){var t=0;for(var i=1;i<=4;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});G('totalProgress').textContent=Math.round(t/28*100)+'%';G('todayTasks').textContent=t+'/28';var d=0;LDATA['w'+S.curWeek].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+S.curWeek+'d'+(j+1))>=0)d++});G('lastStudy').textContent=d>0?'已完成 '+d+'/7':'-'}
+function d2ab(dataURI){var b64=dataURI.split(',')[1],raw=atob(b64),arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr.buffer}
+
+// ====== MQTT ======
+var BROKERS=[{n:'EMQX',u:'wss://broker.emqx.io:8084/mqtt'},{n:'HiveMQ',u:'wss://broker.hivemq.com:8884/mqtt'},{n:'Mosquitto',u:'wss://test.mosquitto.org:8081/mqtt'}]
+var mqttC=null,mqttOn=false,mqttIdx=0,mqttTry=0,onlinePeers=[],peerMap={}
+var CHUNK=150000
+
+// ====== 故障手册 v10 ======
+var recvBuf={}
+var metaStore={}
+
+function upsertMeta(entry){if(!entry||!entry.fileId)return;metaStore[entry.fileId]=entry}
+
+// 添加文件到本地存储（元数据 + IDB + 内存缓存）
+function addLocalFile(fileId,name,size,type,from,time,dataUrl){
+  // 1. 内存缓存
+  dataCache[fileId]=dataUrl
+  // 2. IndexedDB
+  saveFileToIDB(fileId,dataUrl).catch(function(e){console.error('IDB save failed:',e)})
+  // 3. 元数据到 S.manualFiles（不含 data）
+  var found=false
+  for(var i=0;i<(S.manualFiles||[]).length;i++){
+    if(S.manualFiles[i].fileId===fileId){found=true;break}
+  }
+  if(!found)S.manualFiles.push({fileId:fileId,name:name,size:size,type:type,from:from,time:time})
+  saveS()
+}
+
+// 响应文件请求
+function respFileReq(fileId){
+  var d=dataCache[fileId];if(!d)return
+  var b64=d.split(',')[1],total=Math.ceil(b64.length/CHUNK)
+  if(!mqttOn)return
+  // 找到元数据
+  var meta=null
+  for(var i=0;i<(S.manualFiles||[]).length;i++){if(S.manualFiles[i].fileId===fileId){meta=S.manualFiles[i];break}}
+  if(!meta)return
+  mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:fileId,name:meta.name,size:meta.size,ftype:meta.type,from:meta.from,time:meta.time,totalChunks:total}),{qos:1})
+  sendChunks(fileId,b64,total)
+}
+
+// 发送分块（每100ms发3块）
+function sendChunks(fileId,b64,total){
+  var idx=0
+  function sendBatch(){
+    var sent=0
+    while(sent<3&&idx<total){
+      var start=idx*CHUNK,end=Math.min(start+CHUNK,b64.length),chunk=b64.substring(start,end)
+      mqttC.publish('dm/manual_chunk',JSON.stringify({fileId:fileId,chunkIndex:idx,data:chunk,total:total}),{qos:1})
+      idx++;sent++
+    }
+    if(idx<total)setTimeout(sendBatch,100)
+    else mqttC.publish('dm/manual',JSON.stringify({type:'done',fileId:fileId}),{qos:1})
+  }
+  sendBatch()
+}
+
+function handleManualMeta(msg){
+  if(!msg.fileId||!msg.name)return
+  upsertMeta({fileId:msg.fileId,name:msg.name,size:msg.size,type:msg.ftype,from:msg.from,time:msg.time,totalChunks:msg.totalChunks})
+  if(CURTAB==='manual')renderManual()
+}
+
+function requestFile(fileId){
+  if(!mqttOn){toast('未连接到同步服务');return}
+  if(recvBuf[fileId]){toast('已在接收中');return}
+  var meta=metaStore[fileId];if(!meta||!meta.totalChunks){toast('文件信息不可用');return}
+  recvBuf[fileId]={totalChunks:meta.totalChunks,chunks:new Map(),meta:meta,received:0,retryCount:0,retryTimer:null}
+  mqttC.publish('dm/manual',JSON.stringify({type:'req_file',fileId:fileId,from:MY_NAME}),{qos:1})
+  renderManual()
+  toast('已请求接收: '+meta.name)
+}
+
+function requestSelected(){
+  var cbs=document.querySelectorAll('.file-cb:checked'),cnt=0
+  cbs.forEach(function(cb){requestFile(cb.value);cnt++})
+  if(!cnt)toast('请先勾选要接收的文件')
+}
+
+function handleManualChunk(msg){
+  var buf=recvBuf[msg.fileId];if(!buf)return
+  if(!buf.chunks.has(msg.chunkIndex)){
+    buf.chunks.set(msg.chunkIndex,msg.data);buf.received++
+    if(CURTAB==='manual')renderManual()
+    if(buf.received>=buf.totalChunks){
+      clearTimeout(buf.retryTimer)
+      assembleChunks(msg.fileId,buf)
+    }
+  }
+}
+
+function handleManualDone(msg){
+  var buf=recvBuf[msg.fileId];if(!buf)return
+  if(buf.received>=buf.totalChunks)return
+  function doRetry(){
+    var b=recvBuf[msg.fileId];if(!b)return
+    if(b.received>=b.totalChunks){assembleChunks(msg.fileId,b);return}
+    b.retryCount++
+    if(b.retryCount>10){toast('接收超时: '+b.meta.name);delete recvBuf[msg.fileId];renderManual();return}
+    var missing=[]
+    for(var i=0;i<b.totalChunks;i++){if(!b.chunks.has(i))missing.push(i)}
+    if(mqttOn)mqttC.publish('dm/manual',JSON.stringify({type:'req_chunks',fileId:msg.fileId,missing:missing,total:b.totalChunks,missing_cnt:missing.length}),{qos:1})
+    b.retryTimer=setTimeout(doRetry,3000)
+  }
+  setTimeout(doRetry,1000)
+}
+
+function handleManualReqChunks(msg){
+  var b64=null
+  for(var i=0;i<(S.manualFiles||[]).length;i++){
+    if(S.manualFiles[i].fileId===msg.fileId){
+      b64=(dataCache[msg.fileId]||'').split(',')[1];break
+    }
+  }
+  if(!b64)return
+  var mi=0
+  function sendNextMiss(){
+    if(mi>=msg.missing.length)return
+    var idx=msg.missing[mi],start=idx*CHUNK,end=Math.min(start+CHUNK,b64.length)
+    if(mqttOn)mqttC.publish('dm/manual_chunk',JSON.stringify({fileId:msg.fileId,chunkIndex:idx,data:b64.substring(start,end),total:msg.total||0}),{qos:1})
+    mi++;setTimeout(sendNextMiss,50)
+  }
+  sendNextMiss()
+}
+
+function assembleChunks(fileId,buf){
+  var sorted=[];buf.chunks.forEach(function(data,idx){sorted.push({idx:idx,data:data})});sorted.sort(function(a,b){return a.idx-b.idx})
+  var full=sorted.map(function(c){return c.data}).join('')
+  var mime=buf.meta.type||'application/octet-stream',dataUrl='data:'+mime+';base64,'+full
+  addLocalFile(fileId,buf.meta.name,buf.meta.size,buf.meta.type,buf.meta.from,buf.meta.time,dataUrl)
+  delete recvBuf[fileId]
+  delete metaStore[fileId]
+  toast('接收完成: '+buf.meta.name)
+  if(CURTAB==='manual')renderManual()
+}
+
+function renderManual(){
+  var h='<h2>故障手册 <span class="ts">(v10 持久存储 | 刷新不丢文件)</span></h2>'
+  h+='<div class="card"><h3>上传故障文档</h3>'
+  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传 PDF / Word 文档<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
+  h+='<input type="file" id="fupload" accept=".pdf,.doc,.docx" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
+
+  // 本地已就绪（dataCache 中有数据）
+  var readyFiles=S.manualFiles.filter(function(f){return hasFileData(f.fileId)})
+  if(readyFiles.length){
+    h+='<div class="card"><h3>已就绪文档 <span class="ts">（点击打开 | 刷新不丢失）</span></h3>'
+    readyFiles.forEach(function(f){
+      h+='<div class="file-row"><div class="fn ready" onclick="openManual(\''+f.fileId+'\')">'+f.name+'</div><div class="fi">'+fmtSize(f.size)+'</div><span class="tag tag-ok">已就绪</span><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div>'
+    })
+    h+='</div>'
+  }
+
+  // 可接收文件
+  var metaKeys=Object.keys(metaStore)
+  if(metaKeys.length){
+    h+='<div class="card"><h3>可接收文档</h3>'
+    h+='<div class="batch-actions"><button class="btn btn-sm" onclick="requestSelected()">接收勾选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(true)">全选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(false)">取消</button></div>'
+    metaKeys.forEach(function(k){
+      var m=metaStore[k],buf=recvBuf[k]
+      if(!m||!m.name)return
+      var pct=buf&&buf.totalChunks?Math.round(buf.received/buf.totalChunks*100):0
+      var retryInfo=buf&&buf.retryCount>0?' 重试'+buf.retryCount:''
+      h+='<div class="file-row"><input type="checkbox" class="file-cb" value="'+k+'" '+(buf?'checked disabled':'')+'><div class="fn">'+m.name+'</div><div class="fi">'+fmtSize(m.size)+'</div><div class="fi">来自：'+m.from+'</div>'
+      if(buf)h+='<span class="tag tag-warn" style="display:flex;align-items:center;gap:4px">'+pct+'%'+retryInfo+'<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></span>'
+      else h+='<button class="btn btn-sm" onclick="requestFile(\''+k+'\')">接收</button>'
+      h+='</div>'
+    })
+    h+='</div>'
+  }
+
+  h+='<div class="card"><h3>常见故障知识库</h3><input type="text" id="fs" placeholder="搜索故障..." oninput="searchF()" class="mb12"><div id="fResults"></div></div>'
+  G('mainContent').innerHTML=h;searchF()
+}
+
+function selectAllMeta(v){document.querySelectorAll('.file-cb:not([disabled])').forEach(function(cb){cb.checked=v})}
+
+function uploadFiles(files){
+  for(var i=0;i<files.length;i++){(function(file){
+    var reader=new FileReader()
+    reader.onload=function(e){
+      var dataUrl=e.target.result,fileId='f'+Date.now()+'_'+Math.random().toString(36).slice(2,8)
+      addLocalFile(fileId,file.name,file.size,file.type,MY_NAME,Date.now(),dataUrl)
+      renderManual()
+      var b64=dataUrl.split(',')[1],total=Math.ceil(b64.length/CHUNK)
+      if(mqttOn){
+        mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:fileId,name:file.name,size:file.size,ftype:file.type,from:MY_NAME,time:Date.now(),totalChunks:total}),{qos:1})
+        upsertMeta({fileId:fileId,name:file.name,size:file.size,type:file.type,from:MY_NAME,time:Date.now(),totalChunks:total})
+      }
+      toast(file.name+' 已保存'+(mqttOn?'并广播':'（等待连接）'))
+    }
+    reader.readAsDataURL(file)
+  })(files[i])}
+}
+
+function openManual(fileId){
+  var d=dataCache[fileId]
+  if(d){
+    doOpen(fileId,d);return
+  }
+  // 内存没有，尝试从 IDB 加载
+  getFileFromIDB(fileId).then(function(d2){
+    if(d2){dataCache[fileId]=d2;doOpen(fileId,d2)}
+    else toast('文件数据不存在，请重新接收')
+  })
+}
+function doOpen(fileId,dataUrl){
+  for(var i=0;i<S.manualFiles.length;i++){
+    if(S.manualFiles[i].fileId===fileId){
+      var f=S.manualFiles[i]
+      if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')){
+        window.open(URL.createObjectURL(new Blob([d2ab(dataUrl)],{type:'application/pdf'})),'_blank')
+      }else{
+        mammoth.convertToHtml({arrayBuffer:d2ab(dataUrl)}).then(function(r){
+          var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+f.name+'</title><style>body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:40px auto;padding:20px;line-height:1.8;color:#333}h1,h2,h3{color:#1a2736;margin:16px 0 8px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}</style></head><body>'+(r.value||'<p>无可读文本</p>')+'</body></html>'
+          window.open(URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})),'_blank')
+        }).catch(function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d2ab(dataUrl)],{type:f.type}));a.download=f.name;a.click()})
+      }
+      return
+    }
+  }
+  toast('文件元数据丢失')
+}
+
+function delManual(fileId){
+  if(!confirm('确定删除？将从本地永久移除'))return
+  S.manualFiles=S.manualFiles.filter(function(f){return f.fileId!==fileId})
+  delete dataCache[fileId]
+  delete recvBuf[fileId];delete metaStore[fileId]
+  deleteFromIDB(fileId)
+  saveS();renderManual()
+  if(mqttOn)mqttC.publish('dm/manual',JSON.stringify({type:'del',fileId:fileId}),{qos:1})
+}
+
+function searchF(){
+  var q=(G('fs')?G('fs').value:'').toLowerCase(),list=FAULTS
+  if(q)list=FAULTS.filter(function(f){return f.t.toLowerCase().indexOf(q)>=0||f.c.toLowerCase().indexOf(q)>=0||f.s.toLowerCase().indexOf(q)>=0})
+  var h=list.length?list.map(function(f){return '<div class="log-row"><div class="lm"><span class="tag tag-warn">'+f.c+'</span></div><div class="lp">'+f.t+'</div><div class="ts">'+f.s+'</div></div>'}).join(''):'<p class="tc ts">无匹配结果</p>'
+  if(G('fResults'))G('fResults').innerHTML=h
+}
+
+// ====== MQTT 连接 ======
+function mqttConnect(){
+  if(typeof mqtt==='undefined'){setTimeout(mqttConnect,500);return}
+  if(mqttTry>=12){setTimeout(function(){mqttTry=0;mqttConnect()},15000);return}
+  var br=BROKERS[mqttIdx%3]
+  try{if(mqttC){try{mqttC.end(true)}catch(e){}}mqttC=mqtt.connect(br.u,{clientId:'dmpX_'+MY_UID.slice(-8),clean:true,connectTimeout:6000,reconnectPeriod:1500,keepalive:30})}catch(e){mqttTry++;setTimeout(mqttConnect,1000);return}
+  mqttC.on('connect',function(){
+    mqttOn=true;mqttTry=0;onlinePeers=[MY_NAME];peerMap={}
+    mqttC.subscribe(['dm/log','dm/manual','dm/manual_chunk','dm/hello','dm/peer','dm/sync'],{qos:1})
+    mqttC.publish('dm/hello',JSON.stringify({name:MY_NAME,uid:MY_UID,time:Date.now()}),{qos:1})
+    setInterval(function(){if(mqttOn)mqttC.publish('dm/peer',JSON.stringify({name:MY_NAME,uid:MY_UID,time:Date.now()}),{qos:1})},20000)
+    updateCollab()
+    setTimeout(function(){broadcastLocalMetas()},3000)
+  })
+  mqttC.on('message',function(topic,payload){
+    try{var msg=JSON.parse(payload.toString());if(!msg||msg.uid===MY_UID)return}catch(e){return}
+    if(topic==='dm/hello'||topic==='dm/peer'){
+      if(msg.name&&onlinePeers.indexOf(msg.name)<0)onlinePeers.push(msg.name)
+      if(msg.uid)peerMap[msg.uid]={name:msg.name,time:Date.now()}
+      if(msg.reqSync)setTimeout(function(){broadcastLocalMetas()},500)
+      updateCollab()
+    }else if(topic==='dm/log'){
+      if(msg.type==='add'&&msg.log){var idx=-1;for(var i=0;i<S.logs.length;i++){if(S.logs[i].id===msg.log.id){idx=i;break}}if(idx>=0){if((msg.log.time||0)>(S.logs[idx].time||0))S.logs[idx]=msg.log}else S.logs.push(msg.log);saveS();if(CURTAB==='log')showLogs()}
+      else if(msg.type==='del'&&msg.id){S.logs=S.logs.filter(function(l){return l.id!==msg.id});saveS();if(CURTAB==='log')showLogs()}
+    }else if(topic==='dm/manual'){
+      if(msg.type==='meta')handleManualMeta(msg)
+      else if(msg.type==='done')handleManualDone(msg)
+      else if(msg.type==='del'&&msg.fileId){S.manualFiles=S.manualFiles.filter(function(f){return f.fileId!==msg.fileId});delete recvBuf[msg.fileId];delete metaStore[msg.fileId];delete dataCache[msg.fileId];deleteFromIDB(msg.fileId);saveS();if(CURTAB==='manual')renderManual()}
+      else if(msg.type==='req_chunks')handleManualReqChunks(msg)
+      else if(msg.type==='req_file'&&msg.fileId)respFileReq(msg.fileId)
+    }else if(topic==='dm/manual_chunk'){
+      if(msg.fileId&&msg.chunkIndex!==undefined&&msg.data)handleManualChunk(msg)
+    }else if(topic==='dm/sync'){
+      if(msg.logs){var m2={};S.logs.forEach(function(l){m2[l.id]=l});msg.logs.forEach(function(l){var ex=m2[l.id];if(!ex||(l.time||0)>(ex.time||0))m2[l.id]=l});S.logs=Object.values(m2);saveS();if(CURTAB==='log')showLogs()}
+    }
+  })
+  mqttC.on('close',function(){mqttOn=false;updateCollab()})
+  mqttC.on('error',function(){mqttTry++;setTimeout(mqttConnect,1000)})
+}
+
+function broadcastLocalMetas(){
+  if(!mqttOn)return
+  S.manualFiles.forEach(function(f){
+    var d=dataCache[f.fileId]
+    if(d){
+      var total=Math.ceil(d.split(',')[1].length/CHUNK)
+      mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:f.fileId,name:f.name,size:f.size,ftype:f.type,from:MY_NAME,time:f.time,totalChunks:total}),{qos:1})
+    }
+  })
+}
+
+function switchBroker(){mqttIdx++;mqttTry=0;recvBuf={};metaStore={};mqttConnect()}
+function updateCollab(){
+  var dot=G('dot'),count=G('onlineCount'),status=G('netStatus')
+  if(!dot||!count||!status)return
+  dot.style.background=mqttOn?'var(--ok)':'var(--err)'
+  count.textContent=onlinePeers.length
+  status.textContent=mqttOn?BROKERS[mqttIdx%3].n:'未连接'
+}
+
+// ====== 启动 ======
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+
+// 启动时从 IndexedDB 恢复所有文件数据到 dataCache
+function restoreDataCache(){
+  return loadAllFromIDB().then(function(items){
+    items.forEach(function(item){dataCache[item.fileId]=item.data})
+    console.log('Restored '+items.length+' files from IndexedDB')
+  }).catch(function(e){console.error('IndexedDB restore failed:',e)})
+}
+
+restoreDataCache().then(function(){
+  switchTab('today');updateSummary();mqttConnect()
+})
+setTimeout(function(){if(!mqttOn)mqttConnect()},3000)
+setTimeout(function(){if(!mqttOn)mqttConnect()},8000)
+</script>
 </body>
 </html>
