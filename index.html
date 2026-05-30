@@ -34,12 +34,19 @@ textarea{resize:vertical;min-height:60px}
 .tag-ok{background:rgba(46,204,113,.2);color:var(--ok)}.tag-warn{background:rgba(243,156,18,.2);color:var(--warn)}.tag-err{background:rgba(231,76,60,.2);color:var(--err)}
 .upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px}
 .upload-area:hover{border-color:var(--accent);background:var(--bg2)}.upload-area input[type=file]{display:none}
-.file-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:4px;border:1px solid var(--border)}
-.file-row .fn{flex:1;color:var(--accent);font-size:.88rem}
-.file-row .fn.ready{cursor:pointer;text-decoration:underline}.file-row .fn.ready:hover{color:#26a69a}
-.file-row .fi{color:var(--text2);font-size:.75rem;white-space:nowrap}
-.file-row .prog-bar{flex-shrink:0;width:60px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
-.file-row .prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.file-explorer{background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden}
+.file-item{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eef1f5;transition:background .15s}
+.file-item:hover{background:#f0f5ff}
+.file-item:last-child{border-bottom:none}
+.file-icon{font-size:1.3rem;margin-right:10px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-name{font-weight:500;color:#1a2736;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-name.ready{cursor:pointer;color:var(--accent)}
+.file-name.ready:hover{text-decoration:underline}
+.file-meta{font-size:0.78rem;color:#999;margin-top:2px}
+.file-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.file-item .prog-bar{flex-shrink:0;width:60px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.file-item .prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
 .log-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px}
 .log-row .lm{display:flex;gap:10px;font-size:.75rem;color:var(--text2);margin-bottom:4px;flex-wrap:wrap;align-items:center}
 .log-row .lp{font-weight:500;margin-bottom:4px;font-size:.92rem}
@@ -60,7 +67,7 @@ pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px 
 <button class="nav-item cur" data-tab="today" onclick="switchTab('today')">今日学习</button>
 <button class="nav-item" data-tab="practice" onclick="switchTab('practice')">练习题</button>
 <button class="nav-item" data-tab="plan" onclick="switchTab('plan')">计划总览</button>
-<button class="nav-item" data-tab="manual" onclick="switchTab('manual')">故障手册</button>
+<button class="nav-item" data-tab="manual" onclick="switchTab('manual')">操作手册</button>
 <button class="nav-item" data-tab="ai" onclick="switchTab('ai')">AI模板</button>
 <button class="nav-item" data-tab="log" onclick="switchTab('log')">工作日志</button>
 <button class="nav-item" data-tab="backup" onclick="switchTab('backup')">备份/导入</button>
@@ -155,7 +162,7 @@ function hasFileData(fileId){return !!dataCache[fileId]}
 var LDATA={w1:{t:'第1周：通信排障',d:['RS232协议基础与接线','RS485总线拓扑与终端电阻','Modbus RTU报文解析','Modbus TCP网络抓包','串口通信常见故障排查','网络通信故障定位','综合实战：产线通信中断']},w2:{t:'第2周：PLC调试',d:['S7-1200硬件组态','TIA Portal编程基础','三菱FX指令系统','PLC与HMI通信配置','模拟量/数字量处理','故障诊断与程序备份','综合实战：设备启停控制']},w3:{t:'第3周：海康AGV运维',d:['AGV系统组成与导航原理','磁条/二维码导航配置','调度系统RCS基础','常见故障代码解析','电池管理与充电维护','安全传感器校准','综合实战：AGV路径优化']},w4:{t:'第4周：系统集成',d:['MES系统对接基础','OPC UA通信协议','数据库读写与日志','上位机监控画面设计','报警管理与通知机制','系统备份与恢复','综合实战：产线数据看板']}}
 var PDATA={choice:[{q:'RS485总线需要终端电阻吗？',opt:['需要','不需要'],a:'需要'},{q:'Modbus RTU校验方式？',opt:['CRC16','奇校验','偶校验','无校验'],a:'CRC16'},{q:'S7-1200编程软件？',opt:['TIA Portal','STEP 7','GX Works','Codesys'],a:'TIA Portal'},{q:'AGV导航精度最高的是？',opt:['激光SLAM','磁条导航','二维码导航','惯性导航'],a:'激光SLAM'},{q:'PLC输入模块最常见故障？',opt:['电源故障','接线松动','程序错误','通信中断'],a:'接线松动'}],bool:[{q:'Modbus TCP端口502。',a:'true'},{q:'三菱FX可用TIA Portal编程。',a:'false'},{q:'AGV电池应完全放电后再充电。',a:'false'},{q:'RS232通信最长1200米。',a:'false'},{q:'PLC扫描周期三个步骤。',a:'true'}],scene:[{q:'产线停止，PLC输入灯正常、输出灯不亮，原因？',hint:'检查PLC运行状态、程序逻辑、输出模块电源'},{q:'AGV在B区频繁报定位丢失，排查？',hint:'检查地面二维码/磁条、导航传感器、站点坐标'},{q:'Modbus通信时断时续，定位？',hint:'检查接线与终端电阻、波特率、干扰、主从站地址'}]}
 var AIDATA=[{t:'故障排查提问',c:'设备类型：[PLC/AGV/传感器]\n故障现象：[具体描述]\n已排查步骤：[列出]\n当前状态：[运行/停止/报警]\n期望：'},{t:'学习计划提问',c:'当前水平：[新手/有经验/熟练]\n学习目标：[掌握XX]\n可用时间：[每天X小时]\n偏好方式：[理论+实操/纯实操/案例]'},{t:'代码调试提问',c:'编程环境：[TIA Portal/GX Works]\n问题描述：[程序不执行/报警/逻辑错误]\n相关代码：[粘贴]\n已尝试：'},{t:'设备选型提问',c:'应用场景：[产线搬运/仓储分拣]\n负载：[重量/尺寸]\n精度：[定位精度]\n环境：[室内/室外]\n预算：'},{t:'系统集成提问',c:'现有系统：[PLC型号/AGV品牌]\n需集成：[MES/WMS]\n通信协议：[Modbus TCP/OPC UA]\n问题：[连接失败/不同步]'}]
-var FAULTS=[{t:'PLC输入无信号',c:'PLC',s:'检查输入接线、电源、输入模块指示灯，万用表测量端子电压'},{t:'AGV定位丢失',c:'AGV',s:'检查地面二维码/磁条是否脏污损坏，清洁导航传感器'},{t:'通信时断时续',c:'通信',s:'检查终端电阻(120Ω)、波特率一致、屏蔽层接地'},{t:'电机过热报警',c:'电机',s:'检查负载、散热风扇、驱动器过载参数'},{t:'传感器误触发',c:'传感器',s:'调整灵敏度，检查安装位置，排除串扰'},{t:'PLC程序丢失',c:'PLC',s:'检查电池/超级电容，确认程序存储卡状态'},{t:'AGV无法充电',c:'AGV',s:'检查充电电极接触，测量电池电压，确认充电桩通信'},{t:'HMI触摸失灵',c:'HMI',s:'校准触摸屏，清除油污/水渍，检查排线'}]
+var FAULTS=[{t:'PLC输入无信号',c:'PLC',s:'检查输入接线、电源、输入模块指示灯，万用表测量端子电压'},{t:'PLC程序丢失',c:'PLC',s:'检查电池/超级电容状态，确认程序存储卡未松动，重新下载程序'},{t:'PLC CPU停机(STOP)',c:'PLC',s:'查看诊断缓冲区，检查OB块调用、I/O访问错误、编程错误导致停机'},{t:'PLC模拟量读数漂移',c:'PLC',s:'检查模拟量模块接地、屏蔽层单端接地，校准量程卡位置'},{t:'PLC以太网通讯中断',c:'PLC',s:'检查网线连接、IP地址冲突、交换机端口状态，ping测试连通性'},{t:'PLC模块配置丢失',c:'PLC',s:'检查背板总线连接器是否松动，重新上电后在线下载硬件配置'},{t:'PLC输出触点粘连',c:'PLC',s:'测量输出回路电流是否超额定值，更换输出继电器或模块'},{t:'AGV定位丢失',c:'AGV',s:'检查地面二维码/磁条是否脏污损坏，清洁导航传感器并重新标定'},{t:'AGV无法充电',c:'AGV',s:'检查充电电极接触，测量电池电压，确认充电桩通信模块正常'},{t:'AGV避障误停频繁',c:'AGV',s:'检查安全激光区域是否有灰尘遮挡，调整避障区域参数，确认地面反光物'},{t:'AGV驱动轮打滑',c:'AGV',s:'检查驱动轮磨损程度，清理轮面及地面油污，确认悬浮机构压力正常'},{t:'AGV货叉不到位',c:'AGV',s:'检查货叉限位传感器状态，校准货叉升降编码器零点，排除机械卡滞'},{t:'AGV路径规划失败',c:'AGV',s:'检查调度系统地图数据是否更新，确认路径节点未被占用或禁行'},{t:'变频器过流报警(OC)',c:'变频器',s:'检查电机绕组对地绝缘，测量负载是否卡死，确认加减速时间参数'},{t:'变频器过压报警(OV)',c:'变频器',s:'检查制动电阻是否开路或阻值变大，延长减速时间或加装制动单元'},{t:'变频器输出缺相',c:'变频器',s:'测量输出端U/V/W三相电压平衡，检查电机接线端子是否松动脱落'},{t:'变频器参数无法保存',c:'变频器',s:'检查内部EEPROM是否故障，更换控制板或检查写入保护参数设置'},{t:'变频器通讯超时',c:'变频器',s:'检查RS485接线及终端电阻，确认波特率和站号设置一致'},{t:'传感器误触发',c:'传感器',s:'调整灵敏度旋钮，检查安装位置是否受相邻设备干扰，排除串扰源'},{t:'传感器无输出信号',c:'传感器',s:'万用表测量电源电压，检查信号线通断，确认传感器类型(NPN/PNP)匹配'},{t:'传感器测距偏差大',c:'传感器',s:'清洁传感器镜面，检查被测物表面反射特性，重新校准基准距离'},{t:'安全光栅对齐失败',c:'传感器',s:'重新机械对齐发射端与接收端，确认安装支架无松动，清洁光幕表面'},{t:'传感器温漂严重',c:'传感器',s:'检查环境温度是否超出工作范围，加装隔热罩或更换宽温型传感器'},{t:'HMI触摸失灵',c:'HMI',s:'校准触摸屏，清除面板油污/水渍，检查触摸排线及控制板连接'},{t:'HMI画面不刷新',c:'HMI',s:'检查与PLC通信状态，确认变量刷新周期设置，重启HMI进程'},{t:'HMI与PLC断连',c:'HMI',s:'检查以太网/IP地址设置，确认HMI连接参数中的PLC站号和机架槽号'},{t:'通信时断时续',c:'通信',s:'检查终端电阻(120Ω)安装位置、波特率一致性、屏蔽层单端接地'},{t:'PROFINET设备断连',c:'通信',s:'检查网线RJ45接头和交换机端口指示灯，确认设备名称和IP分配正确'},{t:'Modbus轮询超时',c:'通信',s:'检查从站响应时间，延长主站超时参数，减少单次轮询寄存器数量'},{t:'ProfiBus从站丢失',c:'通信',s:'检查DP接头终端电阻拨码，确认波特率一致，测量总线电压(5V左右)'},{t:'交换机端口故障',c:'通信',s:'更换网口测试，检查端口指示灯状态，查看交换机日志是否有错误计数'},{t:'电源模块输出波动',c:'电源',s:'测量输入电压稳定性，检查滤波电容是否鼓包老化，确认负载未超额定功率'},{t:'电源过热保护跳闸',c:'电源',s:'清洁风扇和散热风道，检查环境温度，确认安装间距满足散热要求'},{t:'UPS电池续航不足',c:'电源',s:'测量电池内阻和端电压，进行充放电测试，更换老化电池组'},{t:'伺服电机过热报警(ALM)',c:'电机',s:'检查负载率是否超额定扭矩，清洁散热风扇及风道，确认运行周期'},{t:'伺服编码器故障',c:'电机',s:'检查编码器电缆屏蔽层接地，重新插拔接头，用示波器查看信号波形'},{t:'电机堵转过流',c:'电机',s:'检查机械传动部件是否卡死，确认刹车已正常释放，测量绕组电阻'},{t:'伺服驱动器报AL-03',c:'电机',s:'查看驱动器面板故障代码含义，检查主回路输入电压及再生电阻状态'}]
 
 // ====== 导航 ======
 var CURTAB='today'
@@ -237,7 +244,7 @@ var BROKERS=[{n:'EMQX',u:'wss://broker.emqx.io:8084/mqtt'},{n:'HiveMQ',u:'wss://
 var mqttC=null,mqttOn=false,mqttIdx=0,mqttTry=0,onlinePeers=[],peerMap={}
 var CHUNK=150000
 
-// ====== 故障手册 v10 ======
+// ====== 操作手册 v11 ======
 var recvBuf={}
 var metaStore={}
 
@@ -300,13 +307,13 @@ function requestFile(fileId){
   recvBuf[fileId]={totalChunks:meta.totalChunks,chunks:new Map(),meta:meta,received:0,retryCount:0,retryTimer:null}
   mqttC.publish('dm/manual',JSON.stringify({type:'req_file',fileId:fileId,from:MY_NAME}),{qos:1})
   renderManual()
-  toast('已请求接收: '+meta.name)
+  toast('已请求下载: '+meta.name)
 }
 
 function requestSelected(){
   var cbs=document.querySelectorAll('.file-cb:checked'),cnt=0
   cbs.forEach(function(cb){requestFile(cb.value);cnt++})
-  if(!cnt)toast('请先勾选要接收的文件')
+  if(!cnt)toast('请先勾选要下载的文件')
 }
 
 function handleManualChunk(msg){
@@ -362,42 +369,43 @@ function assembleChunks(fileId,buf){
   addLocalFile(fileId,buf.meta.name,buf.meta.size,buf.meta.type,buf.meta.from,buf.meta.time,dataUrl)
   delete recvBuf[fileId]
   delete metaStore[fileId]
-  toast('接收完成: '+buf.meta.name)
+  toast('下载完成: '+buf.meta.name)
   if(CURTAB==='manual')renderManual()
 }
 
 function renderManual(){
-  var h='<h2>故障手册 <span class="ts">(v10 持久存储 | 刷新不丢文件)</span></h2>'
-  h+='<div class="card"><h3>上传故障文档</h3>'
-  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传 PDF / Word 文档<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
+  var h='<h2>操作手册 <span class="ts">(v11 文件共享 | 刷新不丢文件)</span></h2>'
+  h+='<div class="card"><h3>上传操作文档</h3>'
+  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传文档（PDF/Word）<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
   h+='<input type="file" id="fupload" accept=".pdf,.doc,.docx" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
 
   // 本地已就绪（dataCache 中有数据）
   var readyFiles=S.manualFiles.filter(function(f){return hasFileData(f.fileId)})
   if(readyFiles.length){
-    h+='<div class="card"><h3>已就绪文档 <span class="ts">（点击打开 | 刷新不丢失）</span></h3>'
+    h+='<div class="card"><h3>本机已存档</h3><div class="file-explorer">'
     readyFiles.forEach(function(f){
-      h+='<div class="file-row"><div class="fn ready" onclick="openManual(\''+f.fileId+'\')">'+f.name+'</div><div class="fi">'+fmtSize(f.size)+'</div><span class="tag tag-ok">已就绪</span><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div>'
+      var icon='&#128196;';if(f.name.toLowerCase().endsWith('.pdf'))icon='&#128218;';else if(f.name.toLowerCase().endsWith('.doc')||f.name.toLowerCase().endsWith('.docx'))icon='&#128221;';else if(f.name.toLowerCase().endsWith('.xls')||f.name.toLowerCase().endsWith('.xlsx')||f.name.toLowerCase().endsWith('.csv'))icon='&#128202;'
+      h+='<div class="file-item"><span class="file-icon">'+icon+'</span><div class="file-info"><div class="file-name ready" onclick="openManual(\''+f.fileId+'\')">'+f.name+'</div><div class="file-meta">'+fmtSize(f.size)+'</div></div><div class="file-actions"><span class="tag tag-ok">已存档</span><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div></div>'
     })
-    h+='</div>'
+    h+='</div></div>'
   }
 
   // 可接收文件
   var metaKeys=Object.keys(metaStore)
   if(metaKeys.length){
-    h+='<div class="card"><h3>可接收文档</h3>'
-    h+='<div class="batch-actions"><button class="btn btn-sm" onclick="requestSelected()">接收勾选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(true)">全选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(false)">取消</button></div>'
+    h+='<div class="card"><h3>共享文档库</h3><p class="ts">由任意电脑上传的文档均可在此下载到本机</p>'
+    h+='<div class="batch-actions"><button class="btn btn-sm" onclick="requestSelected()">下载勾选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(true)">全选</button><button class="btn btn-sm btn-s" onclick="selectAllMeta(false)">取消</button></div><div class="file-explorer">'
     metaKeys.forEach(function(k){
       var m=metaStore[k],buf=recvBuf[k]
       if(!m||!m.name)return
       var pct=buf&&buf.totalChunks?Math.round(buf.received/buf.totalChunks*100):0
       var retryInfo=buf&&buf.retryCount>0?' 重试'+buf.retryCount:''
-      h+='<div class="file-row"><input type="checkbox" class="file-cb" value="'+k+'" '+(buf?'checked disabled':'')+'><div class="fn">'+m.name+'</div><div class="fi">'+fmtSize(m.size)+'</div><div class="fi">来自：'+m.from+'</div>'
+      h+='<div class="file-item"><input type="checkbox" class="file-cb" value="'+k+'" '+(buf?'checked disabled':'')+' style="width:auto;flex-shrink:0"><span class="file-icon">'+(function(){var n=m.name.toLowerCase();if(n.endsWith('.pdf'))return '&#128218;';if(n.endsWith('.doc')||n.endsWith('.docx'))return '&#128221;';if(n.endsWith('.xls')||n.endsWith('.xlsx')||n.endsWith('.csv'))return '&#128202;';return '&#128196;'})()+'</span><div class="file-info"><div class="file-name">'+m.name+'</div><div class="file-meta">'+fmtSize(m.size)+' | 来自：'+m.from+'</div></div><div class="file-actions">'
       if(buf)h+='<span class="tag tag-warn" style="display:flex;align-items:center;gap:4px">'+pct+'%'+retryInfo+'<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></span>'
-      else h+='<button class="btn btn-sm" onclick="requestFile(\''+k+'\')">接收</button>'
-      h+='</div>'
+      else h+='<button class="btn btn-sm" onclick="requestFile(\''+k+'\')">下载到</button>'
+      h+='</div></div>'
     })
-    h+='</div>'
+    h+='</div></div>'
   }
 
   h+='<div class="card"><h3>常见故障知识库</h3><input type="text" id="fs" placeholder="搜索故障..." oninput="searchF()" class="mb12"><div id="fResults"></div></div>'
