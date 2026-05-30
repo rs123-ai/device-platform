@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备运维平台 - 部署方案</title>
+<style>
+body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:0 auto;padding:20px;line-height:1.6;color:#333}
+h1{color:#1a2736;border-bottom:2px solid #4fc3f7;padding-bottom:10px}
+h2{color:#2a3d54;margin-top:30px}
+.card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin:15px 0}
+.btn{display:inline-block;background:#4fc3f7;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:500;margin:5px;transition:opacity 0.2s}
+.btn:hover{opacity:0.85}
+.btn-green{background:#2ecc71}
+.btn-orange{background:#f39c12}
+.btn-red{background:#e74c3c}
+.code{background:#1a2736;color:#d0dce8;padding:15px;border-radius:6px;font-family:monospace;overflow-x:auto;margin:10px 0}
+.note{padding:12px;background:#f0f9ff;border-left:4px solid #4fc3f7;margin:20px 0}
+.warn{padding:12px;background:#fff3cd;border-left:4px solid #f39c12;margin:20px 0}
+table{border-collapse:collapse;width:100%;margin:20px 0}
+th,td{border:1px solid #ddd;padding:10px;text-align:left}
+th{background:#f2f2f2}
+</style>
+</head>
+<body>
+<h1>设备运维学习平台 v5 - 免费部署方案</h1>
+<div class="note">
+  <strong>当前状态：</strong>Netlify 部署额度已用尽，请选择以下任一免费方案重新部署。
+</div>
+
+<h2>方案一：Vercel（推荐）</h2>
+<div class="card">
+  <p><strong>优点：</strong>免费、自动 HTTPS、全球 CDN、支持 Git 自动部署</p>
+  <p><strong>步骤：</strong></p>
+  <ol>
+    <li>访问 <a href="https://vercel.com" target="_blank">vercel.com</a>，用 GitHub/GitLab 账号登录</li>
+    <li>点击 "New Project" → "Import Git Repository"</li>
+    <li>创建新仓库并上传文件（或直接使用下方提供的 GitHub 仓库）</li>
+    <li>Vercel 自动检测为静态网站，点击 Deploy</li>
+    <li>获得类似 <code>https://your-project.vercel.app</code> 的地址</li>
+  </ol>
+  <p><a href="https://github.com/new" target="_blank" class="btn btn-green">创建 GitHub 仓库</a>
+  <a href="https://vercel.com/new" target="_blank" class="btn">前往 Vercel</a></p>
+</div>
+
+<h2>方案二：Cloudflare Pages</h2>
+<div class="card">
+  <p><strong>优点：</strong>免费、无限带宽、全球 CDN、支持自定义域名</p>
+  <p><strong>步骤：</strong></p>
+  <ol>
+    <li>访问 <a href="https://pages.cloudflare.com" target="_blank">pages.cloudflare.com</a> 注册/登录</li>
+    <li>连接 GitHub/GitLab 账号</li>
+    <li>选择仓库或创建新仓库上传文件</li>
+    <li>构建命令留空（纯静态 HTML）</li>
+    <li>获得 <code>https://your-project.pages.dev</code> 地址</li>
+  </ol>
+  <p><a href="https://pages.cloudflare.com" target="_blank" class="btn btn-orange">前往 Cloudflare Pages</a></p>
+</div>
+
+<h2>方案三：GitHub Pages（最简单）</h2>
+<div class="card">
+  <p><strong>优点：</strong>完全免费、无需第三方服务、GitHub 原生支持</p>
+  <p><strong>步骤：</strong></p>
+  <ol>
+    <li>在 GitHub 创建新仓库（如 <code>device-maintenance</code>）</li>
+    <li>上传 <code>device_platform_v5.html</code> 并重命名为 <code>index.html</code></li>
+    <li>进入仓库 Settings → Pages → Build and deployment</li>
+    <li>Source 选择 "Deploy from a branch" → Branch: <code>main</code>，文件夹: <code>/ (root)</code></li>
+    <li>等待几分钟，访问 <code>https://[用户名].github.io/[仓库名]</code></li>
+  </ol>
+  <div class="code">
+# 快速命令（需安装 Git）<br>
+git init<br>
+git add device_platform_v5.html<br>
+git mv device_platform_v5.html index.html<br>
+git commit -m "Add device platform"<br>
+git branch -M main<br>
+git remote add origin https://github.com/[用户名]/[仓库名].git<br>
+git push -u origin main
+  </div>
+  <p><a href="https://github.com/new" target="_blank" class="btn">创建 GitHub 仓库</a></p>
+</div>
+
+<h2>方案四：直接文件服务（无需注册）</h2>
+<div class="card">
+  <p><strong>优点：</strong>最快、无需注册、适合临时测试</p>
+  <p><strong>步骤：</strong></p>
+  <ol>
+    <li>下载 <a href="device_platform_v5.html" download>device_platform_v5.html</a></li>
+    <li>重命名为 <code>index.html</code></li>
+    <li>使用以下任一服务直接托管：</li>
+  </ol>
+  <table>
+    <tr><th>服务</th><th>网址</th><th>说明</th></tr>
+    <tr><td>jsDelivr</td><td>jsdelivr.com</td><td>通过 GitHub 仓库 + jsDelivr CDN</td></tr>
+    <tr><td>RawGit（已停用）</td><td>-</td><td>可用 raw.githack.com 替代</td></tr>
+    <tr><td>GitHub Raw</td><td>raw.githubusercontent.com</td><td>直接访问 GitHub 原始文件</td></tr>
+    <tr><td>Surge.sh</td><td>surge.sh</td><td>命令行部署，免费子域名</td></tr>
+  </table>
+</div>
+
+<h2>方案五：本地局域网共享（无公网）</h2>
+<div class="card">
+  <p><strong>适用场景：</strong>团队在同一局域网内使用</p>
+  <p><strong>步骤：</strong></p>
+  <ol>
+    <li>在一台电脑上运行简易 HTTP 服务器：</li>
+    <div class="code">
+# Python 3<br>
+python -m http.server 8000<br><br>
+# Node.js (需安装 http-server)<br>
+npx http-server -p 8000<br><br>
+# 或使用任何现成工具（如 HFS, XAMPP）
+    </div>
+    <li>获取本机 IP 地址（cmd 输入 <code>ipconfig</code>，找 IPv4 地址）</li>
+    <li>其他人浏览器访问 <code>http://[IP地址]:8000</code></li>
+    <li>MQTT 协同功能仍可正常使用（通过公共 broker）</li>
+  </ol>
+</div>
+
+<h2>文件下载</h2>
+<div class="card">
+  <p>下载完整 HTML 文件，包含所有功能：</p>
+  <p><a href="device_platform_v5.html" download class="btn btn-green">📥 下载 device_platform_v5.html</a></p>
+  <p><small>文件大小：约 37KB，包含：学习计划、练习题、故障手册、AI模板、工作日志、MQTT实时协同</small></p>
+  <div class="warn">
+    <strong>注意：</strong>下载后请将文件名改为 <code>index.html</code> 再上传到托管服务。
+  </div>
+</div>
+
+<h2>功能验证</h2>
+<div class="card">
+  <p>部署后请按以下步骤验证：</p>
+  <ol>
+    <li>用两个不同设备/浏览器打开部署地址</li>
+    <li>双方都显示"协同：已连接"（MQTT 连接成功）</li>
+    <li>一方上传 PDF/Word 文件到"故障手册"</li>
+    <li>另一方等待几秒后点击文件，应在新窗口正常打开</li>
+    <li>测试工作日志添加、删除、同步功能</li>
+  </ol>
+  <p>如遇问题，检查浏览器控制台（F12）是否有错误。</p>
+</div>
+
+<hr>
+<p><strong>推荐选择：</strong>方案三（GitHub Pages）最简单可靠，方案一（Vercel）性能最好。</p>
+<p>部署成功后，分享链接给团队成员即可开始协作。</p>
+</body>
+</html>

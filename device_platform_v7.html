@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备运维学习平台</title>
+<style>
+:root{--bg:#0f1923;--bg2:#1a2736;--bg3:#213244;--bg4:#2a3d54;--text:#d0dce8;--text2:#8ba4be;--accent:#4fc3f7;--ok:#2ecc71;--warn:#f39c12;--err:#e74c3c;--border:#3a4d66;--radius:8px;--radius-sm:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.container{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:250px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-header{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.main-body{flex:1;padding:16px;overflow-y:auto}
+.collab-bar{padding:8px 16px;border-top:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;gap:10px;font-size:0.8rem;flex-shrink:0}
+.side-header{padding:14px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.side-nav{flex:1;padding:8px 0;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{text-align:left;background:transparent;color:var(--text);border:none;padding:10px 14px;cursor:pointer;font-size:0.88rem;border-radius:0;transition:all 0.15s}
+.nav-item:hover{background:var(--bg3);color:var(--accent)}
+.nav-item.cur{background:var(--accent);color:var(--bg)}
+.btn{background:var(--accent);color:var(--bg);border:none;padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;font-weight:500;font-size:0.88rem;transition:all 0.15s}
+.btn:hover{opacity:0.85}
+.btn-sm{padding:4px 10px;font-size:0.78rem}
+.btn-s{background:var(--bg4);color:var(--text)}
+.btn-r{background:var(--err);color:#fff}
+.card{background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid var(--border)}
+.card h3{margin-bottom:6px;color:var(--accent);font-size:0.98rem}
+.fx{display:flex;gap:8px;align-items:center}
+.fxw{flex-wrap:wrap}
+.fc{display:flex;flex-direction:column;gap:8px}
+.f1{flex:1}
+.g12{gap:12px}
+.mb8{margin-bottom:8px}
+.mb12{margin-bottom:12px}
+.mt8{margin-top:8px}
+.mt12{margin-top:12px}
+.ts{font-size:0.8rem;color:var(--text2)}
+.tc{text-align:center}
+.hide{display:none!important}
+input,select,textarea{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px 10px;border-radius:var(--radius-sm);font-size:0.88rem;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:500}
+.tag-ok{background:rgba(46,204,113,0.2);color:var(--ok)}
+.tag-warn{background:rgba(243,156,18,0.2);color:var(--warn)}
+.tag-err{background:rgba(231,76,60,0.2);color:var(--err)}
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:12px}
+.upload-area:hover{border-color:var(--accent);background:var(--bg2)}
+.upload-area input[type=file]{display:none}
+.file-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:4px;border:1px solid var(--border)}
+.file-row .fn{flex:1;cursor:pointer;color:var(--accent);text-decoration:underline;font-size:0.88rem}
+.file-row .fn:hover{color:#26a69a}
+.file-row .fi{color:var(--text2);font-size:0.75rem;white-space:nowrap}
+.file-row .prog{height:4px;background:var(--accent);border-radius:2px;transition:width 0.2s}
+.log-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px}
+.log-row .lm{display:flex;gap:10px;font-size:0.75rem;color:var(--text2);margin-bottom:4px;flex-wrap:wrap;align-items:center}
+.log-row .lp{font-weight:500;margin-bottom:4px;font-size:0.92rem}
+.pq{margin-bottom:16px}
+.pq .qt{margin-bottom:6px;font-weight:500}
+.po{display:flex;flex-direction:column;gap:5px}
+.popt{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;cursor:pointer;transition:all 0.15s;font-size:0.88rem}
+.popt:hover{background:var(--bg3)}
+.popt.sel{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.sum-cards{display:flex;gap:10px;flex-wrap:wrap}
+.sum-cards .card{min-width:90px;flex:1;text-align:center}
+pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border);white-space:pre-wrap;font-size:0.84rem;cursor:pointer}
+pre:hover{border-color:var(--accent)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="sidebar">
+<div class="side-header"><h2 style="font-size:1.05rem">设备运维学习平台</h2><div class="ts">v7 服务器同步</div></div>
+<div class="side-nav">
+<button class="nav-item cur" data-tab="today" onclick="switchTab('today')">今日学习</button>
+<button class="nav-item" data-tab="practice" onclick="switchTab('practice')">练习题</button>
+<button class="nav-item" data-tab="plan" onclick="switchTab('plan')">计划总览</button>
+<button class="nav-item" data-tab="manual" onclick="switchTab('manual')">故障手册</button>
+<button class="nav-item" data-tab="ai" onclick="switchTab('ai')">AI模板</button>
+<button class="nav-item" data-tab="log" onclick="switchTab('log')">工作日志</button>
+<button class="nav-item" data-tab="backup" onclick="switchTab('backup')">备份/导入</button>
+</div>
+</div>
+<div class="main">
+<div class="main-header">
+<div class="sum-cards">
+<div class="card"><div class="ts">上次学习</div><div id="lastStudy">-</div></div>
+<div class="card"><div class="ts">总进度</div><div id="totalProgress">0%</div></div>
+<div class="card"><div class="ts">今日任务</div><div id="todayTasks">0/3</div></div>
+</div>
+</div>
+<div class="main-body" id="mainContent"></div>
+<div class="collab-bar">
+<span class="dot" id="dot" style="background:var(--err)"></span>
+<span>协同：<b id="onlineCount">0</b>人在线</span>
+<span id="netStatus" class="ts">未连接</span>
+<span style="font-size:0.65rem;cursor:pointer;text-decoration:underline" onclick="switchBroker()">切换</span>
+<span id="syncNote" class="ts" style="margin-left:auto">分享链接即可协作</span>
+</div>
+</div>
+</div>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script>
+// ====== 基础 ======
+function G(id){return document.getElementById(id)}
+function toast(msg){var d=document.createElement('div');d.style.cssText='position:fixed;top:16px;right:16px;background:var(--accent);color:var(--bg);padding:10px 20px;border-radius:var(--radius-sm);z-index:9999;font-weight:500;animation:toastIn 2.6s forwards;max-width:420px';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
+var ts=document.createElement('style');ts.textContent='@keyframes toastIn{0%,70%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}';document.head.appendChild(ts)
+
+// ====== 状态 ======
+var DB=localStorage.getItem('dm_v7'),S=DB?JSON.parse(DB):{curWeek:1,doneDays:[],pScores:{},manualFiles:[],logs:[]}
+function saveS(){try{localStorage.setItem('dm_v7',JSON.stringify(S))}catch(e){toast('存储空间不足，请清理旧数据')}}
+var MY_UID=localStorage.getItem('dm_uid7')||(function(){var u='u'+Date.now()+Math.random().toString(36).slice(2,8);localStorage.setItem('dm_uid7',u);return u})()
+var MY_NAME=localStorage.getItem('dm_un7')||(function(){var n=prompt('请输入显示名称（用于协同标识）:','运维员');n=(n||'未命名').trim()||'未命名';localStorage.setItem('dm_un7',n);return n})()
+
+// 大文件存储（IndexedDB，避免 localStorage 5MB 限制）
+function openIDB(){return new Promise(function(resolve,reject){var req=indexedDB.open('dm_files_v7',1);req.onupgradeneeded=function(e){e.target.result.createObjectStore('files',{keyPath:'fileId'})};req.onsuccess=function(e){resolve(e.target.result)};req.onerror=function(){reject(req.error)}})}
+function saveFileToIDB(fileId,data){return openIDB().then(function(db){return new Promise(function(resolve,reject){var tx=db.transaction('files','readwrite');tx.objectStore('files').put({fileId:fileId,data:data});tx.oncomplete=resolve;tx.onerror=reject})})}
+function getFileFromIDB(fileId){return openIDB().then(function(db){return new Promise(function(resolve,reject){var tx=db.transaction('files','readonly');var req=tx.objectStore('files').get(fileId);req.onsuccess=function(){resolve(req.result?req.result.data:null)};req.onerror=reject})})}
+function loadAllFromIDB(){return openIDB().then(function(db){return new Promise(function(resolve,reject){var tx=db.transaction('files','readonly');var req=tx.objectStore('files').getAll();req.onsuccess=function(){resolve(req.result||[])};req.onerror=reject})})}
+
+// 启动时从 IndexedDB 恢复大文件数据到内存
+var _idbRestored=false;
+function restoreFromIDB(){
+  if(_idbRestored)return Promise.resolve()
+  return loadAllFromIDB().then(function(items){
+    items.forEach(function(item){
+      for(var i=0;i<(S.manualFiles||[]).length;i++){
+        if(S.manualFiles[i].fileId===item.fileId){S.manualFiles[i].data=item.data;break}
+      }
+    })
+    _idbRestored=true;saveS()
+  }).catch(function(){_idbRestored=true})
+}
+
+// ====== 学习数据 ======
+var LDATA={w1:{t:'第1周：通信排障',d:['RS232协议基础与接线','RS485总线拓扑与终端电阻','Modbus RTU报文解析','Modbus TCP网络抓包','串口通信常见故障排查','网络通信故障定位','综合实战：产线通信中断']},w2:{t:'第2周：PLC调试',d:['S7-1200硬件组态','TIA Portal编程基础','三菱FX指令系统','PLC与HMI通信配置','模拟量/数字量处理','故障诊断与程序备份','综合实战：设备启停控制']},w3:{t:'第3周：海康AGV运维',d:['AGV系统组成与导航原理','磁条/二维码导航配置','调度系统RCS基础','常见故障代码解析','电池管理与充电维护','安全传感器校准','综合实战：AGV路径优化']},w4:{t:'第4周：系统集成',d:['MES系统对接基础','OPC UA通信协议','数据库读写与日志','上位机监控画面设计','报警管理与通知机制','系统备份与恢复','综合实战：产线数据看板']}}
+var PDATA={choice:[{q:'RS485总线需要终端电阻吗？',opt:['需要','不需要'],a:'需要',exp:'RS485总线需要在两端加120Ω终端电阻以消除信号反射。'},{q:'Modbus RTU的校验方式是什么？',opt:['CRC16','奇校验','偶校验','无校验'],a:'CRC16',exp:'Modbus RTU使用CRC16循环冗余校验。'},{q:'S7-1200的编程软件是？',opt:['TIA Portal','STEP 7','GX Works','Codesys'],a:'TIA Portal',exp:'S7-1200使用TIA Portal编程。'},{q:'AGV导航精度最高的是？',opt:['激光SLAM','磁条导航','二维码导航','惯性导航'],a:'激光SLAM',exp:'激光SLAM导航精度可达±5mm。'},{q:'PLC输入模块最常见故障？',opt:['电源故障','接线松动','程序错误','通信中断'],a:'接线松动',exp:'现场振动/腐蚀导致接线松动最常见。'}],bool:[{q:'Modbus TCP使用端口502通信。',a:'true',exp:'正确，Modbus TCP标准端口是502。'},{q:'三菱FX可用TIA Portal编程。',a:'false',exp:'错误，三菱FX使用GX Works。'},{q:'AGV电池应完全放电后再充电。',a:'false',exp:'错误，锂电池应避免完全放电。'},{q:'RS232通信距离最长1200米。',a:'false',exp:'错误，RS232标准距离仅约15米。'},{q:'PLC扫描周期含输入采样、程序执行、输出刷新三个阶段。',a:'true',exp:'正确，这是PLC标准工作循环。'}],scene:[{q:'产线突然停止，PLC输入灯正常、输出灯不亮，可能原因及排查步骤？',hint:'检查：PLC运行状态、程序逻辑、输出模块电源、输出接线'},{q:'AGV在B区频繁报定位丢失，如何排查？',hint:'检查：地面二维码/磁条、导航传感器、站点坐标、环境干扰'},{q:'Modbus通信时断时续，如何定位？',hint:'检查：接线与终端电阻、波特率、网络干扰、主从站地址冲突'}]}
+var AIDATA=[{t:'故障排查提问',c:'设备类型：[PLC/AGV/传感器]\n故障现象：[具体描述]\n已排查步骤：[列出]\n当前状态：[运行/停止/报警]\n期望：'},{t:'学习计划提问',c:'当前水平：[新手/有经验/熟练]\n学习目标：[掌握XX]\n可用时间：[每天X小时]\n偏好方式：[理论+实操/纯实操/案例]'},{t:'代码调试提问',c:'编程环境：[TIA Portal/GX Works]\n问题描述：[程序不执行/报警/逻辑错误]\n相关代码：[粘贴]\n已尝试：'},{t:'设备选型提问',c:'应用场景：[产线搬运/仓储分拣]\n负载：[重量/尺寸]\n精度：[定位精度]\n环境：[室内/室外]\n预算：'},{t:'系统集成提问',c:'现有系统：[PLC型号/AGV品牌]\n需集成：[MES/WMS]\n通信协议：[Modbus TCP/OPC UA]\n问题：[连接失败/不同步]'}]
+var FAULTS=[{t:'PLC输入无信号',c:'PLC',s:'检查输入接线、电源、输入模块指示灯，用万用表测量输入端子电压'},{t:'AGV定位丢失',c:'AGV',s:'检查地面二维码/磁条是否脏污或损坏，清洁导航传感器，排除环境光干扰'},{t:'通信时断时续',c:'通信',s:'检查终端电阻(120Ω)是否安装正确，确认波特率一致，排查线路屏蔽层接地'},{t:'电机过热报警',c:'电机',s:'检查负载是否过重，确认散热风扇运转正常，检查驱动器过载参数设置'},{t:'传感器误触发',c:'传感器',s:'调整灵敏度设置，检查安装位置是否松动，排除相邻传感器串扰'},{t:'PLC程序丢失',c:'PLC',s:'检查电池/超级电容是否失效，确认程序存储卡状态，执行程序重新下载'},{t:'AGV无法充电',c:'AGV',s:'检查充电电极接触，测量电池电压，确认充电桩通信正常，检查BMS保护状态'},{t:'HMI触摸失灵',c:'HMI',s:'校准触摸屏，检查是否有油污/水渍，确认连接排线未松动'}]
+
+// ====== 导航 ======
+var CURTAB='today'
+function switchTab(tab){
+  CURTAB=tab;document.querySelectorAll('.nav-item').forEach(function(el){el.classList.toggle('cur',el.dataset.tab===tab)})
+  if(tab==='today')renderToday();else if(tab==='practice')renderPractice();else if(tab==='plan')renderPlan();else if(tab==='manual')renderManual();else if(tab==='ai')renderAI();else if(tab==='log')renderLog();else if(tab==='backup')renderBackup()
+}
+function renderToday(){
+  var wk=LDATA['w'+S.curWeek],h='<h2>'+wk.t+'</h2><div class="fc mt12">'
+  wk.d.forEach(function(d,i){var k='w'+S.curWeek+'d'+(i+1),done=S.doneDays.indexOf(k)>=0;h+='<div class="card"><div class="fx"><div class="f1">'+d+'</div>'+(done?'<span class="tag tag-ok">已完成</span>':'<button class="btn btn-sm" onclick="markDone(\''+k+'\')">标记完成</button>')+'</div></div>'})
+  h+='<div class="fx g12 mt12">';for(var i=1;i<=4;i++)h+='<button class="btn btn-s'+(S.curWeek===i?'':'" style="opacity:0.6')+'" onclick="setWeek('+i+')">第'+i+'周</button>';h+='</div></div>';G('mainContent').innerHTML=h
+}
+function markDone(k){if(S.doneDays.indexOf(k)<0){S.doneDays.push(k);saveS();renderToday();updateSummary()}}
+function setWeek(w){S.curWeek=w;saveS();renderToday();updateSummary()}
+
+// ====== 练习题 ======
+var pracType='choice',pracAnswers={}
+function renderPractice(){G('mainContent').innerHTML='<h2>练习题</h2><div class="fx g12 mb12"><button class="btn btn-s" onclick="switchPrac(\'choice\')">选择题</button><button class="btn btn-s" onclick="switchPrac(\'bool\')">判断题</button><button class="btn btn-s" onclick="switchPrac(\'scene\')">场景题</button></div><div id="pracContent"></div>';switchPrac('choice')}
+function switchPrac(t){pracType=t;pracAnswers={};var qs=PDATA[t],h='';qs.forEach(function(q,i){h+='<div class="pq" id="pq'+i+'"><div class="qt">Q'+(i+1)+': '+q.q+'</div>';if(t==='choice'){h+='<div class="po">';q.opt.forEach(function(o){h+='<div class="popt" onclick="pickAns('+i+',\''+o.replace(/'/g,"\\'")+'\')">'+o+'</div>'});h+='</div>'}else if(t==='bool')h+='<div class="po"><div class="popt" onclick="pickAns('+i+',\'true\')">正确</div><div class="popt" onclick="pickAns('+i+',\'false\')">错误</div></div>';else h+='<textarea id="scene'+i+'" style="height:80px;margin-top:6px" placeholder="输入你的分析..."></textarea><div class="ts mt8">提示：'+q.hint+'</div>';h+='<div class="ts mt4" id="exp'+i+'" style="display:none">'+q.exp+'</div></div>'});h+='<button class="btn mt12" onclick="checkPrac()">提交并查看得分</button><div id="scoreR" class="tc mt12" style="font-size:1.1rem;font-weight:bold;color:var(--accent)"></div>';document.getElementById('pracContent').innerHTML=h}
+function pickAns(i,ans){var pq=G('pq'+i),opts=pq.querySelectorAll('.popt');G('exp'+i).style.display='block';pracAnswers[i]=ans;if(pracType==='bool'){opts[0].classList.toggle('sel',ans==='true');opts[1].classList.toggle('sel',ans==='false')}else{opts.forEach(function(o){o.classList.toggle('sel',o.textContent===ans)})}}
+function checkPrac(){var qs=PDATA[pracType],s=0,t=0;qs.forEach(function(q,i){if(pracType==='scene')return;t++;if(pracAnswers[i]===q.a)s++});if(pracType==='scene'){var a=0;qs.forEach(function(q,i){if(G('scene'+i)&&G('scene'+i).value.trim())a++});G('scoreR').textContent='场景题已作答：'+a+'/'+qs.length;return}var p=t?Math.round(s/t*100):0;G('scoreR').textContent='得分：'+s+'/'+t+' ('+p+'%)'}
+
+// ====== 计划总览 ======
+function renderPlan(){var h='<h2>计划总览</h2>';for(var i=1;i<=4;i++){var wk=LDATA['w'+i],d=0;wk.d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)d++});h+='<div class="card"><div class="fx"><div class="f1"><h3>'+wk.t+'</h3><div class="ts">完成 '+d+'/7</div></div><div style="font-size:1.2rem;font-weight:bold;color:var(--accent)">'+Math.round(d/7*100)+'%</div></div></div>'}var t=0;for(var i=1;i<=4;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});h+='<div class="card tc"><div class="ts">总完成度</div><div style="font-size:1.4rem;font-weight:bold;color:var(--accent)">'+Math.round(t/28*100)+'%</div></div>';G('mainContent').innerHTML=h}
+
+// ====== AI模板 ======
+function renderAI(){var h='<h2>AI提问模板</h2><div class="ts mb12">点击模板复制到剪贴板</div>';AIDATA.forEach(function(t){h+='<div class="card"><h3>'+t.t+'</h3><pre onclick="copyText(\''+t.c.replace(/'/g,"\\'").replace(/\n/g,'\\n')+'\')">'+t.c+'</pre></div>'});G('mainContent').innerHTML=h}
+function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('已复制！')}).catch(function(){toast('复制失败')})}
+
+// ====== 工作日志 ======
+var logFilter='all'
+function renderLog(){var h='<h2>工作日志</h2><div class="card"><h3>新增日志</h3><div class="fc"><div class="fx g12"><input type="date" id="ldate" value="'+new Date().toISOString().slice(0,10)+'" style="width:auto"><select id="ldev" style="width:auto"><option>PLC(S7-1200)</option><option>PLC(S7-1500)</option><option>PLC(三菱FX)</option><option>海康AGV</option><option>读码器</option><option>变频器</option><option>传感器</option><option>其他</option></select></div><input type="text" id="lprob" placeholder="故障现象（必填）"><textarea id="ldet" placeholder="排查过程" style="height:70px"></textarea><textarea id="lsol" placeholder="解决方案" style="height:60px"></textarea><div class="fx g12"><select id="lstat" style="width:auto"><option value="pending">待跟进</option><option value="resolved">已解决</option><option value="help">需协助</option></select><button class="btn" onclick="addLog()">记录日志</button></div></div></div><div class="fx g12 mb12"><input type="text" id="lsearch" placeholder="搜索日志..." oninput="showLogs()" style="max-width:200px"><button class="btn btn-sm btn-s" onclick="setLogF(\'all\')">全部</button><button class="btn btn-sm btn-s" onclick="setLogF(\'mine\')">我的</button><button class="btn btn-sm btn-s" onclick="setLogF(\'urgent\')">紧急</button><button class="btn btn-sm btn-s" onclick="exportCSV()">导出CSV</button></div><div id="logList"></div>';G('mainContent').innerHTML=h;showLogs()}
+function addLog(){var prob=G('lprob').value.trim();if(!prob){toast('请填写故障现象');return}var log={id:'L'+Date.now()+Math.random().toString(36).slice(2,6),date:G('ldate').value,dev:G('ldev').value,problem:prob,detail:G('ldet').value.trim(),solution:G('lsol').value.trim(),status:G('lstat').value,author:MY_NAME,uid:MY_UID,time:Date.now()};S.logs.unshift(log);saveS();showLogs();G('lprob').value='';G('ldet').value='';G('lsol').value='';if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'add',log:log}),{qos:1});toast('日志已记录')}
+function delLog(id){if(!confirm('确定删除？'))return;S.logs=S.logs.filter(function(l){return l.id!==id});saveS();showLogs();if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'del',id:id}),{qos:1})}
+function setLogF(f){logFilter=f;showLogs()}
+function exportCSV(){var csv='\uFEFF日期,设备类型,故障现象,排查过程,解决方案,状态,记录人\n';S.logs.forEach(function(l){csv+=l.date+','+l.dev+',"'+l.problem+'","'+(l.detail||'')+'","'+(l.solution||'')+'",'+l.status+','+l.author+'\n'});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='日志_'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
+function showLogs(){var logs=S.logs||[],q=(G('lsearch')?G('lsearch').value:'').toLowerCase();if(logFilter==='mine')logs=logs.filter(function(l){return l.uid===MY_UID});else if(logFilter==='urgent')logs=logs.filter(function(l){return l.status==='help'||l.status==='pending'});if(q)logs=logs.filter(function(l){return l.problem.toLowerCase().indexOf(q)>=0||l.dev.toLowerCase().indexOf(q)>=0||(l.detail||'').toLowerCase().indexOf(q)>=0});if(!logs.length){G('logList').innerHTML='<p class="tc ts">暂无日志</p>';return}G('logList').innerHTML=logs.slice(0,80).map(function(l){var sc=l.status==='resolved'?'tag-ok':l.status==='help'?'tag-err':'tag-warn',st={pending:'待跟进',resolved:'已解决',help:'需协助'}[l.status];return '<div class="log-row"><div class="lm"><span>'+l.date+'</span><span>'+l.dev+'</span><span class="tag '+sc+'">'+st+'</span><span>'+l.author+'</span><button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delLog(\''+l.id+'\')">删除</button></div><div class="lp">'+l.problem+'</div>'+(l.detail?'<div class="ts">排查：'+l.detail+'</div>':'')+(l.solution?'<div class="ts mt4">方案：'+l.solution+'</div>':'')+'</div>'}).join('')}
+
+// ====== 备份/导入 ======
+function renderBackup(){G('mainContent').innerHTML='<h2>备份/导入</h2><div class="card"><h3>备份数据</h3><p class="ts mb8">将学习进度、日志等导出为JSON（不含手册文件数据，文件需重新同步）</p><button class="btn" onclick="exportB()">导出备份</button></div><div class="card"><h3>导入数据</h3><p class="ts mb8">从之前导出的JSON恢复数据</p><input type="file" id="bimport" accept=".json" class="hide" onchange="importB(this.files)"><button class="btn btn-s" onclick="G(\'bimport\').click()">选择文件导入</button></div><div class="card"><h3>当前数据统计</h3><p class="ts">学习进度：'+S.doneDays.length+'/28 | 日志：'+(S.logs||[]).length+' | 手册：'+(S.manualFiles||[]).length+'</p></div>'}
+function exportB(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='运维备份_'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('备份已导出')}
+function importB(files){if(!files||!files.length)return;var r=new FileReader();r.onload=function(e){try{S=JSON.parse(e.target.result);saveS();toast('导入成功！');switchTab(CURTAB)}catch(err){toast('文件格式错误')}};r.readAsText(files[0])}
+
+// ====== 辅助 ======
+function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'}
+function updateSummary(){var t=0;for(var i=1;i<=4;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});G('totalProgress').textContent=Math.round(t/28*100)+'%';G('todayTasks').textContent=t+'/28';var d=0;LDATA['w'+S.curWeek].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+S.curWeek+'d'+(j+1))>=0)d++});G('lastStudy').textContent=d>0?'已完成 '+d+'/7':'-'}
+function d2ab(dataURI){var b64=dataURI.split(',')[1],raw=atob(b64),arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr.buffer}
+
+// ====== MQTT 信令 ======
+var BROKERS=[{n:'EMQX',u:'wss://broker.emqx.io:8084/mqtt'},{n:'HiveMQ',u:'wss://broker.hivemq.com:8884/mqtt'},{n:'Mosquitto',u:'wss://test.mosquitto.org:8081/mqtt'}]
+var mqttC=null,mqttOn=false,mqttIdx=0,mqttTry=0,onlinePeers=[],peerMap={}
+var CHUNK=120000 // 120KB 分块，broker 限制通常 256KB
+
+// ====== 故障手册 v7：MQTT 高速块同步 ======
+// 接收中的文件缓冲区: fileId -> {totalChunks, chunks:Map<index,data>, meta:{name,size,type,from,time}}
+var recvBuf={}
+
+function upsertManualFile(entry){
+  if(!entry||!entry.fileId)return;var found=false
+  for(var i=0;i<(S.manualFiles||[]).length;i++){if(S.manualFiles[i].fileId===entry.fileId){if(!S.manualFiles[i].data&&entry.data)S.manualFiles[i].data=entry.data;found=true;break}}
+  if(!found)S.manualFiles.push(entry);saveS();if(CURTAB==='manual')renderManual()
+}
+
+function renderManual(){
+  var h='<h2>故障手册 <span class="ts">(MQTT高速同步 | 120KB/块)</span></h2>'
+  h+='<div class="card"><h3>上传故障文档</h3>'
+  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传 PDF / Word 文档<br><span class="ts">上传后自动同步给所有在线用户（通过MQTT服务器中转）</span></div>'
+  h+='<input type="file" id="fupload" accept=".pdf,.doc,.docx" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
+  h+='<div class="card"><h3>已上传文档 <span class="ts">（点击打开）</span></h3><div id="fileList">'
+  if(!S.manualFiles||!S.manualFiles.length)h+='<p class="tc ts">暂无文档 — 上传后其他用户打开此页面即可自动接收</p>'
+  else S.manualFiles.forEach(function(f,i){
+    var buf=recvBuf[f.fileId],pct=buf&&buf.totalChunks?Math.round((buf.chunks.size||0)/buf.totalChunks*100):0
+    h+='<div class="file-row"><div class="fn" onclick="openManual('+i+')">'+f.name+'</div><div class="fi">'+fmtSize(f.size)+'</div>'
+    if(f.from)h+='<div class="fi">来自：'+f.from+'</div>'
+    if(f.data)h+='<span class="tag tag-ok">已就绪</span>'
+    else if(buf)h+='<span class="tag tag-warn" style="display:flex;align-items:center;gap:4px">接收中 '+pct+'%<div style="width:40px;height:4px;background:var(--bg);border-radius:2px"><div class="prog" style="width:'+pct+'%;height:100%"></div></div></span>'
+    else h+='<span class="tag tag-err">等待同步</span>'
+    h+='<button class="btn btn-r btn-sm" onclick="delManual('+i+')">删除</button></div>'
+  })
+  h+='</div></div>'
+  h+='<div class="card"><h3>常见故障知识库</h3><input type="text" id="fs" placeholder="搜索故障..." oninput="searchF()" class="mb12"><div id="fResults"></div></div>'
+  G('mainContent').innerHTML=h;searchF()
+}
+
+function uploadFiles(files){
+  for(var i=0;i<files.length;i++){(function(file){
+    var reader=new FileReader()
+    reader.onload=function(e){
+      var dataUrl=e.target.result,fileId='f'+Date.now()+'_'+Math.random().toString(36).slice(2,8)
+      var b64=dataUrl.split(',')[1]
+      var entry={fileId:fileId,name:file.name,size:file.size,type:file.type,data:dataUrl,from:MY_NAME,time:Date.now()}
+      S.manualFiles.push(entry);saveS();renderManual()
+
+      // 大文件存 IndexedDB
+      if(file.size>1048576)saveFileToIDB(fileId,dataUrl)
+
+      // MQTT 元数据
+      var totalChunks=Math.ceil(b64.length/CHUNK)
+      if(mqttOn){
+        mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:fileId,name:file.name,size:file.size,ftype:file.type,from:MY_NAME,time:entry.time,totalChunks:totalChunks}),{qos:1})
+        sendChunks(fileId,b64,totalChunks)
+        toast(file.name+' 上传成功，同步中... ('+totalChunks+'块)')
+      }else{toast(file.name+' 已保存（等待连接）')}
+    }
+    reader.readAsDataURL(file)
+  })(files[i])}
+}
+
+function sendChunks(fileId,b64,total){
+  var idx=0
+  function sendBatch(){
+    var sent=0
+    while(sent<8&&idx<total){
+      var start=idx*CHUNK,end=Math.min(start+CHUNK,b64.length),chunk=b64.substring(start,end)
+      mqttC.publish('dm/manual_chunk',JSON.stringify({fileId:fileId,chunkIndex:idx,data:chunk,total:total}),{qos:1})
+      idx++;sent++
+    }
+    if(idx<total)setTimeout(sendBatch,15)
+    else mqttC.publish('dm/manual',JSON.stringify({type:'done',fileId:fileId}),{qos:1})
+  }
+  sendBatch()
+}
+
+function handleManualMeta(msg){
+  if(!msg.fileId)return
+  var exists=false
+  for(var i=0;i<(S.manualFiles||[]).length;i++){if(S.manualFiles[i].fileId===msg.fileId){exists=true;break}}
+  if(exists)return // 已存在，跳过
+  upsertManualFile({fileId:msg.fileId,name:msg.name,size:msg.size,type:msg.ftype,from:msg.from,time:msg.time})
+  if(msg.totalChunks){
+    recvBuf[msg.fileId]={totalChunks:msg.totalChunks,chunks:new Map(),meta:msg,received:0}
+  }
+  if(CURTAB==='manual')renderManual()
+}
+
+function handleManualChunk(msg){
+  var buf=recvBuf[msg.fileId];if(!buf)return
+  if(!buf.chunks.has(msg.chunkIndex)){
+    buf.chunks.set(msg.chunkIndex,msg.data);buf.received++
+    if(CURTAB==='manual')renderManual() // 更新进度条
+    if(buf.received>=buf.totalChunks){
+      assembleChunks(msg.fileId,buf)
+    }
+  }
+}
+
+function handleManualDone(msg){
+  var buf=recvBuf[msg.fileId];if(!buf)return
+  if(buf.received>=buf.totalChunks)return // 已组装
+  // 如果还有缺失的块，不发补传请求（MQTT broker 应该都已投递）
+  setTimeout(function(){
+    var buf2=recvBuf[msg.fileId];if(!buf2)return
+    if(buf2.received<buf2.totalChunks){
+      // 缺块，请求补传
+      var missing=[]
+      for(var i=0;i<buf2.totalChunks;i++){if(!buf2.chunks.has(i))missing.push(i)}
+      if(mqttOn)mqttC.publish('dm/manual',JSON.stringify({type:'req_chunks',fileId:msg.fileId,missing:missing}),{qos:1})
+    }else{
+      assembleChunks(msg.fileId,buf2)
+    }
+  },2000)
+}
+
+function handleManualReqChunks(msg){
+  // 有人请求补传缺失的块
+  for(var i=0;i<(S.manualFiles||[]).length;i++){
+    if(S.manualFiles[i].fileId===msg.fileId&&S.manualFiles[i].data){
+      var b64=S.manualFiles[i].data.split(',')[1]
+      msg.missing.forEach(function(idx){
+        var start=idx*CHUNK,end=Math.min(start+CHUNK,b64.length)
+        if(mqttOn)mqttC.publish('dm/manual_chunk',JSON.stringify({fileId:msg.fileId,chunkIndex:idx,data:b64.substring(start,end),total:msg.missing.length}),{qos:1})
+      })
+      break
+    }
+  }
+}
+
+function assembleChunks(fileId,buf){
+  var sorted=[];buf.chunks.forEach(function(data,idx){sorted.push({idx:idx,data:data})});sorted.sort(function(a,b){return a.idx-b.idx})
+  var full=sorted.map(function(c){return c.data}).join('')
+  var mime=buf.meta.ftype||'application/octet-stream',dataUrl='data:'+mime+';base64,'+full
+  var entry={fileId:fileId,name:buf.meta.name,size:buf.meta.size,type:buf.meta.ftype,data:dataUrl,from:buf.meta.from,time:buf.meta.time}
+  upsertManualFile(entry)
+  if(buf.meta.size>1048576)saveFileToIDB(fileId,dataUrl)
+  delete recvBuf[fileId]
+  toast('文件同步完成: '+buf.meta.name)
+  if(CURTAB==='manual')renderManual()
+}
+
+function openManual(idx){
+  var f=S.manualFiles[idx];if(!f){toast('文件不存在');return}
+  if(!f.data){
+    // 尝试从 IDB 加载
+    getFileFromIDB(f.fileId).then(function(d){if(d){f.data=d;openManual(idx)}else{toast('文件数据尚未同步完成，等待其他设备上线...')}})
+    return
+  }
+  if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')){
+    window.open(URL.createObjectURL(new Blob([d2ab(f.data)],{type:'application/pdf'})),'_blank')
+  }else{
+    mammoth.convertToHtml({arrayBuffer:d2ab(f.data)}).then(function(r){
+      var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+f.name+'</title><style>body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:40px auto;padding:20px;line-height:1.8;color:#333}h1,h2,h3{color:#1a2736;margin:16px 0 8px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}</style></head><body>'+(r.value||'<p>无可读文本</p>')+'</body></html>'
+      window.open(URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})),'_blank')
+    }).catch(function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d2ab(f.data)],{type:f.type}));a.download=f.name;a.click();toast('解析失败，已触发下载')})
+  }
+}
+
+function delManual(idx){if(!confirm('确定删除？'))return;var f=S.manualFiles[idx];S.manualFiles.splice(idx,1);saveS();delete recvBuf[f.fileId];renderManual();if(mqttOn)mqttC.publish('dm/manual',JSON.stringify({type:'del',fileId:f.fileId}),{qos:1})}
+
+function searchF(){
+  var q=(G('fs')?G('fs').value:'').toLowerCase(),list=FAULTS
+  if(q)list=FAULTS.filter(function(f){return f.t.toLowerCase().indexOf(q)>=0||f.c.toLowerCase().indexOf(q)>=0||f.s.toLowerCase().indexOf(q)>=0})
+  var h=list.length?list.map(function(f){return '<div class="log-row"><div class="lm"><span class="tag tag-warn">'+f.c+'</span></div><div class="lp">'+f.t+'</div><div class="ts">'+f.s+'</div></div>'}).join(''):'<p class="tc ts">无匹配结果</p>'
+  if(G('fResults'))G('fResults').innerHTML=h
+}
+
+// ====== MQTT 连接 ======
+function mqttConnect(){
+  if(typeof mqtt==='undefined'){setTimeout(mqttConnect,500);return}
+  if(mqttTry>=12){setTimeout(function(){mqttTry=0;mqttConnect()},15000);return}
+  var br=BROKERS[mqttIdx%3]
+  try{if(mqttC){try{mqttC.end(true)}catch(e){}}mqttC=mqtt.connect(br.u,{clientId:'dmp7_'+MY_UID,clean:true,connectTimeout:6000,reconnectPeriod:1500,keepalive:30})}catch(e){mqttTry++;setTimeout(mqttConnect,1000);return}
+  mqttC.on('connect',function(){
+    mqttOn=true;mqttTry=0;onlinePeers=[MY_NAME];peerMap={}
+    mqttC.subscribe(['dm/log','dm/manual','dm/manual_chunk','dm/hello','dm/peer','dm/sync'],{qos:1})
+    mqttC.publish('dm/hello',JSON.stringify({name:MY_NAME,uid:MY_UID,time:Date.now(),reqSync:true}),{qos:1})
+    setInterval(function(){if(mqttOn)mqttC.publish('dm/peer',JSON.stringify({name:MY_NAME,uid:MY_UID,time:Date.now()}),{qos:1})},20000)
+    updateCollab()
+    // 请求文件同步
+    setTimeout(function(){syncMissingFiles()},2000)
+  })
+  mqttC.on('message',function(topic,payload){
+    try{var msg=JSON.parse(payload.toString());if(!msg||msg.uid===MY_UID)return}catch(e){return}
+    if(topic==='dm/hello'||topic==='dm/peer'){
+      if(msg.name&&onlinePeers.indexOf(msg.name)<0)onlinePeers.push(msg.name)
+      if(msg.uid)peerMap[msg.uid]={name:msg.name,time:Date.now()}
+      if(msg.reqSync&&topic==='dm/hello'){doSync(msg.uid);updateCollab()}
+      else updateCollab()
+    }else if(topic==='dm/log'){
+      if(msg.type==='add'&&msg.log){var idx=-1;for(var i=0;i<S.logs.length;i++){if(S.logs[i].id===msg.log.id){idx=i;break}}if(idx>=0){if((msg.log.time||0)>(S.logs[idx].time||0))S.logs[idx]=msg.log}else S.logs.push(msg.log);saveS();if(CURTAB==='log')showLogs()}
+      else if(msg.type==='del'&&msg.id){S.logs=S.logs.filter(function(l){return l.id!==msg.id});saveS();if(CURTAB==='log')showLogs()}
+    }else if(topic==='dm/manual'){
+      if(msg.type==='meta')handleManualMeta(msg)
+      else if(msg.type==='done')handleManualDone(msg)
+      else if(msg.type==='del'&&msg.fileId){S.manualFiles=S.manualFiles.filter(function(f){return f.fileId!==msg.fileId});delete recvBuf[msg.fileId];saveS();if(CURTAB==='manual')renderManual()}
+      else if(msg.type==='req_chunks')handleManualReqChunks(msg)
+    }else if(topic==='dm/manual_chunk'){
+      if(msg.fileId&&msg.chunkIndex!==undefined&&msg.data)handleManualChunk(msg)
+    }else if(topic==='dm/sync'){
+      if(msg.logs){var m={};S.logs.forEach(function(l){m[l.id]=l});msg.logs.forEach(function(l){var ex=m[l.id];if(!ex||(l.time||0)>(ex.time||0))m[l.id]=l});S.logs=Object.values(m);saveS();if(CURTAB==='log')showLogs()}
+      if(msg.files)msg.files.forEach(function(f){upsertManualFile(f)})
+    }
+  })
+  mqttC.on('close',function(){mqttOn=false;updateCollab()})
+  mqttC.on('error',function(){mqttTry++;setTimeout(mqttConnect,1000)})
+}
+
+function doSync(toUid){
+  var fm=S.manualFiles.map(function(f){return{type:'meta',fileId:f.fileId,name:f.name,size:f.size,ftype:f.type,from:f.from,time:f.time}})
+  mqttC.publish('dm/sync',JSON.stringify({logs:S.logs,files:fm,from:MY_NAME,uid:MY_UID}),{qos:1})
+  // 发送所有本地文件
+  setTimeout(function(){S.manualFiles.forEach(function(f){if(f.data){var b64=f.data.split(',')[1],total=Math.ceil(b64.length/CHUNK);if(mqttOn){mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:f.fileId,name:f.name,size:f.size,ftype:f.type,from:f.from,time:f.time,totalChunks:total}),{qos:1});sendChunks(f.fileId,b64,total)}}})},500)
+}
+
+function syncMissingFiles(){
+  if(!mqttOn)return
+  var hasData=false;S.manualFiles.forEach(function(f){if(f.data)hasData=true})
+  if(!hasData&&S.manualFiles.length>0){
+    // 我有文件但没数据，请求帮助
+    mqttC.publish('dm/hello',JSON.stringify({name:MY_NAME,uid:MY_UID,time:Date.now(),reqSync:true}),{qos:1})
+  }
+}
+
+function switchBroker(){mqttIdx++;mqttTry=0;recvBuf={};mqttConnect()}
+
+function updateCollab(){
+  var dot=G('dot'),count=G('onlineCount'),status=G('netStatus')
+  if(!dot||!count||!status)return
+  dot.style.background=mqttOn?'var(--ok)':'var(--err)'
+  count.textContent=onlinePeers.length
+  status.textContent=mqttOn?BROKERS[mqttIdx%3].n:'未连接'
+}
+
+// ====== 初始化 ======
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+restoreFromIDB().then(function(){switchTab('today');updateSummary();mqttConnect()})
+setTimeout(function(){if(!mqttOn)mqttConnect()},3000)
+setTimeout(function(){if(!mqttOn)mqttConnect()},8000)
+</script>
+</body>
+</html>

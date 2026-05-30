@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>设备运维平台 v5</title>
+  <meta charset="UTF-8">
+  <style>
+    body{font-family:"Microsoft YaHei",sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.6}
+    h1{color:#1a2736;border-bottom:2px solid #4fc3f7;padding-bottom:8px}
+    .btn{display:inline-block;background:#4fc3f7;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;margin:10px 5px;font-weight:500}
+    .btn:hover{opacity:0.85}
+    .note{padding:12px;background:#f0f9ff;border-left:4px solid #4fc3f7;margin:20px 0}
+  </style>
+</head>
+<body>
+  <h1>设备运维学习平台 v5</h1>
+  <p>由于 Netlify 部署额度已用尽，请手动部署到 Gitee Pages：</p>
+  <div class="note">
+    <strong>步骤：</strong><br>
+    1. 访问 <a href="https://gitee.com/" target="_blank">gitee.com</a> 并登录<br>
+    2. 新建仓库（例如命名为 device-maintenance）<br>
+    3. 将以下文件上传到仓库根目录：<br>
+    &nbsp;&nbsp;- index.html（即本页面）<br>
+    &nbsp;&nbsp;- netlify.toml（可删除）<br>
+    4. 进入仓库 → 服务 → Gitee Pages → 开启<br>
+    5. 等待几分钟，访问生成的 .gitee.io 链接即可
+  </div>
+  <p>或直接下载完整文件包：</p>
+  <a href="device_platform_v5.html" download class="btn">下载 HTML 文件</a>
+  <a href="https://gitee.com/help/articles/4136" target="_blank" class="btn">Gitee Pages 教程</a>
+  <hr>
+  <h3>v5 版本改进：</h3>
+  <ul>
+    <li>故障手册通过 MQTT 分块传输，所有人本地都有完整文件</li>
+    <li>点击文件在新窗口打开（PDF 浏览器原生渲染，Word 转 HTML）</li>
+    <li>工作日志增加删除按钮，删除操作实时同步</li>
+    <li>修复了之前其他人无法打开上传文件的问题</li>
+  </ul>
+  <p>部署后，任何人访问该链接即可实时协作。</p>
+</body>
+</html>
