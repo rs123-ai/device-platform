@@ -369,7 +369,16 @@ function assembleChunks(fileId,buf){
   addLocalFile(fileId,buf.meta.name,buf.meta.size,buf.meta.type,buf.meta.from,buf.meta.time,dataUrl)
   delete recvBuf[fileId]
   delete metaStore[fileId]
-  toast('下载完成: '+buf.meta.name)
+  // 自动弹出系统下载对话框，保存到本地磁盘
+  try{
+    var downloadBlob=new Blob([d2ab(dataUrl)],{type:mime})
+    var dlA=document.createElement('a')
+    dlA.href=URL.createObjectURL(downloadBlob)
+    dlA.download=buf.meta.name
+    dlA.click()
+    setTimeout(function(){URL.revokeObjectURL(dlA.href)},30000)
+  }catch(e){console.error('auto-download failed:',e)}
+  toast('已保存到本地: '+buf.meta.name)
   if(CURTAB==='manual')renderManual()
 }
 
