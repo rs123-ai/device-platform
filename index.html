@@ -127,12 +127,11 @@ function openIDB(){
     req.onerror=function(){reject(req.error)}
   })
 }
-function saveFileToIDB(fileId,data,fileName,fileSize,fileType,category){
+function saveFileToIDB(fileId,data){
   return openIDB().then(function(db){
     return new Promise(function(resolve,reject){
-      var record={fileId:fileId,data:data,fileName:fileName||'',fileSize:fileSize||0,fileType:fileType||'',category:category||'other',uploadTime:Date.now()}
       var tx=db.transaction('files','readwrite')
-      tx.objectStore('files').put(record)
+      tx.objectStore('files').put({fileId:fileId,data:data})
       tx.oncomplete=resolve;tx.onerror=reject
     })
   })
@@ -171,13 +170,10 @@ function deleteFromIDB(fileId){
 function hasFileData(fileId){return !!dataCache[fileId]}
 
 // ====== 学习数据 ======
-var LDATA={w1:{t:'第1周：通信排障',d:['RS232协议基础与接线','RS485总线拓扑与终端电阻','Modbus RTU报文解析','Modbus TCP网络抓包','串口通信常见故障排查','网络通信故障定位','综合实战：产线通信中断']},w2:{t:'第2周：PLC调试',d:['S7-1200硬件组态','TIA Portal编程基础','三菱FX指令系统','PLC与HMI通信配置','模拟量/数字量处理','故障诊断与程序备份','综合实战：设备启停控制']},w3:{t:'第3周：海康AGV运维',d:['AGV系统组成与导航原理','磁条/二维码导航配置','调度系统RCS基础','常见故障代码解析','电池管理与充电维护','安全传感器校准','综合实战：AGV路径优化']},w4:{t:'第4周：系统集成',d:['MES系统对接基础','OPC UA通信协议','数据库读写与日志','上位机监控画面设计','报警管理与通知机制','系统备份与恢复','综合实战：产线数据看板']},w5:{t:'第5周：AI工具与效率提升',d:['Codesys MCP协议入门','AI自动建POU与变量','AI写ST代码与编译纠错','西门子Openness API基础','TIA Portal程序化操作','AI辅助故障排查思路','综合实战：AI驱动PLC工程']},w6:{t:'第6周：工控产品选型',d:['PLC选型全攻略','AGV选型与应用匹配','变频器选型要点','传感器选型指南','HMI及上位机选型','伺服驱动系统选型','综合实战：产线设备清单编制']},w7:{t:'第7周：实训计划',d:['项目1：传送带启停控制','项目2：Modbus多站轮询','项目3：AGV站点呼叫联动','项目4：HMI监控画面设计','项目5：传感器分拣系统','项目6：AI驱动PLC编程实战','项目7：综合产线方案设计']},w8:{t:'第8周：电路图详解',d:['基本电气符号大全','控制回路器件符号','主回路与二次回路','电机控制电路识读','传感器与执行器接线图','PLC接线图与I/O分配','综合电路图识读练习']},w9:{t:'第9周：大模型基础入门',d:['环境搭建与API调用','提示工程基础','思维链推理实战','预训练模型微调(上)','预训练模型微调(下)','模型部署与Demo搭建','知识编辑入门']},
+var LDATA={w1:{t:'第1周：通信排障',d:['RS232协议基础与接线','RS485总线拓扑与终端电阻','Modbus RTU报文解析','Modbus TCP网络抓包','串口通信常见故障排查','网络通信故障定位','综合实战：产线通信中断']},w2:{t:'第2周：PLC调试',d:['S7-1200硬件组态','TIA Portal编程基础','三菱FX指令系统','PLC与HMI通信配置','模拟量/数字量处理','故障诊断与程序备份','综合实战：设备启停控制']},w3:{t:'第3周：海康AGV运维',d:['AGV系统组成与导航原理','磁条/二维码导航配置','调度系统RCS基础','常见故障代码解析','电池管理与充电维护','安全传感器校准','综合实战：AGV路径优化']},w4:{t:'第4周：系统集成',d:['MES系统对接基础','OPC UA通信协议','数据库读写与日志','上位机监控画面设计','报警管理与通知机制','系统备份与恢复','综合实战：产线数据看板']},w5:{t:'第5周：AI工具与效率提升',d:['Codesys MCP协议入门','AI自动建POU与变量','AI写ST代码与编译纠错','西门子Openness API基础','TIA Portal程序化操作','AI辅助故障排查思路','综合实战：AI驱动PLC工程']},w6:{t:'第6周：工控产品选型',d:['PLC选型全攻略','AGV选型与应用匹配','变频器选型要点','传感器选型指南','HMI及上位机选型','伺服驱动系统选型','综合实战：产线设备清单编制']},w7:{t:'第7周：实训计划',d:['项目1：传送带启停控制','项目2：Modbus多站轮询','项目3：AGV站点呼叫联动','项目4：HMI监控画面设计','项目5：传感器分拣系统','项目6：AI驱动PLC编程实战','项目7：综合产线方案设计']},w8:{t:'第8周：电路图详解',d:['电气符号识别','控制回路器件详解','主回路与二次回路','电机控制经典电路','传感器与执行器接线','PLC接线图与I/O分配','综合电路图识读练习']},
+w9:{t:'第9周：大模型基础入门',d:['环境搭建与API调用','提示工程基础','思维链推理实战','预训练模型微调(上)','预训练模型微调(下)','模型部署与Demo搭建','知识编辑入门']},
 w10:{t:'第10周：大模型进阶实战',d:['知识编辑批量操作','数学推理数据蒸馏','模型水印技术','隐写术与安全','越狱攻击技术','智能体安全风险','RLHF安全对齐']},
 w11:{t:'第11周：多模态与智能体',d:['多模态模型架构','视觉语言模型实战','GUI智能体基础','GUI智能体实战','综合项目：新闻分类系统','综合项目：数学助手','学习总结与进阶路线']}}
-var PDATA={choice:[{q:'RS485总线需要终端电阻吗？',opt:['需要','不需要'],a:'需要',explanation:'RS485总线两端必须各接120Ω终端电阻以消除信号反射，不接会导致通信时断时续。'},{q:'Modbus RTU校验方式？',opt:['CRC16','奇校验','偶校验','无校验'],a:'CRC16',explanation:'Modbus RTU使用CRC16（循环冗余校验），2字节位于报文末尾，用于检测传输错误。'},{q:'S7-1200编程软件？',opt:['TIA Portal','STEP 7','GX Works','Codesys'],a:'TIA Portal',explanation:'S7-1200/1500系列使用TIA Portal（博途）；STEP 7用于S7-300/400；GX Works是三菱的编程软件。'},{q:'AGV导航精度最高的是？',opt:['激光SLAM','磁条导航','二维码导航','惯性导航'],a:'激光SLAM',explanation:'激光SLAM导航精度可达±5mm且无需地面标识。二维码精度也高但需贴码维护。'},{q:'PLC输入模块最常见故障？',opt:['电源故障','接线松动','程序错误','通信中断'],a:'接线松动',explanation:'现场振动导致端子螺丝松动是最常见故障，表现为信号时有时无，需定期紧固端子。'},{q:'RS485 A/B线接反会怎样？',opt:['通信中断','烧毁设备','自动纠正','速率变慢'],a:'通信中断',explanation:'RS485差分信号依赖A、B线的极性，接反会导致接收端解出反相数据，通信完全中断。'},{q:'S7-1200模拟量输入原始值范围？',opt:['0~27648','0~32767','4~20','0~10000'],a:'0~27648',explanation:'S7-1200模拟量输入模块将4-20mA/0-10V信号转换为0~27648的数字值，0~27648对应量程。'},{q:'AGV锂电池最佳充电时机？',opt:['低于10%','低于5%','低于20%','用完再充'],a:'低于20%',explanation:'磷酸铁锂电池严禁深度放电，电量低于20%时应自动返回充电，低于5%可能永久损坏电池。'},{q:'PROFINET分配设备名称的协议？',opt:['DCP','DHCP','DNS','ARP'],a:'DCP',explanation:'PROFINET通过DCP(Discovery and Configuration Protocol)分配设备名称和IP地址，不是DHCP。'},{q:'变频器过流报警(OC)最常见原因？',opt:['加减速太快','电压过高','通讯中断','参数丢失'],a:'加减速太快',explanation:'加减速时间设置过短导致电流冲击超出变频器额定值，应适当延长加减速时间参数。'},{q:'安全PLC与普通PLC的关键区别？',opt:['冗余双通道','速度更快','支持以太网','价格更贵'],a:'冗余双通道',explanation:'安全PLC采用冗余双通道设计，两个CPU同时运算并交叉校验，任一故障立即安全停机。'},{q:'OPC UA相比Modbus的核心优势？',opt:['内置加密认证','速度更快','协议更简单','无需编程'],a:'内置加密认证',explanation:'OPC UA内置加密、证书认证和用户鉴权，解决了Modbus明文传输无安全防护的致命缺陷。'}],bool:[{q:'Modbus TCP默认使用端口502。',a:'true',explanation:'Modbus TCP标准端口为502，IANA已正式分配。可用telnet IP 502测试端口是否可达。'},{q:'三菱FX系列可用TIA Portal编程。',a:'false',explanation:'三菱FX系列PLC使用GX Works/GX Developer编程，TIA Portal是西门子的专用编程平台。'},{q:'AGV锂电池应完全放电后再充电。',a:'false',explanation:'锂电池严禁完全放空，深度放电会造成永久性损伤。应在电量低于20%前充电。'},{q:'RS232通信最远距离可达1200米。',a:'false',explanation:'RS232最大传输距离仅约15米，速率越高距离越短。1200米是RS485的最大距离。'},{q:'PLC扫描周期包含读输入、执行程序、写输出三步。',a:'true',explanation:'PLC每个扫描周期确实包含三个阶段：读取输入映像区→执行用户程序→刷新输出映像区。'},{q:'RS485终端电阻阻值是120Ω。',a:'true',explanation:'RS485标准规定终端匹配电阻为120Ω，等于双绞线特征阻抗，用于消除信号反射。'},{q:'4-20mA信号中0mA表示传感器正常但量程为零。',a:'false',explanation:'4mA才是零点（量程下限），0mA表示传感器断线或掉电，利用这一特性可检测线路故障。'},{q:'AGV安全激光的急停区域通常设置为5米。',a:'false',explanation:'安全激光急停区通常为1-1.5米，减速区为3-5米。急停区太大会导致AGV频繁误停。'},{q:'梯形图的常开触点在输入为0时导通。',a:'false',explanation:'常开触点(-| |-)在输入为1(ON)时闭合导通，输入为0(OFF)时断开。常闭触点(-|/|-)才是在输入0时导通。'},{q:'MODBUS TCP报文中包含CRC16校验。',a:'false',explanation:'Modbus TCP去掉了CRC16（TCP/IP层已有校验），改为MBAP报文头7字节+功能码+数据。'}],scene:[{q:'产线停止，PLC输入灯正常、输出灯不亮，原因？',hint:'检查PLC运行状态、程序逻辑、输出模块电源'},{q:'AGV在B区频繁报定位丢失，排查？',hint:'检查地面二维码/磁条有无脏污破损、导航传感器状态、站点坐标是否偏移'},{q:'Modbus通信时断时续，如何定位？',hint:'检查RS485接线和终端电阻、波特率一致性、屏蔽层接地、主从站地址冲突'},{q:'变频器带电机运行中突然报OC（过流），排查思路？',hint:'检查电机是否堵转/卡死、加减速时间是否过短、电机绕组绝缘是否正常'},{q:'新装S7-1200上电后CPU STOP灯常亮，如何处理？',hint:'连接TIA Portal查看诊断缓冲区，检查是否为首次上电需下载硬件配置，或程序中有OB调用错误、I/O访问错误'},{q:'一台潜伏式AGV到达目标站点后货叉无法顶升，排查？',hint:'检查货叉限位传感器是否卡住、顶升电机是否得电、机械结构是否卡滞、上位机是否下发了顶升指令'}]}
-var AIDATA=[{t:'故障排查提问',c:'设备类型：[PLC/AGV/传感器]\n故障现象：[具体描述]\n已排查步骤：[列出]\n当前状态：[运行/停止/报警]\n期望：'},{t:'学习计划提问',c:'当前水平：[新手/有经验/熟练]\n学习目标：[掌握XX]\n可用时间：[每天X小时]\n偏好方式：[理论+实操/纯实操/案例]'},{t:'代码调试提问',c:'编程环境：[TIA Portal/GX Works]\n问题描述：[程序不执行/报警/逻辑错误]\n相关代码：[粘贴]\n已尝试：'},{t:'设备选型提问',c:'应用场景：[产线搬运/仓储分拣]\n负载：[重量/尺寸]\n精度：[定位精度]\n环境：[室内/室外]\n预算：'},{t:'系统集成提问',c:'现有系统：[PLC型号/AGV品牌]\n需集成：[MES/WMS]\n通信协议：[Modbus TCP/OPC UA]\n问题：[连接失败/不同步]'},{t:'Codesys MCP编程提问',c:'开发环境：[Codesys IDE版本]\n项目需求：[控制目标描述]\nPOU类型：[Program/Function Block/Function]\n变量清单：[输入：XX / 输出：XX / 内部：XX]\n控制逻辑要点：[步骤1/步骤2/...]\n期望输出：[AI生成完整ST代码并编译通过]'},{t:'AI辅助故障排查提问',c:'设备信息：[PLC型号/固件版本]\n故障代码：[LED状态/诊断缓冲区代码]\n故障现象：[停机/报警/通信中断]\n诊断数据：[粘贴诊断缓冲区内容]\n已尝试：[列出已做的排查步骤]\n期望：[AI给出排查步骤清单和修复建议]'}]
-var FAULTS=[{t:'PLC输入无信号',c:'PLC',s:'检查输入接线、电源、输入模块指示灯，万用表测量端子电压'},{t:'PLC程序丢失',c:'PLC',s:'检查电池/超级电容状态，确认程序存储卡未松动，重新下载程序'},{t:'PLC CPU停机(STOP)',c:'PLC',s:'查看诊断缓冲区，检查OB块调用、I/O访问错误、编程错误导致停机'},{t:'PLC模拟量读数漂移',c:'PLC',s:'检查模拟量模块接地、屏蔽层单端接地，校准量程卡位置'},{t:'PLC以太网通讯中断',c:'PLC',s:'检查网线连接、IP地址冲突、交换机端口状态，ping测试连通性'},{t:'PLC模块配置丢失',c:'PLC',s:'检查背板总线连接器是否松动，重新上电后在线下载硬件配置'},{t:'PLC输出触点粘连',c:'PLC',s:'测量输出回路电流是否超额定值，更换输出继电器或模块'},{t:'AGV定位丢失',c:'AGV',s:'检查地面二维码/磁条是否脏污损坏，清洁导航传感器并重新标定'},{t:'AGV无法充电',c:'AGV',s:'检查充电电极接触，测量电池电压，确认充电桩通信模块正常'},{t:'AGV避障误停频繁',c:'AGV',s:'检查安全激光区域是否有灰尘遮挡，调整避障区域参数，确认地面反光物'},{t:'AGV驱动轮打滑',c:'AGV',s:'检查驱动轮磨损程度，清理轮面及地面油污，确认悬浮机构压力正常'},{t:'AGV货叉不到位',c:'AGV',s:'检查货叉限位传感器状态，校准货叉升降编码器零点，排除机械卡滞'},{t:'AGV路径规划失败',c:'AGV',s:'检查调度系统地图数据是否更新，确认路径节点未被占用或禁行'},{t:'变频器过流报警(OC)',c:'变频器',s:'检查电机绕组对地绝缘，测量负载是否卡死，确认加减速时间参数'},{t:'变频器过压报警(OV)',c:'变频器',s:'检查制动电阻是否开路或阻值变大，延长减速时间或加装制动单元'},{t:'变频器输出缺相',c:'变频器',s:'测量输出端U/V/W三相电压平衡，检查电机接线端子是否松动脱落'},{t:'变频器参数无法保存',c:'变频器',s:'检查内部EEPROM是否故障，更换控制板或检查写入保护参数设置'},{t:'变频器通讯超时',c:'变频器',s:'检查RS485接线及终端电阻，确认波特率和站号设置一致'},{t:'传感器误触发',c:'传感器',s:'调整灵敏度旋钮，检查安装位置是否受相邻设备干扰，排除串扰源'},{t:'传感器无输出信号',c:'传感器',s:'万用表测量电源电压，检查信号线通断，确认传感器类型(NPN/PNP)匹配'},{t:'传感器测距偏差大',c:'传感器',s:'清洁传感器镜面，检查被测物表面反射特性，重新校准基准距离'},{t:'安全光栅对齐失败',c:'传感器',s:'重新机械对齐发射端与接收端，确认安装支架无松动，清洁光幕表面'},{t:'传感器温漂严重',c:'传感器',s:'检查环境温度是否超出工作范围，加装隔热罩或更换宽温型传感器'},{t:'HMI触摸失灵',c:'HMI',s:'校准触摸屏，清除面板油污/水渍，检查触摸排线及控制板连接'},{t:'HMI画面不刷新',c:'HMI',s:'检查与PLC通信状态，确认变量刷新周期设置，重启HMI进程'},{t:'HMI与PLC断连',c:'HMI',s:'检查以太网/IP地址设置，确认HMI连接参数中的PLC站号和机架槽号'},{t:'通信时断时续',c:'通信',s:'检查终端电阻(120Ω)安装位置、波特率一致性、屏蔽层单端接地'},{t:'PROFINET设备断连',c:'通信',s:'检查网线RJ45接头和交换机端口指示灯，确认设备名称和IP分配正确'},{t:'Modbus轮询超时',c:'通信',s:'检查从站响应时间，延长主站超时参数，减少单次轮询寄存器数量'},{t:'ProfiBus从站丢失',c:'通信',s:'检查DP接头终端电阻拨码，确认波特率一致，测量总线电压(5V左右)'},{t:'交换机端口故障',c:'通信',s:'更换网口测试，检查端口指示灯状态，查看交换机日志是否有错误计数'},{t:'电源模块输出波动',c:'电源',s:'测量输入电压稳定性，检查滤波电容是否鼓包老化，确认负载未超额定功率'},{t:'电源过热保护跳闸',c:'电源',s:'清洁风扇和散热风道，检查环境温度，确认安装间距满足散热要求'},{t:'UPS电池续航不足',c:'电源',s:'测量电池内阻和端电压，进行充放电测试，更换老化电池组'},{t:'伺服电机过热报警(ALM)',c:'电机',s:'检查负载率是否超额定扭矩，清洁散热风扇及风道，确认运行周期'},{t:'伺服编码器故障',c:'电机',s:'检查编码器电缆屏蔽层接地，重新插拔接头，用示波器查看信号波形'},{t:'电机堵转过流',c:'电机',s:'检查机械传动部件是否卡死，确认刹车已正常释放，测量绕组电阻'},{t:'伺服驱动器报AL-03',c:'电机',s:'查看驱动器面板故障代码含义，检查主回路输入电压及再生电阻状态'}]
-var LESSONS={};
 LESSONS["w1d1"]={title:"RS232协议基础与接线",content:'<h3>什么是 RS232？</h3><p>RS232 是工业自动化中最经典的串行通信标准，1960年由美国电子工业协会发布。虽然年纪大了，但至今仍在 PLC 调试、仪表通信、串口打印机等场景广泛使用。它采用<strong>单端信号</strong>传输，即用一根信号线相对于地线(GND)的电压高低来表示数据。</p><h3>电气特性</h3><p>RS232 使用负逻辑：<strong>-3V~-15V 表示逻辑"1"</strong>（MARK），<strong>+3V~+15V 表示逻辑"0"</strong>（SPACE）。注意！这和常见的 TTL 电平（0V=0，5V=1）是反的——这点经常引起接线错误。传输距离一般不超过 <strong>15米</strong>，速率最高约 115.2kbps。</p><h3>DB9 针脚定义（必须背下来）</h3><div class="highlight"><p>记住最核心的 3 个引脚：<br><strong>Pin 2 — RXD（接收数据）</strong>：本端接收对方发来的数据<br><strong>Pin 3 — TXD（发送数据）</strong>：本端向对方发送数据<br><strong>Pin 5 — GND（信号地）</strong>：双方共地参考</p></div><p>实测时最容易犯的错误就是把 2 和 3 接反了。如果通信不通，<strong>第一步就是交叉 TXD 和 RXD</strong>（即本端 2 接对端 3，本端 3 接对端 2）</p><h3>波特率与帧格式</h3><p>通信双方必须在这些参数上一致：<strong>波特率</strong>（常见：9600、19200、115200）、<strong>数据位</strong>（通常 8 位）、<strong>停止位</strong>（1 或 2）、<strong>奇偶校验</strong>（无/奇/偶）。比如 "9600,8,N,1" 表示 9600bps、8 数据位、无校验、1 停止位。</p>'};
 LESSONS["w1d2"]={title:"RS485总线拓扑与终端电阻",content:'<h3>从 RS232 到 RS485：为什么需要总线？</h3><p>RS232 只能<strong>一对一</strong>通信，而工厂里往往一个主站要跟几十个从站通信。RS485 解决了这个问题——它支持 <strong>1 个主站 + 最多 32 个从站</strong>（使用中继器可扩展到 256 个），传输距离可达 <strong>1200 米</strong>。</p><h3>差分信号：抗干扰的秘密</h3><p>RS485 的秘密武器是<strong>差分信号</strong>。它用两根线 A（非反相）和 B（反相），接收端通过比较 A-B 的电压差来判断数据。因为两根线绞在一起，外部干扰同时加到两线上（共模干扰），差分接收器自动抵消。这就是为什么 RS485 用双绞线而不用平行线。</p><h3>终端电阻为什么是 120Ω？</h3><div class="highlight"><p>信号在长线传输时会在端点反射回来，造成波形畸变。终端电阻的作用是<strong>吸收信号能量，消除反射</strong>。阻值选 120Ω 是因为它等于双绞线的<strong>特征阻抗</strong>（阻抗匹配原理）。<br><strong>必须在总线的最远端和最末端各接一个 120Ω 电阻。</strong>注意：有的 RS485 设备自带终端电阻跳线，不要重复加。</p></div><h3>接线要点</h3><p>所有设备的 A 连 A、B 连 B（同名端相连），形成<strong>菊花链</strong>拓扑——一根总线从头串到尾，不要分叉（星形）。分叉会造成阻抗不连续，信号反射严重，通信时断时续。</p>'};
 LESSONS["w1d3"]={title:"Modbus RTU报文解析",content:'<h3>Modbus：工业通信的"普通话"</h3><p>Modbus 是 1979 年 Modicon 公司发布的开放协议，因简单高效成为事实上的工业标准。Modbus RTU 运行在 RS485/RS232 物理层上，采用<strong>主从模式</strong>：主站发起请求，从站应答。一次只能有一个主站。</p><h3>报文结构（必须会看）</h3><div class="highlight"><p>Modbus RTU 报文格式：<br><strong>地址码（1字节）</strong> + <strong>功能码（1字节）</strong> + <strong>数据区（N字节）</strong> + <strong>CRC16校验（2字节）</strong></p></div><p>举例：<code>01 03 00 00 00 02 C4 0B</code><br>01=1号从站地址 | 03=读保持寄存器 | 00 00=起始地址0 | 00 02=读2个寄存器 | C4 0B=CRC16校验值</p><h3>三大核心功能码</h3><p><strong>03（读保持寄存器）</strong>：最常用，读取从站的参数、测量值等。比如读变频器的运行频率。<br><strong>06（写单个寄存器）</strong>：修改单个参数，比如写入变频器的目标频率。<br><strong>10（写多个寄存器）</strong>：批量修改多个参数，比如一次性设置 PID 的 P/I/D 三个值。</p><h3>CRC16 校验</h3><p>每个报文末尾的 2 字节 CRC 用于检测传输错误。从站收到后重新计算，不匹配则丢弃。用串口助手抓包时，可以勾选"自动计算 CRC"选项来验证。</p>'};
@@ -234,25 +230,7 @@ LESSONS["w8d4"]={title:"电机控制电路识读",content:'<h3>电动机控制�
 LESSONS["w8d5"]={title:"传感器与执行器接线图",content:'<h3>传感器与执行器：PLC 与现场设备的桥梁</h3><p>传感器负责<strong>采集现场信号</strong>（位置、温度、压力、距离……），执行器负责<strong>执行控制命令</strong>（电磁阀、继电器、变频器、伺服……）。本课讲解各类传感器的接线方式、NPN/PNP 区别、执行器控制方式。</p><h3>传感器接线：两线制/三线制/四线制</h3><div class="highlight"><p><strong>两线制</strong>：限位开关、干簧管、机械式行程开关。只有两根线，串联在 DI 回路中（一根进、一根出）。接线最简单，但需要注意触点类型（NO/NC）。<br><strong>三线制 NPN/PNP（重点！）</strong>：<br>• NPN = 低电平有效（信号线对 0V 导通）→ 对应 PLC 的<strong>源型输入（Sourcing）</strong>。接线：棕 +24V、蓝 0V、黑信号 → 触发时黑线输出 0V。<br>• PNP = 高电平有效（信号线对 +24V 导通）→ 对应 PLC 的<strong>漏型输入（Sinking）</strong>。接线：棕 +24V、蓝 0V、黑信号 → 触发时黑线输出 +24V。<br><strong>重要</strong>：西门子 S7-1200 默认 PNP 传感器（漏型输入，M 端接 0V）；三菱 FX 系列默认 NPN 传感器（源型输入，COM 端接 +24V）。<strong>接线错误会导致传感器烧毁！</strong><br><strong>四线制</strong>：模拟量传感器（4-20mA 电流型 / 0-10V 电压型），常用于压力/温度/距离传感器。两根线供电（+24V/0V），两根线输出信号（IO/0V 或 +OUT/0V）。</p></div><h3>传感器颜色编码对照表（世界标准）</h3><table class="highlight"><tr><th>线色</th><th>含义</th><th>万用表测量</th><th>注意事项</th></tr><tr><td>棕（Brown）</td><td>+24V 电源正极</td><td>对蓝线 24V</td><td>接反会烧毁传感器！</td></tr><tr><td>蓝（Blue）</td><td>0V 电源负极</td><td>对棕线 0V</td><td>必须可靠接地</td></tr><tr><td>黑（Black）</td><td>信号输出 DO</td><td>触发时 0V 或 24V</td><td>接 PLC DI 点</td></tr><tr><td>白（White）</td><td>信号 2 / 调零</td><td>因传感器而异</td><td>部分型号无白线</td></tr></table><p><strong>接线口诀</strong>：棕接正、蓝接负、黑接 DI、白看说明书。</p><h3>执行器接线</h3><p><strong>电磁阀</strong>：单线圈（弹簧复位，断电后阀芯回到初始位置）vs 双线圈（自保持，断电后阀芯保持位置）。24VDC 驱动，线圈必须<strong>并联续流二极管</strong>（1N4007）防止关断时产生高压反峰（可能击穿 PLC DO 点）。西门子 S7-1200 DO 点容量 1A，可直接驱动小型电磁阀（功率 ≤24W）。<br><strong>继电器驱动</strong>：PLC DO → 中间继电器线圈（线圈必须并续流二极管！）→ 继电器触点 → AC 负载（接触器线圈/加热管/电机）。继电器触点容量通常 5A~10A，足以驱动大部分 AC 负载。<br><strong>变频器</strong>：PLC AO（0-10V）→ 变频器 AI1（频率给定）；PLC DO → 变频器 DI1（正转）/ DI2（反转）/ DI3（故障复位）。注意：变频器 DI 点通常需要外接 24V 电源（源型/漏型接法）。<br><strong>伺服驱动器</strong>：<strong>脉冲+方向（PULSE+DIR）</strong> vs <strong>CW/CCW 双脉冲</strong>。差分信号（RS422 电平）抗干扰能力强，适合长距离传输。典型接线：PLC 高速输出 Q0.0（PULSE+）/ Q0.1（DIR+）→ 伺服驱动器 PULS+/SIGN+（差模输入）。</p><h3>练习：传感器+执行器选型与接线图</h3><p>场景：某产线需要检测工件到位（光电传感器）、区分金属/非金属（电感式接近开关）、测量工件高度（激光测距传感器），并执行分拣动作（电磁阀驱动气缸）。<br><strong>任务</strong>：① 选择合适的传感器型号（包括输出类型 NPN/PNP、接线方式）；② 画出完整的接线图（包括 PLC DI/DO 分配、传感器接线、电磁阀接线、续流二极管接法）；③ 标注所有线号和端子号。</p>'};
 LESSONS["w8d6"]={title:"PLC接线图与I/O分配",content:'<h3>PLC 接线图与 I/O 分配表：程序与实物的桥梁</h3><p>PLC 接线图和 I/O 分配表是连接"程序"与"实物"的桥梁。程序中的 <code>I0.0</code>、<code>Q0.0</code> 等地址，必须和实物接线一一对应，否则程序逻辑正确也无法正常运行。</p><h3>S7-1200 硬件概览</h3><div class="highlight"><p><strong>CPU 1214C AC/DC/RLY</strong>：供电 AC220V、数字量输入 14 点（DC24V 源型/漏型可切换）、数字量输出 10 点（继电器输出，2A 每点）、模拟量输入 2 路（0-10V / 0-20mA）。<br><strong>信号板 SB</strong>：可扩展 1 路模拟量输出（AO）或 1 路 RS485 通信。<br><strong>扩展模块 SM</strong>：可扩展数字量（DI/DO）、模拟量（AI/AO）、通信（RS485/RS232）等模块，最多支持 8 个扩展模块。</p></div><h3>I/O 地址分配规则</h3><p><strong>本地输入</strong>：<code>I0.0 ~ I1.5</code>（14 点），字节.位 编址方式。<br><strong>本地输出</strong>：<code>Q0.0 ~ Q1.1</code>（10 点）。<br><strong>扩展模块</strong>：输入从 <code>I8.0</code> 开始，输出从 <code>Q8.0</code> 开始（按模块槽位自动分配地址）。<br><strong>命名规范</strong>：地址 + 功能描述 → <code>I0.0:急停按钮</code>、<code>Q0.0:主接触器</code>、<code>I1.0:变频器故障</code>。</p><h3>I/O 分配表模板</h3><table class="highlight"><tr><th>地址</th><th>符号名</th><th>功能描述</th><th>信号类型</th><th>备注</th></tr><tr><td>I0.0</td><td>EMG_Stop</td><td>急停按钮</td><td>DI (NC)</td><td>常闭触点，接 24V+</td></tr><tr><td>I0.1</td><td>Start_PB</td><td>启动按钮</td><td>DI (NO)</td><td>绿色带灯按钮</td></tr><tr><td>I0.2</td><td>Stop_PB</td><td>停止按钮</td><td>DI (NC)</td><td>红色带灯按钮</td></tr><tr><td>I0.3</td><td>Photo_Sensor</td><td>光电传感器</td><td>DI (PNP)</td><td>三线制，棕+24V 蓝 0V 黑信号</td></tr><tr><td>I0.4</td><td>Motor_Run_FB</td><td>电机运行反馈</td><td>DI (NO)</td><td>接触器常开辅助触点</td></tr><tr><td>Q0.0</td><td>Main_KM</td><td>主接触器</td><td>DO (Relay)</td><td>继电器输出，AC220V 线圈</td></tr><tr><td>Q0.1</td><td>Run_Lamp</td><td>运行指示灯</td><td>DO (DC24V)</td><td>绿色 LED，24V 供电</td></tr><tr><td>Q0.2</td><td>Fault_Lamp</td><td>故障指示灯</td><td>DO (DC24V)</td><td>红色 LED，24V 供电</td></tr><tr><td>Q0.3</td><td>Solenoid_Valve</td><td>电磁阀</td><td>DO (DC24V)</td><td>24V 电磁阀，并续流二极管</td></tr></table><h3>端子接线图识读</h3><p>S7-1200 CPU 模块：<br><strong>上方端子</strong>：L+/M（24V 电源）、DI 输入点（I0.0~I1.5）、模拟量输入（AI0/AI1）。<br><strong>下方端子</strong>：DO 输出点（Q0.0~Q1.1）、公共端（1L/2L）。<br><strong>继电器输出分组</strong>：Q0.0~Q0.3 共用 1L（公共端），Q0.4~Q0.7 共用 2L，Q1.0~Q1.1 共用 3L → <strong>不同组可用不同电压</strong>（如 1L 接 AC220V、2L 接 DC24V）。</p><h3>接线规范与注意事项</h3><div class="highlight"><p><strong>DC24V 电源极性</strong>：不可接反！接反会导致 PLC 输入点无法识别信号，甚至烧毁 DI 点。<br><strong>DI 公共端（M）</strong>：接 0V（漏型输入）或接 +24V（源型输入），取决于传感器类型（PNP→M 接 0V；NPN→M 接 +24V）。<br><strong>DO 继电器输出公共端（1L/2L/3L）</strong>：接负载电源（AC220V 或 DC24V，取决于负载类型）。<br><strong>屏蔽线接地</strong>：模拟量信号、通信线（RS485/PROFINET）必须使用屏蔽双绞线，屏蔽层<strong>单端接地</strong>（在 PLC 侧接 PE，现场侧悬空），防止地环路干扰。</p></div><h3>练习：传送带控制场景 I/O 分配与接线图</h3><p>场景：一条传送带，需要 3 个按钮（启动/停止/急停）、2 个传感器（光电到位检测/电机运行反馈）、3 个输出（主接触器/运行指示灯/故障指示灯）。PLC 选用 S7-1200 CPU 1214C。<br><strong>任务</strong>：① 列出完整 I/O 分配表（按上面模板）；② 画出 S7-1200 端子接线图（标注每个端子的连接）；③ 说明 DI 公共端 M 的接法（源型还是漏型）并说明理由。</p>'};
 LESSONS["w8d7"]={title:"综合电路图识读练习",content:'<h3>综合实战：从实际项目中识读一套完整电气图纸</h3><p>综合运用前 6 天知识，从实际项目中抽取一套完整电气图纸进行识读和分析。本课提供文字描述的图纸内容，并给出 7 个逐步深入的识读任务。</p><h3>图纸描述：小型自动化产线控制系统电气图</h3><div class="highlight"><p>一套完整的电气图纸共 5 张：<br><strong>封面 + 图纸目录</strong>（第 1 张）：项目名称"小型自动化产线"、图号 D-001~D-005、设计者、版本 V1.2。<br><strong>图 1：主回路图</strong>（第 2 张）：总进线 3×16mm² 电缆 → 总断路器 QF0（160A）→ 分路断路器 QF1（电机 1，63A）/ QF2（电机 2，40A）/ QF3（电机 3，25A）→ 接触器 KM1/KM2/KM3 → 热继电器 FR1/FR2/FR3 → 3 台电机 M1（传送带 5.5kW）/ M2（风机 3kW）/ M3（液压泵 2.2kW）。<br><strong>图 2：控制回路图</strong>（第 3 张）：启停/急停/故障复位/3 电机分别控制/联锁逻辑。控制变压器 AC220V 输出 → 熔断器 FU1 → 按钮站（急停 SA、启动 SB2、停止 SB1）→ 3 个接触器线圈 KM1/KM2/KM3（分别由中间继电器 KA1/KA2/KA3 驱动）→ 指示灯 HL1（运行绿）/ HL2（故障红）。<br><strong>图 3：PLC 接线图</strong>（第 4 张）：S7-1200 CPU 1214C，DI 12 点（I0.0~I1.3）、DO 8 点（Q0.0~Q0.7），含传感器和执行器清单。传感器：光电 ×3（PNP）、接近开关 ×2（NPN，接源型输入）、温度传感器 ×1（4-20mA，接 AI0）。执行器：电磁阀 ×3（24V DC）、指示灯 ×2（24V DC）。<br><strong>图 4：端子排接线图</strong>（第 5 张）：XT1~XT40（40 个端子），柜内/柜外信号分界清晰（XT20 为分界点，XT1~XT20 柜内、XT21~XT40 柜外）。<br><strong>图 5：BOM 设备清单表</strong>（第 6 张）：列出所有元器件的型号、数量、厂家、备注。</p></div><h3>识读任务（7 步，每步有答案引导）</h3><p><strong>任务 1</strong>：识别主回路中每台电机的供电路径（QF → KM → FR → M），并标注各器件的型号和整定参数。<br><strong>任务 2</strong>：找出急停回路在控制回路中的位置（控制电源 → SA 急停 → 分断所有接触器线圈），并说明为什么急停要用常闭触点。<br><strong>任务 3</strong>：分析 M1-M2-M3 的顺序联锁关系（M2 启动条件 = M1 运行；M3 启动条件 = M2 运行；M1 停止条件 = M3 已停止），并在图纸上标出联锁触点。<br><strong>任务 4</strong>：核对 PLC I/O 表中的传感器类型是否匹配接线（PNP 传感器 → 漏型输入，M 接 0V；NPN 传感器 → 源型输入，M 接 +24V）。发现 1 处接线错误：接近开关（NPN）的 M 端接了 0V（应为 +24V），需要改正。<br><strong>任务 5</strong>：验证端子排接线是否正确跨接了柜内/柜外信号（XT20 分界点：XT1~XT20 的线号是 U1/V1/W1...，XT21~XT40 的线号是 101/102/103...），并说明两种线号体系的区别。<br><strong>任务 6</strong>：列出 BOM 表中缺失的元件（如忘记标熔断器 FU1 规格、缺中间继电器 KA1~KA3 的续流二极管型号、缺控制变压器容量），并提出补充建议。<br><strong>任务 7</strong>：对图纸中的 1 处错误进行分析（接触器线圈并了续流二极管但方向画反了 → 导致线圈断电时产生高压反峰，可能击穿 PLC DO 点），说明正确的画法和接线方法。</p><h3>练习答案和评分标准</h3><div class="highlight"><p>7 个任务每题有分值：任务 1（10 分）、任务 2（10 分）、任务 3（15 分）、任务 4（15 分）、任务 5（15 分）、任务 6（15 分）、任务 7（20 分）。总分 100 分，<strong>60 分及格</strong>。<br>详细答案和评分要点见附录（此处省略，实际教学中应提供）。</p></div><h3>总结</h3><p>电路图识读是工控工程师的基本功，一张图纸就是现场的"地图"。掌握今天的内容后，你应该能独立看懂 <strong>80% 以上的工业电气图纸</strong>。后续可以继续深入学习 EPLAN 等电气 CAD 软件，自己绘制专业的电气原理图和接线图。</p>'};
-#!/usr/bin/env python3
-"""Replace LESSONS w9d1-w9d7 and add w10d1-w11d7 in device_platform_v11.html
-Also update all global numeric adaptations (9->11 weeks, 63->84 days).
-"""
 
-import re
-
-FILE = r"C:\Users\PT-009\AppData\Roaming\Tencent\Marvis\User\oAN1i2QNI_3tu6nMDTkLv_ei8V4E\workspace\conv_19e6d852296_b8a0152ae0a1\output\deploy\device_platform_v11.html"
-OUT = FILE  # overwrite in place after backup
-
-with open(FILE, 'r', encoding='utf-8') as f:
-    content = f.read()
-
-print(f"Original file length: {len(content)}")
-
-# ========== PART 1: Build new LESSONS block for w9d1..w11d7 ==========
-# We replace the old w9d1..w9d7 block (from 'LESSONS["w9d1"]=' up to but not including '// ====== 导航 ======')
-
-new_lessons_block = r"""
 
 // ====== w9: 第9周：大模型基础入门 ======
 
@@ -304,6 +282,9 @@ LESSONS["w11d7"]={title:"学习总结与进阶路线",content:'<h3>总结三周�
 
 
 // ====== 导航（原样保留）======
+
+
+
 // ====== 导航 ======
 var CURTAB='today'
 function switchTab(tab){
@@ -327,7 +308,7 @@ function renderAI(){var h='<h2>AI提问模板</h2><div class="ts mb12">点击模
 function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('已复制')}).catch(function(){toast('复制失败')})}
 // ====== 工作日志 ======
 var logFilter='all'
-function renderLog(){var h='<h2>工作日志</h2><div class="card"><h3>新增日志</h3><div class="fc"><div class="fx g12"><input type="date" id="ldate" value="'+new Date().toISOString().slice(0,10)+'" style="width:auto"><select id="ldev" style="width:auto"><option>PLC(S7-1200)</option><option>PLC(S7-1500)</option><option>PLC(三菱FX)</option><option>海康AGV</option><option>读码器</option><option>变频器</option><option>传感器</option><option>其他</option></select></div><input type="text" id="lprob" placeholder="故障现象（必填）"><textarea id="ldet" placeholder="排查过程" style="height:70px"></textarea><textarea id="lsol" placeholder="解决方案" style="height:60px"></textarea><div class="fx g12"><select id="lstat" style="width:auto"><option value="pending">待跟进</option><option value="resolved">已解决</option><option value="help">需协助</option></select><button class="btn" onclick="addLog()">记录日志</button></div></div></div><div class="fx g12 mb12"><input type="text" id="lsearch" placeholder="搜索日志..." oninput="showLogs()" style="max-width:200px"><button class="btn btn-sm btn-s" onclick="setLogF(\'all\')">全部</button><button class="btn btn-sm btn-s" onclick="setLogF(\'mine\')">我的</button><button class="btn btn-sm btn-s" onclick="setLogF(\'urgent\')">紧急</button><button class="btn btn-sm btn-s" onclick="exportCSV()">导出CSV</button><button class="btn btn-sm btn-s" onclick="downloadTemplate()">下载CSV模板</button><label class="btn btn-sm btn-s" style="cursor:pointer">上传文件<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label></div><div id="logList"></div>';G('mainContent').innerHTML=h;showLogs()}
+function renderLog(){var h='<h2>工作日志</h2><div class="card"><h3>新增日志</h3><div class="fc"><div class="fx g12"><input type="date" id="ldate" value="'+new Date().toISOString().slice(0,10)+'" style="width:auto"><select id="ldev" style="width:auto"><option>PLC(S7-1200)</option><option>PLC(S7-1500)</option><option>PLC(三菱FX)</option><option>海康AGV</option><option>读码器</option><option>变频器</option><option>传感器</option><option>其他</option></select></div><input type="text" id="lprob" placeholder="故障现象（必填）"><textarea id="ldet" placeholder="排查过程" style="height:70px"></textarea><textarea id="lsol" placeholder="解决方案" style="height:60px"></textarea><div class="fx g12"><select id="lstat" style="width:auto"><option value="pending">待跟进</option><option value="resolved">已解决</option><option value="help">需协助</option></select><button class="btn" onclick="addLog()">记录日志</button></div></div></div><div class="fx g12 mb12"><input type="text" id="lsearch" placeholder="搜索日志..." oninput="showLogs()" style="max-width:200px"><button class="btn btn-sm btn-s" onclick="setLogF(\'all\')">全部</button><button class="btn btn-sm btn-s" onclick="setLogF(\'mine\')">我的</button><button class="btn btn-sm btn-s" onclick="setLogF(\'urgent\')">紧急</button><button class="btn btn-sm btn-s" onclick="exportCSV()">导出CSV</button><button class="btn btn-sm btn-s" onclick="downloadTemplate()">下载模板</button><label class="btn btn-sm btn-s" style="cursor:pointer">导入CSV<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label></div><div id="logList"></div>';G('mainContent').innerHTML=h;showLogs()}
 function addLog(){var prob=G('lprob').value.trim();if(!prob){toast('请填写故障现象');return}var log={id:'L'+Date.now()+Math.random().toString(36).slice(2,6),date:G('ldate').value,dev:G('ldev').value,problem:prob,detail:G('ldet').value.trim(),solution:G('lsol').value.trim(),status:G('lstat').value,author:MY_NAME,uid:MY_UID,time:Date.now()};S.logs.unshift(log);saveS();showLogs();G('lprob').value='';G('ldet').value='';G('lsol').value='';if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'add',log:log}),{qos:1});toast('日志已记录')}
 function delLog(id){if(!confirm('确定删除？'))return;S.logs=S.logs.filter(function(l){return l.id!==id});saveS();showLogs();if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'del',id:id}),{qos:1})}
 function setLogF(f){logFilter=f;showLogs()}
@@ -335,7 +316,7 @@ function downloadTemplate(){
   var t='日期,设备名称,故障现象,排查过程,解决方案,状态,负责人\n';
   t+='2025-06-15,PLC(S7-1200),通讯模块报错,检查网络连接和IP配置,更换通讯模块并重新配置,resolved,张三\n';
   var b=new Blob(['\uFEFF'+t],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='CSV模板_工作日志.csv';a.click()
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='工作日志导入模板.csv';a.click()
 }
 function importCSV(input){
   var f=input.files[0];if(!f)return;
@@ -374,33 +355,7 @@ function importB(files){if(!files||!files.length)return;var r=new FileReader();r
 // ====== 辅助 ======
 function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'}
 function updateSummary(){var t=0;for(var i=1;i<=11;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});G('totalProgress').textContent=Math.round(t/84*100)+'%';G('todayTasks').textContent=t+'/84';var d=0;LDATA['w'+S.curWeek].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+S.curWeek+'d'+(j+1))>=0)d++});G('lastStudy').textContent=d>0?'已完成 '+d+'/7':'-'}
-function d2ab(dataURI){
-  if(typeof dataURI!=='string'){try{return new Uint8Array(dataURI).buffer}catch(e){throw new Error('d2ab: unsupported data type')}}
-  var s=dataURI.trim()
-  // 1) 标准 Data URL
-  if(s.indexOf('data:')===0){
-    var commaIdx=s.indexOf(','),head=s.substring(0,commaIdx),body=s.substring(commaIdx+1)
-    if(head.indexOf(';base64')>=0){
-      // base64 分支
-      try{var raw=atob(body),arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr.buffer}
-      catch(e){
-        // 标记了 ;base64 但数据实际是 URL 编码文本的兼容情况
-        try{return new TextEncoder().encode(decodeURIComponent(body)).buffer}
-        catch(e2){throw e}
-      }
-    }else{
-      // URL 编码文本分支
-      return new TextEncoder().encode(decodeURIComponent(body)).buffer
-    }
-  }
-  // 2) 纯 base64 字符串（存量兼容：无 data: 前缀的原始 base64）
-  if(/^[A-Za-z0-9+/=]+$/.test(s)){
-    try{var raw2=atob(s),arr2=new Uint8Array(raw2.length);for(var j=0;j<raw2.length;j++)arr2[j]=raw2.charCodeAt(j);return arr2.buffer}
-    catch(e){throw e}
-  }
-  // 3) 纯文本兜底
-  return new TextEncoder().encode(s).buffer
-}
+function d2ab(dataURI){var b64=dataURI.split(',')[1],raw=atob(b64),arr=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);return arr.buffer}
 
 // ====== MQTT ======
 var BROKERS=[{n:'EMQX',u:'wss://broker.emqx.io:8084/mqtt'},{n:'HiveMQ',u:'wss://broker.hivemq.com:8884/mqtt'},{n:'Mosquitto',u:'wss://test.mosquitto.org:8081/mqtt'}]
@@ -414,35 +369,26 @@ var metaStore={}
 function upsertMeta(entry){if(!entry||!entry.fileId)return;metaStore[entry.fileId]=entry}
 
 // 添加文件到本地存储（元数据 + IDB + 内存缓存）
-function addLocalFile(fileId,name,size,type,from,time,dataUrl,category){
+function addLocalFile(fileId,name,size,type,from,time,dataUrl){
   // 1. 内存缓存
   dataCache[fileId]=dataUrl
   // 2. IndexedDB
-  saveFileToIDB(fileId,dataUrl,name,size,type,category||getFileCategory(name)).catch(function(e){console.error('IDB save failed:',e)})
+  saveFileToIDB(fileId,dataUrl).catch(function(e){console.error('IDB save failed:',e)})
   // 3. 元数据到 S.manualFiles（不含 data）
   var found=false
   for(var i=0;i<(S.manualFiles||[]).length;i++){
     if(S.manualFiles[i].fileId===fileId){found=true;break}
   }
-  if(!found)S.manualFiles.push({fileId:fileId,name:name,size:size,type:type,from:from,time:time,category:category||getFileCategory(name)})
+  if(!found)S.manualFiles.push({fileId:fileId,name:name,size:size,type:type,from:from,time:time})
   saveS()
 }
 
 // 响应文件请求
 function respFileReq(fileId){
   var d=dataCache[fileId];if(!d)return
-  var b64
-  if(d.indexOf(';base64,')>=0){
-    b64=d.split(',')[1]
-  }else{
-    // 文本文件：先解码再转 base64 以便网络传输
-    var body=d.split(',').slice(1).join(','),txt=decodeURIComponent(body)
-    var enc=new TextEncoder(),bytes=enc.encode(txt),bin=''
-    for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i])
-    b64=btoa(bin)
-  }
-  var total=Math.ceil(b64.length/CHUNK)
+  var b64=d.split(',')[1],total=Math.ceil(b64.length/CHUNK)
   if(!mqttOn)return
+  // 找到元数据
   var meta=null
   for(var i=0;i<(S.manualFiles||[]).length;i++){if(S.manualFiles[i].fileId===fileId){meta=S.manualFiles[i];break}}
   if(!meta)return
@@ -520,16 +466,7 @@ function handleManualReqChunks(msg){
   var b64=null
   for(var i=0;i<(S.manualFiles||[]).length;i++){
     if(S.manualFiles[i].fileId===msg.fileId){
-      var d=dataCache[msg.fileId]||''
-      if(d.indexOf(';base64,')>=0){
-        b64=d.split(',')[1]
-      }else{
-        var body=d.split(',').slice(1).join(','),txt=decodeURIComponent(body)
-        var enc=new TextEncoder(),bytes=enc.encode(txt),bin=''
-        for(var k=0;k<bytes.length;k++)bin+=String.fromCharCode(bytes[k])
-        b64=btoa(bin)
-      }
-      break
+      b64=(dataCache[msg.fileId]||'').split(',')[1];break
     }
   }
   if(!b64)return
@@ -564,24 +501,18 @@ function assembleChunks(fileId,buf){
 }
 
 function renderManual(){
-  var h='<h2>文件管理 <span class="ts">(v11 文件共享 | 刷新不丢文件)</span></h2>'
-  h+='<div class="card"><h3>上传文件</h3>'
-  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传文件<br><span class="ts">支持所有文件格式，上传后自动持久化，刷新不丢失</span></div>'
-  h+='<input type="file" id="fupload" accept="*" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
+  var h='<h2>操作手册 <span class="ts">(v11 文件共享 | 刷新不丢文件)</span></h2>'
+  h+='<div class="card"><h3>上传操作文档</h3>'
+  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传文档（PDF/Word）<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
+  h+='<input type="file" id="fupload" accept=".pdf,.doc,.docx" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
 
   // 本地已就绪（dataCache 中有数据）
   var readyFiles=S.manualFiles.filter(function(f){return hasFileData(f.fileId)})
   if(readyFiles.length){
     h+='<div class="card"><h3>本机已存档</h3><div class="file-explorer">'
     readyFiles.forEach(function(f){
-      var cat=f.category||getFileCategory(f.name),icon='&#128196;',iconMap={document:{pdf:'&#128218;',doc:'&#128221;',docx:'&#128221;',xls:'&#128202;',xlsx:'&#128202;',csv:'&#128202;',ppt:'&#128202;',pptx:'&#128202;'},image:'&#128444;',video:'&#127916;',archive:'&#128230;',code:'&#128187;',other:'&#128196;'}
-      if(cat==='document'){
-        var ext=(f.name.split('.').pop()||'').toLowerCase()
-        icon=iconMap.document[ext]||'&#128196;'
-        if(ext==='pdf')icon='&#128218;';else if(ext==='doc'||ext==='docx')icon='&#128221;';else if(ext==='xls'||ext==='xlsx'||ext==='csv')icon='&#128202;';else if(ext==='ppt'||ext==='pptx')icon='&#128202;';else icon='&#128214;'
-      }else icon=iconMap[cat]||'&#128196;'
-      var ftime=f.time?new Date(f.time):new Date()
-      h+='<div class="file-item"><span class="file-icon">'+icon+'</span><div class="file-info"><div class="file-name ready" onclick="openManual(\''+f.fileId+'\')" title="点击预览">'+f.name+'</div><div class="file-meta">'+fmtSize(f.size)+' | '+ftime.toLocaleDateString()+' '+ftime.toLocaleTimeString()+'</div></div><div class="file-actions"><span class="tag tag-ok">已存档</span><button class="btn btn-sm" onclick="downloadManual(\''+f.fileId+'\')">下载</button><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div></div>'
+      var icon='&#128196;';if(f.name.toLowerCase().endsWith('.pdf'))icon='&#128218;';else if(f.name.toLowerCase().endsWith('.doc')||f.name.toLowerCase().endsWith('.docx'))icon='&#128221;';else if(f.name.toLowerCase().endsWith('.xls')||f.name.toLowerCase().endsWith('.xlsx')||f.name.toLowerCase().endsWith('.csv'))icon='&#128202;'
+      h+='<div class="file-item"><span class="file-icon">'+icon+'</span><div class="file-info"><div class="file-name ready" onclick="openManual(\''+f.fileId+'\')">'+f.name+'</div><div class="file-meta">'+fmtSize(f.size)+'</div></div><div class="file-actions"><span class="tag tag-ok">已存档</span><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div></div>'
     })
     h+='</div></div>'
   }
@@ -596,7 +527,7 @@ function renderManual(){
       if(!m||!m.name)return
       var pct=buf&&buf.totalChunks?Math.round(buf.received/buf.totalChunks*100):0
       var retryInfo=buf&&buf.retryCount>0?' 重试'+buf.retryCount:''
-      h+='<div class="file-item"><input type="checkbox" class="file-cb" value="'+k+'" '+(buf?'checked disabled':'')+' style="width:auto;flex-shrink:0"><span class="file-icon">'+(function(){var n=m.name.toLowerCase(),cat=getFileCategory(m.name);if(cat==='image')return '&#128444;';if(cat==='video')return '&#127916;';if(cat==='archive')return '&#128230;';if(cat==='code')return '&#128187;';if(n.endsWith('.pdf'))return '&#128218;';if(n.endsWith('.doc')||n.endsWith('.docx'))return '&#128221;';if(n.endsWith('.xls')||n.endsWith('.xlsx')||n.endsWith('.csv'))return '&#128202;';if(n.endsWith('.ppt')||n.endsWith('.pptx'))return '&#128202;';return '&#128196;'})()+'</span><div class="file-info"><div class="file-name">'+m.name+'</div><div class="file-meta">'+fmtSize(m.size)+' | 来自：'+m.from+'</div></div><div class="file-actions">'
+      h+='<div class="file-item"><input type="checkbox" class="file-cb" value="'+k+'" '+(buf?'checked disabled':'')+' style="width:auto;flex-shrink:0"><span class="file-icon">'+(function(){var n=m.name.toLowerCase();if(n.endsWith('.pdf'))return '&#128218;';if(n.endsWith('.doc')||n.endsWith('.docx'))return '&#128221;';if(n.endsWith('.xls')||n.endsWith('.xlsx')||n.endsWith('.csv'))return '&#128202;';return '&#128196;'})()+'</span><div class="file-info"><div class="file-name">'+m.name+'</div><div class="file-meta">'+fmtSize(m.size)+' | 来自：'+m.from+'</div></div><div class="file-actions">'
       if(buf)h+='<span class="tag tag-warn" style="display:flex;align-items:center;gap:4px">'+pct+'%'+retryInfo+'<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></span>'
       else h+='<button class="btn btn-sm" onclick="requestFile(\''+k+'\')">下载到</button>'
       h+='</div></div>'
@@ -610,50 +541,21 @@ function renderManual(){
 
 function selectAllMeta(v){document.querySelectorAll('.file-cb:not([disabled])').forEach(function(cb){cb.checked=v})}
 
-function getFileCategory(name){
-  var ext=name.split('.').pop().toLowerCase()
-  if('pdf doc docx xls xlsx ppt pptx txt csv md'.split(' ').indexOf(ext)>=0)return 'document'
-  if('jpg jpeg png gif bmp svg webp'.split(' ').indexOf(ext)>=0)return 'image'
-  if('mp4 avi mov wmv flv mkv'.split(' ').indexOf(ext)>=0)return 'video'
-  if('zip rar 7z tar gz'.split(' ').indexOf(ext)>=0)return 'archive'
-  if('js py html css json xml lua st scl cpp h c'.split(' ').indexOf(ext)>=0)return 'code'
-  return 'other'
-}
-function getFileMime(name){
-  var ext=name.split('.').pop().toLowerCase(),map={'pdf':'application/pdf','doc':'application/msword','docx':'application/vnd.openxmlformats-officedocument.wordprocessingml.document','xls':'application/vnd.ms-excel','xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','ppt':'application/vnd.ms-powerpoint','pptx':'application/vnd.openxmlformats-officedocument.presentationml.presentation','jpg':'image/jpeg','jpeg':'image/jpeg','png':'image/png','gif':'image/gif','bmp':'image/bmp','svg':'image/svg+xml','webp':'image/webp','mp4':'video/mp4','avi':'video/x-msvideo','mov':'video/quicktime','wmv':'video/x-ms-wmv','zip':'application/zip','rar':'application/x-rar-compressed','7z':'application/x-7z-compressed','tar':'application/x-tar','gz':'application/gzip','txt':'text/plain','csv':'text/csv','md':'text/markdown','json':'application/json','xml':'application/xml','html':'text/html','js':'text/javascript','py':'text/x-python','lua':'text/x-lua','st':'text/plain','scl':'text/plain'}
-  return map[ext]||'application/octet-stream'
-}
-function isTextFile(name){
-  var ext=name.split('.').pop().toLowerCase()
-  return ('txt csv md json xml html js py lua st scl css h c cpp'.split(' ')).indexOf(ext)>=0
-}
 function uploadFiles(files){
   for(var i=0;i<files.length;i++){(function(file){
     var reader=new FileReader()
     reader.onload=function(e){
-      var buf=e.target.result,fileId='UP'+Date.now()+'_'+Math.random().toString(36).slice(2,8)
-      var cat=getFileCategory(file.name),mime=file.type||getFileMime(file.name)
-      var dataToStore=null,storageType='blob'
-      if(isTextFile(file.name)){
-        try{var dec=new TextDecoder('utf-8'),txt=dec.decode(new Uint8Array(buf))
-          dataToStore='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);storageType='text'
-        }catch(ex){}
-      }
-      if(!dataToStore){
-        var bytes=new Uint8Array(buf),b64='',CHUNK_SIZE=8192
-        for(var j=0;j<bytes.length;j+=CHUNK_SIZE){var chunk=bytes.subarray(j,j+CHUNK_SIZE),bin='';for(var k=0;k<chunk.length;k++)bin+=String.fromCharCode(chunk[k]);b64+=btoa(bin)}
-        dataToStore='data:'+mime+';base64,'+b64;storageType='blob'
-      }
-      addLocalFile(fileId,file.name,file.size,mime,MY_NAME,Date.now(),dataToStore,cat)
+      var dataUrl=e.target.result,fileId='f'+Date.now()+'_'+Math.random().toString(36).slice(2,8)
+      addLocalFile(fileId,file.name,file.size,file.type,MY_NAME,Date.now(),dataUrl)
       renderManual()
-      var b64part=dataToStore.split(',')[1],total=Math.ceil(b64part.length/CHUNK)
+      var b64=dataUrl.split(',')[1],total=Math.ceil(b64.length/CHUNK)
       if(mqttOn){
-        mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:fileId,name:file.name,size:file.size,ftype:mime,from:MY_NAME,time:Date.now(),totalChunks:total}),{qos:1})
-        upsertMeta({fileId:fileId,name:file.name,size:file.size,type:mime,from:MY_NAME,time:Date.now(),totalChunks:total})
+        mqttC.publish('dm/manual',JSON.stringify({type:'meta',fileId:fileId,name:file.name,size:file.size,ftype:file.type,from:MY_NAME,time:Date.now(),totalChunks:total}),{qos:1})
+        upsertMeta({fileId:fileId,name:file.name,size:file.size,type:file.type,from:MY_NAME,time:Date.now(),totalChunks:total})
       }
       toast(file.name+' 已保存'+(mqttOn?'并广播':'（等待连接）'))
     }
-    reader.readAsArrayBuffer(file)
+    reader.readAsDataURL(file)
   })(files[i])}
 }
 
@@ -671,67 +573,19 @@ function openManual(fileId){
 function doOpen(fileId,dataUrl){
   for(var i=0;i<S.manualFiles.length;i++){
     if(S.manualFiles[i].fileId===fileId){
-      var f=S.manualFiles[i],ext=(f.name.split('.').pop()||'').toLowerCase()
-      // 文本文件：弹出模态框显示文本
-      if(isTextFile(f.name)){
-        try{
-          var txt
-          if(dataUrl.indexOf(';base64,')>=0){
-            try{
-              var buf2=d2ab(dataUrl)
-              txt=new TextDecoder('utf-8').decode(new Uint8Array(buf2))
-            }catch(e2){txt=decodeURIComponent(dataUrl.split(',')[1])}
-          }else{
-            txt=decodeURIComponent(dataUrl.split(',')[1])
-          }
-          showPreviewModal(f.name,'<pre style="white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;max-height:70vh;overflow:auto">'+escHtml(txt)+'</pre>')
-        }catch(e){downloadManual(fileId)}
-        return
+      var f=S.manualFiles[i]
+      if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')){
+        window.open(URL.createObjectURL(new Blob([d2ab(dataUrl)],{type:'application/pdf'})),'_blank')
+      }else{
+        mammoth.convertToHtml({arrayBuffer:d2ab(dataUrl)}).then(function(r){
+          var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+f.name+'</title><style>body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:40px auto;padding:20px;line-height:1.8;color:#333}h1,h2,h3{color:#1a2736;margin:16px 0 8px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px}</style></head><body>'+(r.value||'<p>无可读文本</p>')+'</body></html>'
+          window.open(URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})),'_blank')
+        }).catch(function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d2ab(dataUrl)],{type:f.type}));a.download=f.name;a.click()})
       }
-      // 图片文件：弹出模态框显示图片
-      if('jpg jpeg png gif bmp svg webp'.split(' ').indexOf(ext)>=0){
-        showPreviewModal(f.name,'<img src="'+dataUrl+'" style="max-width:100%;max-height:70vh;object-fit:contain" onerror="this.style.display=\'none\'">')
-        return
-      }
-      // PDF 文件：弹出模态框用 iframe 预览
-      if(ext==='pdf'){
-        var pdfBlob=new Blob([d2ab(dataUrl)],{type:'application/pdf'})
-        var pdfUrl=URL.createObjectURL(pdfBlob)
-        showPreviewModal(f.name,'<iframe src="'+pdfUrl+'" style="width:100%;height:75vh;border:none"></iframe>')
-        setTimeout(function(){URL.revokeObjectURL(pdfUrl)},60000)
-        return
-      }
-      // 其他格式：提示并下载
-      toast('此格式暂不支持预览，请下载后查看')
-      downloadManual(fileId)
       return
     }
   }
   toast('文件元数据丢失')
-}
-function showPreviewModal(title,bodyHtml){
-  var overlay=document.createElement('div')
-  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center'
-  var modal=document.createElement('div')
-  modal.style.cssText='background:#fff;border-radius:10px;max-width:85vw;max-height:90vh;overflow:auto;padding:20px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.3)'
-  modal.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #eee;padding-bottom:8px"><span style="font-size:1.05rem;font-weight:600;color:#1a2736">'+escHtml(title)+'</span><button onclick="this.closest(\'.pv-overlay\').remove()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;padding:0 4px">&times;</button></div><div>'+bodyHtml+'</div><div style="margin-top:14px;text-align:right"><button class="btn btn-sm" onclick="this.closest(\'.pv-overlay\').remove()">关闭</button></div>'
-  overlay.className='pv-overlay'
-  overlay.appendChild(modal)
-  overlay.onclick=function(e){if(e.target===overlay)overlay.remove()}
-  document.body.appendChild(overlay)
-}
-function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function downloadManual(fileId){
-  var f=null;for(var i=0;i<S.manualFiles.length;i++){if(S.manualFiles[i].fileId===fileId){f=S.manualFiles[i];break}}
-  if(!f){toast('文件未找到');return}
-  var d=dataCache[fileId]
-  if(!d){toast('文件数据未加载');return}
-  try{
-    var blob=new Blob([d2ab(d)],{type:f.type||'application/octet-stream'})
-    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=f.name;a.click()
-    setTimeout(function(){URL.revokeObjectURL(a.href)},30000)
-    toast('开始下载: '+f.name)
-  }catch(e){toast('下载失败: '+e.message)}
 }
 
 function delManual(fileId){
