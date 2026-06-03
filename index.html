@@ -592,9 +592,9 @@ function renderPlan(){
       });
       var wpp=tC2?Math.round(sC2/tC2*100):0;
       var cls=wpp>=80?'db-stat-green':wpp>=50?'db-stat-orange':'db-stat-red';
-      h+='<div class="quiz-week-card" onclick="switchTab('practice');setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score '+cls+'">'+wpp+'%</div><div class="qw-detail">'+sC2+'/'+tC2+' 正确</div></div>';
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score '+cls+'">'+wpp+'%</div><div class="qw-detail">'+sC2+'/'+tC2+' 正确</div></div>';
     }else{
-      h+='<div class="quiz-week-card" onclick="switchTab('practice');setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score" style="color:#8892b0">-</div><div class="qw-detail">未答题</div></div>';
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score" style="color:#8892b0">-</div><div class="qw-detail">未答题</div></div>';
     }
   }
   h+='</div></div>';
@@ -610,9 +610,9 @@ function renderPlan(){
   if(cw>=7)tps.push({t:'电路图分析',d:'电气原理图解读',tag:'电路',id:7});
   if(cw>=8)tps.push({t:'Prompt优化',d:'优化提示词提升质量',tag:'AI',id:8});
   tps.forEach(function(tp){
-    h+='<div class="tp-card" onclick="switchTab('ai');setTimeout(function(){var ps=document.querySelectorAll(\x27pre\x27);if(ps.length>\x27+tp.id+\x27)ps[\x27+tp.id+\x27].click();},200)"><div class="tp-title">'+tp.t+'</div><div class="tp-desc">'+tp.d+'</div><span class="tp-tag">'+tp.tag+'</span></div>';
+    h+='<div class="tp-card" onclick="switchTab(\x27ai\x27);setTimeout(function(){var ps=document.querySelectorAll(\x27pre\x27);if(ps.length>\x27+tp.id+\x27)ps[\x27+tp.id+\x27].click();},200)"><div class="tp-title">'+tp.t+'</div><div class="tp-desc">'+tp.d+'</div><span class="tp-tag">'+tp.tag+'</span></div>';
   });
-  h+='</div><button class="btn btn-s btn-gen mt12" onclick="switchTab('ai')">查看全部模板</button></div>';
+  h+='</div><button class="btn btn-s btn-gen mt12" onclick="switchTab(\x27ai\x27)">查看全部模板</button></div>';
   G('mainContent').innerHTML=h;
   // Draw ring chart
   var rc=document.getElementById('ringCanvas');
