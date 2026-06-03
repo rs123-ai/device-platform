@@ -70,29 +70,74 @@ pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px 
 .prac-feedback.er{background:rgba(231,76,60,.1);color:var(--err);border:1px solid rgba(231,76,60,.3)}
 
 /* Dashboard */
-.db-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
-.db-card{background:var(--bg-card, #fff);border-radius:12px;padding:18px;box-shadow:var(--shadow, 0 2px 8px rgba(0,0,0,.06))}
-.db-card .db-val{font-size:2rem;font-weight:700;color:var(--primary,#3B82F6);line-height:1.2}
-.db-card .db-label{font-size:.78rem;color:var(--text-muted,#888);margin-top:4px}
-.db-section{margin-bottom:24px}
-.db-section h3{font-size:1rem;margin-bottom:12px;color:var(--text,#333);border-left:3px solid var(--primary,#3B82F6);padding-left:10px}
-.wk-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.wk-bar .wk-label{width:70px;font-size:.8rem;text-align:right;flex-shrink:0}
-.wk-bar .wk-track{flex:1;height:14px;background:var(--bg,#f0f0f0);border-radius:7px;overflow:hidden;position:relative}
-.wk-bar .wk-fill{height:100%;border-radius:7px;background:linear-gradient(90deg, #3B82F6, #60A5FA);transition:width .5s}
-.wk-bar .wk-pct{font-size:.75rem;color:var(--text-muted,#888);width:45px;text-align:left}
-.quiz-summary{display:flex;gap:16px;flex-wrap:wrap}
-.quiz-type-card{flex:1;min-width:150px;border:1px solid var(--border,#eee);border-radius:10px;padding:14px;text-align:center}
-.quiz-type-card .qt-name{font-weight:600;margin-bottom:6px}
-.quiz-type-card .qt-stat{font-size:1.3rem;font-weight:700}
-.qt-stat.good{color:#22c55e}.qt-stat.medium{color:#f59e0b}.qt-stat.bad{color:#ef4444}
-.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.tp-card{background:var(--bg-card,#fff);border:1px solid var(--border,#eee);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s}
-.tp-card:hover{border-color:var(--primary,#3B82F6);box-shadow:0 2px 8px rgba(59,130,246,.15)}
-.tp-card .tp-title{font-weight:600;font-size:.9rem;margin-bottom:4px}
-.tp-card .tp-desc{font-size:.75rem;color:var(--text-muted,#888);line-height:1.4}
-.tp-card .tp-tag{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:10px;background:#eff6ff;color:#3B82F6;margin-top:8px}
-@media(max-width:600px){.db-grid{grid-template-columns:repeat(2,1fr)}.template-grid{grid-template-columns:1fr}}
+
+
+
+/* ====== 工业数据看板样式 ====== */
+.db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.db-card{background:#1a1a2e;border-radius:12px;padding:20px;text-align:center;color:#e0e0e0;position:relative;overflow:hidden}
+.db-card .db-val{font-size:2rem;font-weight:700;color:#fff;line-height:1.2}
+.db-card .db-label{font-size:.75rem;color:#8892b0;margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.db-card .db-ring{display:flex;align-items:center;justify-content:center;gap:12px}
+.db-card .db-ring canvas{flex-shrink:0}
+.db-card .db-ring-text{text-align:left}
+.db-card .db-ring-text .db-val{font-size:2rem}
+.db-card .db-ring-text .db-label{font-size:.75rem}
+.db-stat-green{color:#22c55e!important}
+.db-stat-orange{color:#f59e0b!important}
+.db-stat-red{color:#ef4444!important}
+
+.wk-section{margin-bottom:24px}
+.wk-section h3,.db-section h3{color:#ccd6f6;font-size:1rem;font-weight:600;margin-bottom:14px;border-left:3px solid #3B82F6;padding-left:10px}
+.wk-bar-list{display:flex;flex-direction:column;gap:8px}
+.wk-bar{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:8px;background:#16213e;border:2px solid transparent;transition:all .2s}
+.wk-bar.cur-wk{border-color:#3B82F6;box-shadow:0 0 0 2px #3B82F6}
+.wk-bar .wk-label{width:40px;font-size:.8rem;font-weight:600;color:#8892b0;text-align:right;flex-shrink:0}
+.wk-bar .wk-track{flex:1;height:14px;background:#2a2a4a;border-radius:7px;overflow:hidden;position:relative}
+.wk-bar .wk-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,#3B82F6,#06b6d4);transition:width .5s}
+.wk-bar .wk-pct{font-size:.75rem;color:#8892b0;width:40px;text-align:left}
+
+.quiz-week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.quiz-week-card{background:#16213e;border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid transparent;position:relative}
+.quiz-week-card:hover{border-color:#3B82F6;background:#1a2744;transform:translateY(-2px)}
+.quiz-week-card .qw-week{font-size:.7rem;color:#8892b0;font-weight:600;margin-bottom:4px}
+.quiz-week-card .qw-title{font-size:.85rem;font-weight:600;color:#ccd6f6;margin-bottom:8px}
+.quiz-week-card .qw-score{font-size:1.3rem;font-weight:700}
+.quiz-week-card .qw-detail{font-size:.65rem;color:#8892b0;margin-top:3px}
+
+.template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tp-card{background:#16213e;border:1px solid #2a2a4a;border-radius:10px;padding:14px;cursor:pointer;transition:all .2s}
+.tp-card:hover{border-color:#3B82F6;box-shadow:0 2px 8px rgba(59,130,246,.2)}
+.tp-card .tp-title{font-weight:600;font-size:.85rem;color:#ccd6f6;margin-bottom:4px}
+.tp-card .tp-desc{font-size:.7rem;color:#8892b0;line-height:1.4}
+.tp-card .tp-tag{display:inline-block;font-size:.6rem;padding:2px 8px;border-radius:10px;background:rgba(59,130,246,.2);color:#60A5FA;margin-top:8px}
+
+.week-select-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.week-select-card{background:#16213e;border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid #2a2a4a}
+.week-select-card:hover{border-color:#3B82F6;background:#1a2744;transform:translateY(-2px)}
+.week-select-card .ws-week{font-size:.75rem;color:#8892b0;font-weight:700;margin-bottom:6px}
+.week-select-card .ws-title{font-size:1rem;font-weight:600;color:#ccd6f6;margin-bottom:10px}
+.week-select-card .ws-stat{font-size:.8rem;font-weight:600}
+.week-select-card .ws-stat.good{color:#22c55e}.week-select-card .ws-stat.medium{color:#f59e0b}.week-select-card .ws-stat.bad{color:#ef4444}
+.week-select-card .ws-detail{font-size:.65rem;color:#8892b0;margin-top:4px}
+
+.quiz-nav-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.quiz-nav-tab{padding:8px 16px;border-radius:20px;border:2px solid #2a2a4a;background:#16213e;color:#8892b0;cursor:pointer;font-weight:600;font-size:.8rem;transition:all .2s}
+.quiz-nav-tab.active{background:#3B82F6;border-color:#3B82F6;color:#fff}
+.quiz-nav-tab:hover:not(.active){border-color:#3B82F6;color:#ccd6f6}
+
+.quiz-score-bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.75rem;color:#8892b0}
+.quiz-score-bar .qs-track{flex:1;height:8px;background:#2a2a4a;border-radius:4px;overflow:hidden}
+.quiz-score-bar .qs-fill{height:100%;border-radius:4px;transition:width .5s}
+
+@media(max-width:600px){
+  .db-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .db-card{padding:14px}
+  .db-card .db-val{font-size:1.4rem}
+  .template-grid{grid-template-columns:1fr}
+  .quiz-week-grid{grid-template-columns:repeat(2,1fr)}
+  .week-select-grid{grid-template-columns:repeat(2,1fr)}
+}
 
 </style>
 </head>
@@ -102,13 +147,12 @@ pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px 
 <div class="side-header"><h2 style="font-size:1.05rem">设备运维学习平台</h2><div class="ts">v11 维护日志</div></div>
 <div class="side-nav">
 <button class="nav-item cur" data-tab="today" onclick="switchTab('today')">今日学习</button>
-<button class="nav-item" data-tab="practice" onclick="switchTab('practice')">练习题</button>
+<button class="nav-item" data-tab="practice" onclick="switchTab(\x27practice\x27)">练习题</button>
 <button class="nav-item" data-tab="plan" onclick="switchTab('plan')">计划总览</button>
 <button class="nav-item" data-tab="manual" onclick="switchTab('manual')">操作手册</button>
-<button class="nav-item" data-tab="ai" onclick="switchTab('ai')">AI模板</button>
+<button class="nav-item" data-tab="ai" onclick="switchTab(\x27ai\x27)">AI模板</button>
 <button class="nav-item" data-tab="log" onclick="switchTab('log')">工作日志</button>
 <button class="nav-item" data-tab="backup" onclick="switchTab('backup')">备份/导入</button>
-<button class="nav-item" data-tab="dashboard" onclick="switchTab('dashboard')">📊 仪表盘</button>
 </div>
 </div>
 <div class="main">
@@ -321,181 +365,262 @@ var CURTAB='today'
 function switchTab(tab){
   CURTAB=tab;document.querySelectorAll('.nav-item').forEach(function(el){el.classList.toggle('cur',el.dataset.tab===tab)})
   if(tab==='today')renderToday();else if(tab==='practice')renderPractice();else if(tab==='plan')renderPlan();else if(tab==='manual')renderManual();else if(tab==='ai')renderAI();else if(tab==='log')renderLog();else if(tab==='backup')renderBackup()
-else if(tab==='dashboard')renderDashboard()}
+}
 function renderToday(){var wk=LDATA['w'+S.curWeek],h='<h2>'+wk.t+'</h2><div class="fc mt12">';wk.d.forEach(function(d,i){var k='w'+S.curWeek+'d'+(i+1),done=S.doneDays.indexOf(k)>=0;h+='<div class="card" style="cursor:pointer" onclick="showLesson(\''+k+'\')"><div class="fx"><div class="f1">'+d+'</div>'+(done?'<span class="tag tag-ok">已完成</span>':'<button class="btn btn-sm" onclick="event.stopPropagation();markDone(\''+k+'\')">标记完成</button>')+'</div></div>'});h+='<div class="fx g12 mt12">';for(var i=1;i<=11;i++)h+='<button class="btn btn-s'+(S.curWeek===i?'':'" style="opacity:0.6')+'" onclick="setWeek('+i+')">第'+i+'周</button>';h+='</div></div>';G('mainContent').innerHTML=h}
 function markDone(k){if(S.doneDays.indexOf(k)<0){S.doneDays.push(k);saveS();renderToday();updateSummary()}}
 function showLesson(key){var les=LESSONS[key];if(!les){toast('课程内容未加载');return}var wkNum=parseInt(key.charAt(1)),dayNum=parseInt(key.substring(3)),done=S.doneDays.indexOf(key)>=0;var h='<div style="margin-bottom:14px">';h+='<button class="btn btn-s" onclick="renderToday()" style="margin-bottom:10px">&larr; 返回学习列表</button>';h+='<h2>第'+wkNum+'周 · 第'+dayNum+'天</h2>';h+='<h3 style="color:var(--accent);font-size:1.1rem;margin:6px 0 16px">'+les.title+'</h3>';h+='</div>';h+='<div class="lesson-content">'+les.content+'</div>';h+='<div style="margin-top:20px;text-align:center">';if(!done){h+='<button class="btn" onclick="markDone(\''+key+'\');showLesson(\''+key+'\')">标记完成</button>'}else{h+='<span class="tag tag-ok" style="font-size:.9rem;padding:6px 14px">已完成学习</span>'}h+='</div>';G('mainContent').innerHTML=h}
 function setWeek(w){S.curWeek=w;saveS();renderToday();updateSummary()}
-// ====== 练习题 ======
-var pracType='choice',pracAnswers={}
-function renderPractice(){G('mainContent').innerHTML='<h2>练习题</h2><div class="fx g12 mb12"><button class="btn btn-s" onclick="switchPrac(\'choice\')">选择题</button><button class="btn btn-s" onclick="switchPrac(\'bool\')">判断题</button><button class="btn btn-s" onclick="switchPrac(\'scene\')">场景题</button></div><div id="pracContent"></div>';switchPrac('choice')}
-function switchPrac(t){pracType=t;pracAnswers={};var qs=PDATA[t],h='';qs.forEach(function(q,i){h+='<div class="pq" id="pq'+i+'"><div class="qt">Q'+(i+1)+': '+q.q+'</div>';if(t==='choice'){h+='<div class="po">';q.opt.forEach(function(o){h+='<div class="popt" onclick="pickAns('+i+',\''+o.replace(/'/g,"\\'")+'\')">'+o+'</div>'});h+='</div>'}else if(t==='bool')h+='<div class="po"><div class="popt" onclick="pickAns('+i+',\'true\')">正确</div><div class="popt" onclick="pickAns('+i+',\'false\')">错误</div></div>';else h+='<textarea id="scene'+i+'" style="height:80px;margin-top:6px" placeholder="输入分析..."></textarea><div class="ts mt8">提示：'+q.hint+'</div>';h+='<div class="prac-feedback" id="fb'+i+'" style="display:none"></div></div>'});h+='<button class="btn mt12" onclick="checkPrac()">提交并查看得分</button><div id="scoreR" class="tc mt12" style="font-size:1.1rem;font-weight:bold;color:var(--accent)"></div>';document.getElementById('pracContent').innerHTML=h}
-function pickAns(i,ans){var pq=G('pq'+i),opts=pq.querySelectorAll('.popt');pracAnswers[i]=ans;if(pracType==='bool'){opts[0].classList.toggle('sel',ans==='true');opts[1].classList.toggle('sel',ans==='false')}else{opts.forEach(function(o){o.classList.toggle('sel',o.textContent===ans)})}}
-function checkPrac(){var qs=PDATA[pracType],s=0,t=0;qs.forEach(function(q,i){var pq=G('pq'+i),fb=G('fb'+i);if(pracType==='scene'){if(fb){fb.style.display='none';fb.className='prac-feedback'}return}t++;var opts=pq.querySelectorAll('.popt'),ua=pracAnswers[i],ca=q.a;opts.forEach(function(o){o.classList.remove('correct','wrong')});if(ua===ca){s++;opts.forEach(function(o){if(o.textContent===ca)o.classList.add('correct')});if(fb){fb.className='prac-feedback ok';fb.innerHTML='&#10003; 正确';fb.style.display='block'}}else{opts.forEach(function(o){if(o.textContent===ua)o.classList.add('wrong');if(o.textContent===ca)o.classList.add('correct')});var expText='&#10007; 正确答案：<b>'+ca+'</b>';if(q.explanation)expText+='<br>'+q.explanation;if(fb){fb.className='prac-feedback er';fb.innerHTML=expText;fb.style.display='block'}}});if(pracType==='scene'){var a=0;qs.forEach(function(q,i){if(G('scene'+i)&&G('scene'+i).value.trim())a++});G('scoreR').textContent='已作答：'+a+'/'+qs.length;return}var p=t?Math.round(s/t*100):0;G('scoreR').textContent='得分：'+s+'/'+t+' ('+p+'%)';var qr={type:pracType,date:new Date().toISOString().slice(0,10),correct:s,total:t,pct:t?Math.round(s/t*100):0};S.quizHistory=S.quizHistory||[];S.quizHistory.push(qr);if(S.quizHistory.length>200)S.quizHistory=S.quizHistory.slice(-100);saveS()}
-// ====== 计划总览 ======
-function renderPlan(){var h='<h2>计划总览</h2>';for(var i=1;i<=11;i++){var wk=LDATA['w'+i],d=0;wk.d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)d++});h+='<div class="card"><div class="fx"><div class="f1"><h3>'+wk.t+'</h3><div class="ts">完成 '+d+'/7</div></div><div style="font-size:1.2rem;font-weight:bold;color:var(--accent)">'+Math.round(d/7*100)+'%</div></div></div>'}var t=0;for(var i=1;i<=11;i++)LDATA['w'+i].d.forEach(function(_,j){if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)t++});h+='<div class="card tc"><div class="ts">总完成度</div><div style="font-size:1.4rem;font-weight:bold;color:var(--accent)">'+Math.round(t/84*100)+'%</div></div>';G('mainContent').innerHTML=h}
-// ====== AI模板 ======
-function renderAI(){var h='<h2>AI提问模板</h2><div class="ts mb12">点击模板复制到剪贴板</div>';AIDATA.forEach(function(t){h+='<div class="card"><h3>'+t.t+'</h3><pre onclick="copyText(\''+t.c.replace(/'/g,"\\'").replace(/\n/g,'\\n')+'\')">'+t.c+'</pre></div>'});G('mainContent').innerHTML=h}
-function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('已复制')}).catch(function(){toast('复制失败')})}
-// ====== 工作日志 ======
-var logFilter='all'
-function renderLog(){var h='<h2>工作日志</h2><div class="card"><h3>新增日志</h3><div class="fc"><div class="fx g12"><input type="date" id="ldate" value="'+new Date().toISOString().slice(0,10)+'" style="width:auto"><select id="ldev" style="width:auto"><option>PLC(S7-1200)</option><option>PLC(S7-1500)</option><option>PLC(三菱FX)</option><option>海康AGV</option><option>读码器</option><option>变频器</option><option>传感器</option><option>其他</option></select></div><input type="text" id="lprob" placeholder="故障现象（必填）"><textarea id="ldet" placeholder="排查过程" style="height:70px"></textarea><textarea id="lsol" placeholder="解决方案" style="height:60px"></textarea><div class="fx g12"><select id="lstat" style="width:auto"><option value="pending">待跟进</option><option value="resolved">已解决</option><option value="help">需协助</option></select><button class="btn" onclick="addLog()">记录日志</button></div></div></div><div class="fx g12 mb12"><input type="text" id="lsearch" placeholder="搜索日志..." oninput="showLogs()" style="max-width:200px"><button class="btn btn-sm btn-s" onclick="setLogF(\'all\')">全部</button><button class="btn btn-sm btn-s" onclick="setLogF(\'mine\')">我的</button><button class="btn btn-sm btn-s" onclick="setLogF(\'urgent\')">紧急</button><button class="btn btn-sm btn-s" onclick="exportCSV()">导出CSV</button><button class="btn btn-sm btn-s" onclick="downloadTemplate()">下载模板</button><label class="btn btn-sm btn-s" style="cursor:pointer">导入CSV<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label></div><div id="logList"></div>';G('mainContent').innerHTML=h;showLogs()}
-function addLog(){var prob=G('lprob').value.trim();if(!prob){toast('请填写故障现象');return}var log={id:'L'+Date.now()+Math.random().toString(36).slice(2,6),date:G('ldate').value,dev:G('ldev').value,problem:prob,detail:G('ldet').value.trim(),solution:G('lsol').value.trim(),status:G('lstat').value,author:MY_NAME,uid:MY_UID,time:Date.now()};S.logs.unshift(log);saveS();showLogs();G('lprob').value='';G('ldet').value='';G('lsol').value='';if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'add',log:log}),{qos:1});toast('日志已记录')}
-function delLog(id){if(!confirm('确定删除？'))return;S.logs=S.logs.filter(function(l){return l.id!==id});saveS();showLogs();if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'del',id:id}),{qos:1})}
-function setLogF(f){logFilter=f;showLogs()}
-function downloadTemplate(){
-  var t='日期,设备名称,故障现象,排查过程,解决方案,状态,负责人\n';
-  t+='2025-06-15,PLC(S7-1200),通讯模块报错,检查网络连接和IP配置,更换通讯模块并重新配置,resolved,张三\n';
-  var b=new Blob(['\uFEFF'+t],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='工作日志导入模板.csv';a.click()
-}
-function importCSV(input){
-  var f=input.files[0];if(!f)return;
-  var r=new FileReader();
-  r.onload=function(e){
-    var added=0;
-    var lines=e.target.result.split(/\r?\n/);
-    for(var i=1;i<lines.length;i++){
-      var cols=lines[i].split(',');
-      if(cols.length<3||!cols[2].trim())continue;
-      var log={
-        id:'IM'+Date.now()+'_'+i,
-        date:cols[0].trim()||new Date().toISOString().slice(0,10),
-        dev:cols[1].trim()||'其他',
-        problem:cols[2].trim(),
-        detail:(cols[3]||'').trim(),
-        solution:(cols[4]||'').trim(),
-        status:(cols[5]||'pending').trim()||'pending',
-        author:(cols[6]||MY_NAME).trim()||MY_NAME,
-        uid:MY_UID,
-        time:Date.now()
-      };
-      S.logs.push(log);added++
-    }
-    if(added>0){saveS();showLogs();toast('已导入'+added+'条日志')}
-    else{toast('未识别到有效数据')}
-  };
-  r.readAsText(f,'utf-8')
-}
-function exportCSV(){var csv='\uFEFF日期,设备类型,故障现象,排查过程,解决方案,状态,记录人\n';S.logs.forEach(function(l){csv+=l.date+','+l.dev+',"'+l.problem+'","'+(l.detail||'')+'","'+(l.solution||'')+'",'+l.status+','+l.author+'\n'});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='日志_'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
-function showLogs(){var logs=S.logs||[],q=(G('lsearch')?G('lsearch').value:'').toLowerCase();if(logFilter==='mine')logs=logs.filter(function(l){return l.uid===MY_UID});else if(logFilter==='urgent')logs=logs.filter(function(l){return l.status==='help'||l.status==='pending'});if(q)logs=logs.filter(function(l){return l.problem.toLowerCase().indexOf(q)>=0||l.dev.toLowerCase().indexOf(q)>=0||(l.detail||'').toLowerCase().indexOf(q)>=0});if(!logs.length){G('logList').innerHTML='<p class="tc ts">暂无日志</p>';return}G('logList').innerHTML=logs.slice(0,80).map(function(l){var sc=l.status==='resolved'?'tag-ok':l.status==='help'?'tag-err':'tag-warn',st={pending:'待跟进',resolved:'已解决',help:'需协助'}[l.status];return '<div class="log-row"><div class="lm"><span>'+l.date+'</span><span>'+l.dev+'</span><span class="tag '+sc+'">'+st+'</span><span>'+l.author+'</span><button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delLog(\''+l.id+'\')">删除</button></div><div class="lp">'+l.problem+'</div>'+(l.detail?'<div class="ts">排查：'+l.detail+'</div>':'')+(l.solution?'<div class="ts mt4">方案：'+l.solution+'</div>':'')+'</div>'}).join('')}
-// ====== 备份/导入 ======
-function renderBackup(){G('mainContent').innerHTML='<h2>备份/导入</h2><div class="card"><h3>备份数据</h3><p class="ts mb8">学习进度、日志导出为JSON（文件数据存储于浏览器IndexedDB，备份不含文件本体）</p><button class="btn" onclick="exportB()">导出备份</button></div><div class="card"><h3>导入数据</h3><p class="ts mb8">从JSON恢复数据</p><input type="file" id="bimport" accept=".json" class="hide" onchange="importB(this.files)"><button class="btn btn-s" onclick="G(\'bimport\').click()">选择文件导入</button></div><div class="card"><h3>数据统计</h3><p class="ts">学习进度：'+S.doneDays.length+'/84 | 日志：'+(S.logs||[]).length+' | 手册：'+(S.manualFiles||[]).length+'（已就绪：'+Object.keys(dataCache).length+'）</p></div>'}
+// ====== 练习题（每周一套，共11周） ======
+var WEEK_QUIZZES={w1:{title:'通信协议基础',choice:[{q:'RS485总线两端是否需要终端电阻？',opts:['需要，各接120Ω','不需要','只需要一端','需要各接60Ω'],ans:0,exp:'RS485总线两端必须各接120Ω终端电阻以消除信号反射。'},{q:'Modbus RTU的校验方式是？',opts:['CRC16','奇校验','偶校验','无校验'],ans:0,exp:'Modbus RTU使用CRC16循环冗余校验，2字节位于报文末尾。'},{q:'RS232通信最远传输距离约为？',opts:['15米','1200米','500米','3公里'],ans:0,exp:'RS232最大传输距离约15米，RS485可达1200米。'},{q:'RS485 A/B线接反会导致？',opts:['通信中断','烧毁设备','自动纠正','速率变慢'],ans:0,exp:'RS485差分信号依赖A/B线极性，接反导致接收端解出反相数据，通信完全中断。'},{q:'Modbus TCP默认使用端口号？',opts:['502','80','8080','443'],ans:0,exp:'Modbus TCP标准端口为502，IANA已正式分配。'}],bool:[{q:'RS485总线最多可连接32个节点。',ans:true,exp:'标准RS485收发器支持32个单位负载。'},{q:'Modbus TCP报文中包含CRC16校验。',ans:false,exp:'Modbus TCP去掉了CRC16，改为MBAP报文头7字节。'},{q:'RS232是全双工通信，RS485是半双工通信。',ans:true,exp:'RS232收发独立可同时双向传输；RS485分时收发。'},{q:'4-20mA信号中0mA表示传感器正常但量程为零。',ans:false,exp:'4mA才是量程下限，0mA表示传感器断线或掉电。'},{q:'Modbus协议是西门子开发的私有协议。',ans:false,exp:'Modbus由Modicon（现施耐德电气）于1979年发布，是开放协议。'}],essay:[{q:'简述RS485与RS232的主要区别（至少列出3点）。',ref:'1.通信距离：RS232约15米，RS485可达1200米；2.通信方式：RS232全双工，RS485半双工；3.信号方式：RS232单端信号，RS485差分信号抗干扰强；4.节点数量：RS232点对点，RS485支持多节点。'},{q:'说明Modbus RTU报文的基本结构。',ref:'地址码(1字节)+功能码(1字节)+数据区(N字节)+CRC16校验(2字节)。地址码0为广播地址。'}]},w2:{title:'PLC编程基础',choice:[{q:'S7-1200的编程软件是什么？',opts:['TIA Portal','STEP 7','GX Works','Codesys'],ans:0,exp:'S7-1200/1500使用TIA Portal；STEP 7用于S7-300/400。'},{q:'PLC扫描周期的正确顺序是？',opts:['读输入→执行程序→写输出','执行程序→读输入→写输出','写输出→读输入→执行程序','读输入→写输出→执行程序'],ans:0,exp:'每个扫描周期：读取输入映像→执行用户程序→刷新输出映像。'},{q:'梯形图中常开触点在什么时候导通？',opts:['输入为ON(1)时','输入为OFF(0)时','始终导通','程序开始时'],ans:0,exp:'常开触点(-| |-)在输入为1(ON)时闭合导通。'},{q:'S7-1200模拟量输入原始值范围是？',opts:['0~27648','0~32767','4~20','0~10000'],ans:0,exp:'S7-1200将4-20mA/0-10V转换为0~27648的数字值。'},{q:'PLC输入模块最常见故障是什么？',opts:['接线松动','电源故障','程序错误','通信中断'],ans:0,exp:'现场振动导致端子螺丝松动是最常见故障。'}],bool:[{q:'三菱FX系列PLC可用TIA Portal编程。',ans:false,exp:'三菱FX系列使用GX Works/GX Developer。'},{q:'PLC每个扫描周期必定执行完所有用户程序。',ans:true,exp:'每个周期内必须完整执行用户程序后才能刷新输出。'},{q:'常闭触点在输入为0(断开)时导通。',ans:true,exp:'常闭触点(-|/|-)输入信号为0时触点保持闭合。'},{q:'S7-1200的OB1是循环组织块，每个扫描周期都执行。',ans:true,exp:'OB1是主循环组织块，每个扫描周期自动调用。'},{q:'PLC输出模块可以直接驱动大功率电机。',ans:false,exp:'大功率设备需通过继电器或接触器间接控制。'}],essay:[{q:'解释PLC扫描周期的工作原理及其对程序执行的影响。',ref:'三个阶段：1)读输入映像区；2)执行程序逐条执行；3)刷新输出。影响：输出在扫描周期结束前不变，梯形图靠后的线圈覆盖前面同一地址。'},{q:'简述S7-1200中OB、FB、FC、DB的区别。',ref:'OB组织块：系统调用主程序；FB功能块：带背景DB有记忆；FC功能：无背景DB不保留状态；DB数据块：存储全局或背景数据。'}]},w3:{title:'AGV基础',choice:[{q:'AGV导航精度最高的是哪种方式？',opts:['激光SLAM','磁条导航','二维码导航','惯性导航'],ans:0,exp:'激光SLAM导航精度可达±5mm且无需地面标识。'},{q:'AGV安全激光的急停区域通常设置为？',opts:['1-1.5米','5米','10米','0.5米'],ans:0,exp:'安全激光急停区通常为1-1.5米，减速区为3-5米。'},{q:'AGV锂电池最佳充电时机是电量低于？',opts:['20%','5%','10%','用完再充'],ans:0,exp:'电量低于20%应自动返回充电，低于5%可能永久损坏电池。'},{q:'AGV调度系统的核心功能不包括？',opts:['视觉识别货物','路径规划','任务分配','交通管制'],ans:0,exp:'视觉识别是感知系统功能，非调度核心。'},{q:'潜伏式AGV的顶升机构通常由什么驱动？',opts:['电动推杆','液压','气动','手动'],ans:0,exp:'潜伏式AGV普遍采用电动推杆或电机丝杠。'}],bool:[{q:'AGV锂电池应完全放空后再充电。',ans:false,exp:'锂电池严禁完全放空，深度放电会造成永久性损伤。'},{q:'磁条导航AGV可以在无地面标识的区域自由行驶。',ans:false,exp:'磁条导航必须沿铺设的磁条行驶。'},{q:'激光SLAM导航需要在地面铺设二维码。',ans:false,exp:'激光SLAM通过激光雷达构建地图，无需任何地面标识。'},{q:'AGV调度系统可以同时管理多台AGV的交通管制。',ans:true,exp:'调度系统的交通管制功能可避免多台AGV碰撞和死锁。'},{q:'AGV的驱动轮打滑会影响定位精度。',ans:true,exp:'驱动轮打滑导致里程计数据偏差，累积误差影响定位精度。'}],essay:[{q:'比较磁条导航与激光SLAM导航的优缺点。',ref:'磁条导航：成本低、技术成熟、不受光线影响；缺点是需铺设磁条、路径固定。激光SLAM：无需地面标识、灵活变更路径、精度±5mm；缺点是成本高、依赖环境特征。'},{q:'AGV安全防护系统通常包括哪些组成部分？',ref:'1.安全激光扫描仪：检测障碍物分减速区和急停区；2.碰撞传感器/触边；3.声光报警器；4.急停按钮；5.速度监控：弯道自动减速。'}]},w4:{title:'故障诊断',choice:[{q:'PLC CPU停机(STOP)时首先应查看什么？',opts:['诊断缓冲区','输入模块','电源电压','网络连接'],ans:0,exp:'诊断缓冲区记录了停机原因、错误代码和发生时间。'},{q:'变频器报OC（过流）最常见原因是？',opts:['加减速时间太短','电压过高','通信中断','参数丢失'],ans:0,exp:'加减速时间过短导致电流冲击超出变频器额定值。'},{q:'传感器信号时有时无最可能的原因是？',opts:['接线端子松动','传感器损坏','电源故障','程序错误'],ans:0,exp:'现场振动导致接线松动是最常见原因。'},{q:'PROFINET设备突然断连，首先检查什么？',opts:['网线连接和交换机','PLC程序','设备参数','电源模块'],ans:0,exp:'物理连接中断是最常见原因。'},{q:'伺服电机报编码器故障，排查的第一步是？',opts:['检查编码器电缆屏蔽层','更换编码器','重启驱动器','下载新程序'],ans:0,exp:'编码器电缆屏蔽层接地不良是常见原因。'}],bool:[{q:'变频器过压报警可能是减速时间过短导致的。',ans:true,exp:'减速时电机产生再生能量回馈直流母线，减速过快触发过压保护。'},{q:'所有传感器故障都可以通过重启设备解决。',ans:false,exp:'重启只能解决少数软件/通信问题，物理故障需检查接线和电源。'},{q:'安全PLC与普通PLC的关键区别是冗余双通道设计。',ans:true,exp:'安全PLC两个CPU同时运算并交叉校验，任一故障立即安全停机。'},{q:'交换机端口故障可以通过观察指示灯状态初步判断。',ans:true,exp:'指示灯不亮或异常闪烁可初步判断端口物理故障。'},{q:'模拟量读数漂移与接地不良无关。',ans:false,exp:'接地不良是模拟量读数漂移的常见原因之一。'}],essay:[{q:'描述一套完整的工业设备故障排查流程。',ref:'1.收集信息：询问故障现象、发生时间；2.外观检查：观察指示灯、线缆连接；3.读取诊断：PLC诊断缓冲区、错误代码；4.隔离定位：逐步缩小范围；5.替换验证：交叉测试；6.修复记录：观察运行并记录预防措施。'},{q:'日志分析在故障诊断中有何作用？举例说明。',ref:'作用：追溯故障时间线、关联系统事件链、识别间歇性故障规律。例：AGV每周三定位丢失，通过日志发现是清洁地面时遮挡二维码。'}]},w5:{title:'AI工具与效率提升',choice:[{q:'以下哪个不属于大语言模型的特点？',opts:['精确数学计算','文本生成','语言理解','知识问答'],ans:0,exp:'大语言模型不擅长精确数学计算，容易产生幻觉。'},{q:'Prompt工程中，few-shot learning指的是？',opts:['给出少量示例','减少训练数据','快速部署','降低模型精度'],ans:0,exp:'在提示词中给出几个示例，让模型参照示例格式回答。'},{q:'使用AI进行故障排查时，最关键的是？',opts:['提供准确的故障信息','使用高级AI模型','联网搜索','付费服务'],ans:0,exp:'AI排障效果取决于输入信息的完整性和准确性。'},{q:'AI辅助代码调试最适合解决什么问题？',opts:['语法错误和逻辑分析','硬件连接问题','传感器供电','机械磨损'],ans:0,exp:'AI擅长分析代码逻辑和语法，无法感知物理世界。'},{q:'以下哪种方式能最有效提升AI回复质量？',opts:['编写清晰的提示词','反复问同一个问题','使用多个AI','缩短问题'],ans:0,exp:'清晰具体的提示词是提升AI输出质量的关键。'}],bool:[{q:'AI可以完全替代工程师的现场故障诊断工作。',ans:false,exp:'AI无法感知物理世界，现场排障仍需工程师实际检测。'},{q:'使用AI编写PLC程序前应明确工艺要求和IO清单。',ans:true,exp:'明确的输入和约束是AI生成正确程序的前提。'},{q:'大模型可以记住所有历史对话并一直使用。',ans:false,exp:'大模型有上下文窗口限制，超出长度的历史对话会被截断。'},{q:'AI工具可以帮助快速整理故障日志和生成报告。',ans:true,exp:'AI擅长文本处理，可快速提取关键信息并生成结构化报告。'},{q:'任何AI生成的代码都可以直接用于生产环境。',ans:false,exp:'AI生成的代码必须在测试环境充分验证。'}],essay:[{q:'列举AI在工业设备运维中的三个实际应用场景并说明价值。',ref:'1.故障日志智能分析：自动扫描异常模式减少人工排查时间；2.知识库问答：快速获取排查建议；3.报告自动生成：根据巡检数据自动生成日报/周报。'},{q:'编写Prompt时应注意哪些要点？',ref:'1.明确角色定位；2.提供充分背景信息；3.设定输出格式约束；4.必要时给出示例(few-shot)；5.复杂任务分步骤提问；6.要求标注不确定信息。'}]},w6:{title:'工控产品选型',choice:[{q:'选择PLC时首要考虑的因素是？',opts:['IO点数和功能需求','品牌知名度','价格','外观尺寸'],ans:0,exp:'IO点数和功能需求是选型的首要依据。'},{q:'变频器选型时功率应如何匹配电机？',opts:['变频器功率≥电机功率','变频器功率<电机功率','相等即可','差一个等级'],ans:0,exp:'变频器额定功率应大于等于电机功率，重载场合建议放大一档。'},{q:'工业交换机选型中，以下哪项最重要？',opts:['支持冗余环网协议','端口数量最多','价格最低','外观最小'],ans:0,exp:'冗余环网协议可确保单点故障不断网。'},{q:'传感器选型中NPN和PNP的区别是什么？',opts:['输出极性不同','测量精度不同','品牌不同','价格不同'],ans:0,exp:'NPN输出低电平(0V)，PNP输出高电平(24V)。'},{q:'选择AGV类型时最不关键的因素是？',opts:['外观颜色','负载能力','导航方式','工作环境'],ans:0,exp:'负载、导航方式和环境直接影响AGV能否完成任务。'}],bool:[{q:'选型时品牌兼容性不是必须考虑的因素。',ans:false,exp:'不同品牌通信协议和接口标准可能不兼容。'},{q:'工业环境中应选用商用级交换机以节省成本。',ans:false,exp:'商用交换机无法承受工业环境的温度、振动和电磁干扰。'},{q:'OPC UA相比Modbus的核心优势是内置加密认证。',ans:true,exp:'OPC UA内置加密、证书认证和用户鉴权。'},{q:'电源模块选型时只需考虑输出电压。',ans:false,exp:'还需考虑额定功率、输入电压范围、效率、保护功能等。'},{q:'传感器防护等级IP67表示完全防尘且可短时间浸水。',ans:true,exp:'IP67第一位6完全防尘，第二位7可在1米水深浸泡30分钟。'}],essay:[{q:'为一台输送线电机（2.2kW）选配变频器，请列出选型要点。',ref:'1.功率：变频器≥2.2kW重载选3.7kW；2.电压匹配380V三相；3.控制：恒速V/F，精确调速矢量；4.通信：Modbus RTU/PROFINET；5.保护：过流过压过热缺相；6.环境：IP20以上。'},{q:'为一个新项目选择PLC品牌时需要考虑哪些因素？',ref:'1.功能需求：IO点数运动控制安全功能；2.通信协议兼容性；3.团队编程平台熟悉度；4.本地技术支持响应和备件供应；5.成本含软件授权培训；6.扩展性预留3-5年。'}]},w7:{title:'实训计划',choice:[{q:'制定实训计划时首要步骤是？',opts:['明确培训目标','购买设备','安排时间','编写教材'],ans:0,exp:'培训目标是实训计划的出发点，决定了内容、时长和考核方式。'},{q:'PLC实训中，为什么强调先仿真后实操？',opts:['降低设备损坏风险','节省时间','更简单','规范要求'],ans:0,exp:'仿真环境可让学生在无风险的情况下验证程序逻辑。'},{q:'AGV实训中安全培训的时间应占多少？',opts:['至少总时长的15%','可有可无','5%即可','全程实操'],ans:0,exp:'安全培训是AGV实训的核心至少占15%以上。'},{q:'实训考核方式中哪种最能反映实际操作能力？',opts:['实操考核','笔试','选择题','课后作业'],ans:0,exp:'技术岗位实训核心目标是动手能力。'},{q:'设备运维实训计划周期通常建议？',opts:['根据培训目标灵活制定','固定一个月','固定一周','固定一年'],ans:0,exp:'培训计划应围绕具体目标灵活制定。'}],bool:[{q:'实训计划制定后不可调整。',ans:false,exp:'实训计划应根据学员反馈和实际进度动态调整。'},{q:'故障排查实训必须包含真实故障场景的模拟。',ans:true,exp:'真实故障模拟是让学员在安全环境下积累排障经验的最佳方式。'},{q:'设备操作培训不需要理论讲解。',ans:false,exp:'没有理论支撑的操作只是机械记忆，理解原理才能举一反三。'},{q:'实训中应鼓励学员主动提问和记录笔记。',ans:true,exp:'主动学习和记录是知识内化的关键。'},{q:'安全操作规程可以口头传达无需书面化。',ans:false,exp:'安全规程必须书面化并签字确认，确保责任到人。'}],essay:[{q:'设计一个为期一周的PLC基础实训计划大纲。',ref:'周一：PLC概述与硬件认识→TIA Portal安装；周二：基本指令→电机启停控制；周三：定时器计数器→传送带顺序控制；周四：模拟量处理→温度监控；周五：综合实训→考核独立完成控制逻辑。'},{q:'AGV操作实训中安全培训应涵盖哪些内容？',ref:'1.安全激光区域识别减速/急停区；2.紧急停止操作位置和方法；3.电池安全充电注意事项；4.运行区域安全禁止进入路径；5.启动前检查清单；6.异常处理上报流程。'}]},w8:{title:'电路图详解',choice:[{q:'电气原理图中常开触点用什么符号表示？',opts:['两条平行短线','两条交叉线','一个圆圈','一个方框'],ans:0,exp:'常开触点(NO)符号为两条平行线。'},{q:'电路图中K代表什么类型的元件？',opts:['继电器/接触器','电阻','电容','开关'],ans:0,exp:'K(继电器/接触器)、R(电阻)、C(电容)、S(开关)。'},{q:'电气图中急停按钮串联在什么回路中？',opts:['安全回路','主电路','信号回路','照明回路'],ans:0,exp:'急停按钮串联在安全回路中，按下时切断所有动力电源。'},{q:'自锁电路的核心原理是什么？',opts:['利用自身触点保持导通','使用锁扣机械结构','编程实现','外加密码'],ans:0,exp:'自锁电路将接触器常开辅助触点与启动按钮并联实现保持。'},{q:'电动机正反转控制电路中必须有什么保护？',opts:['互锁保护','过载保护','短路保护','以上都是'],ans:3,exp:'正反转电路必须同时具备互锁、过载保护和短路保护。'}],bool:[{q:'电气图中PE代表保护接地线。',ans:true,exp:'PE(Protective Earthing)是保护接地线的标准符号。'},{q:'互锁就是两个接触器可以同时吸合。',ans:false,exp:'互锁确保两个接触器不会同时吸合防止短路等危险。'},{q:'电机星三角启动的目的是降低启动电流。',ans:true,exp:'星三角启动将启动电流降至全压启动的1/3。'},{q:'热继电器用于电机的短路保护。',ans:false,exp:'热继电器用于过载保护，短路保护由断路器或熔断器实现。'},{q:'接触器的线圈电压必须与控制回路电压一致。',ans:true,exp:'接触器线圈额定电压需与控制回路电压匹配。'}],essay:[{q:'画出电动机自锁（启保停）控制电路并解释工作原理。',ref:'启动SB2(常开)与KM线圈串联，KM常开辅助触点与SB2并联。按下SB2→KM线圈得电→主触点闭合电机启动+辅助触点闭合→松开SB2后通过辅助触点保持线圈通电。按下停止SB1(常闭)→KM线圈失电→所有触点断开→电机停止。'},{q:'分析一个典型的三相异步电动机正反转控制电路的保护措施。',ref:'1.短路保护：断路器QF主回路；2.过载保护：热继电器FR常闭串联控制回路；3.互锁保护：KM1线圈串KM2常闭，KM2线圈串KM1常闭；4.按钮互锁：正转按钮串反转常闭；5.失压保护：接触器自锁断电自动断开。'}]},w9:{title:'大模型基础入门',choice:[{q:'Transformer架构的核心机制是？',opts:['自注意力机制','卷积','循环','全连接'],ans:0,exp:'自注意力机制是Transformer核心让模型关注输入序列中不同位置的关系。'},{q:'大模型中的Token指的是什么？',opts:['文本的基本处理单元','认证令牌','错误标记','特殊字符'],ans:0,exp:'Token是将文本分词后的最小单元。'},{q:'以下哪项是大模型的局限性？',opts:['产生幻觉信息','处理自然语言','翻译文本','回答问题'],ans:0,exp:'大模型可能生成看似合理但实际错误的内容（幻觉）。'},{q:'大模型训练中预训练阶段的主要目的是？',opts:['学习语言的通用模式','针对特定任务优化','减少模型大小','提升推理速度'],ans:0,exp:'预训练在海量文本上学习通用语言模式和知识。'},{q:'什么是大模型的上下文窗口？',opts:['模型一次能处理的最大文本长度','显示器分辨率','对话轮次','训练数据量'],ans:0,exp:'上下文窗口决定模型一次能看到多少文本。'}],bool:[{q:'大语言模型本质上是在做下一个词的预测。',ans:true,exp:'GPT类模型核心任务是预测下一个token。'},{q:'所有的大模型参数越多效果一定越好。',ans:false,exp:'模型效果受训练数据质量训练方法等多因素影响。'},{q:'大模型可以实时获取最新的网络信息。',ans:false,exp:'大模型的知识截止于训练数据日期除非接入联网搜索。'},{q:'提示工程是提升大模型输出质量的有效方式。',ans:true,exp:'精心设计提示词可显著改善模型输出的准确性格式和深度。'},{q:'大模型可以直接用于控制工业设备。',ans:false,exp:'大模型无法直接控制物理设备需要中间系统验证安全性。'}],essay:[{q:'简述Transformer架构中自注意力机制的基本原理。',ref:'每个词计算三个向量Query(Q)Key(K)Value(V)。Q与所有K点积得到注意力权重表示当前位置与其他位置的相关程度，用权重对V加权求和得到输出。多头设计让模型从不同角度关注信息。'},{q:'大模型在企业内部部署的优缺点是什么？',ref:'优点：1.数据安全不出内网；2.可定制微调优化；3.成本可控。缺点：1.硬件成本高需GPU；2.维护复杂需专业人员；3.更新滞后跟不上开源版本迭代。'}]},w10:{title:'大模型进阶实战',choice:[{q:'模型微调的主要目的是？',opts:['让模型适应特定领域任务','减少模型大小','增加训练速度','修改模型架构'],ans:0,exp:'Fine-tuning在预训练基础上用领域数据继续训练。'},{q:'LoRA微调方法的优势是？',opts:['大幅减少可训练参数量','提升模型精度','减少推理时间','增加模型大小'],ans:0,exp:'LoRA通过低秩分解仅训练少量参数大幅降低显存需求。'},{q:'RAG（检索增强生成）的核心思想是？',opts:['先检索相关知识再生成回答','循环生成多次','随机增强数据','梯度回传优化'],ans:0,exp:'RAG先从知识库检索相关文档再作为上下文输入模型生成回答减少幻觉。'},{q:'量化技术的主要效果是？',opts:['减少模型存储和推理资源','增加模型精度','扩展上下文窗口','优化训练速度'],ans:0,exp:'量化将参数从高精度降低到低精度减少存储和显存占用。'},{q:'Agent智能体架构的核心组件不包括？',opts:['数据库索引','规划','工具使用','记忆'],ans:0,exp:'Agent核心组件包括LLM规划工具使用记忆。'}],bool:[{q:'LoRA微调需要修改原始模型的全部参数。',ans:false,exp:'LoRA通过旁路矩阵仅训练新增参数原始模型参数保持不变。'},{q:'RAG可以有效减少大模型的幻觉问题。',ans:true,exp:'RAG将回答建立在检索到的真实文档上显著减少编造信息。'},{q:'模型量化会损失部分精度但大幅降低部署成本。',ans:true,exp:'量化是精度与效率的权衡INT4可减少75%存储。'},{q:'Function Calling是让大模型调用外部API的技术。',ans:true,exp:'Function Calling让大模型输出结构化的函数调用请求。'},{q:'微调后的模型不再需要评估就可以直接部署。',ans:false,exp:'微调后必须用测试集评估确认无性能退化才能部署。'}],essay:[{q:'对比微调Fine-tuning和RAG两种技术路线的适用场景。',ref:'微调适用：需学习特定领域风格术语；固定知识库不频繁更新；需低延迟。RAG适用：知识库频繁更新；需可溯源的精确答案；知识范围广。两者可结合：RAG获取事实+微调优化输出风格。'},{q:'设计一个设备运维知识库的RAG系统架构。',ref:'1.文档处理：手册维修记录切分文本块向量化存储；2.检索层：问题向量化搜索Top-K文本块；3.增强层：检索结果与问题组合提示词；4.生成层：LLM基于增强上下文生成回答；5.反馈层：记录满意度优化检索。'}]},w11:{title:'多模态与智能体',choice:[{q:'多模态大模型可以处理哪些类型的数据？',opts:['文本+图像+音频','仅文本','仅图像','仅音频'],ans:0,exp:'多模态模型可同时理解和生成文本图像音频等多种类型的数据。'},{q:'AI Agent的规划能力指的是什么？',opts:['将复杂任务分解为子步骤','制定训练计划','设计模型架构','编写代码'],ans:0,exp:'Agent的规划指将用户目标分解为可执行的子任务序列。'},{q:'以下哪个是多模态模型的典型应用？',opts:['根据电路图照片分析故障','纯文本翻译','数据库查询','数学计算'],ans:0,exp:'多模态模型可以看电路图图片并进行分析。'},{q:'Agent的工具使用Tool Use指的是什么？',opts:['调用外部API/程序完成任务','使用螺丝刀','编写工具类代码','下载软件'],ans:0,exp:'Tool Use指Agent自主判断需调用哪些外部工具完成子任务。'},{q:'智能体相比于单纯的大模型额外具备什么能力？',opts:['自主规划和执行任务','更快的推理速度','更低的成本','更好的翻译效果'],ans:0,exp:'Agent核心特征是自主性：感知环境制定计划使用工具执行根据反馈调整。'}],bool:[{q:'多模态模型只能处理图像和文本两种类型。',ans:false,exp:'高级多模态模型可处理图像文本音频视频等多种模态。'},{q:'AI Agent可以自主调用搜索引擎查询信息。',ans:true,exp:'这是Agent工具调用能力的基本示例。'},{q:'多模态大模型可以直接操作工业设备。',ans:false,exp:'多模态模型仍需通过中间系统与物理世界交互。'},{q:'Agent的记忆组件用于保存对话历史和执行中间结果。',ans:true,exp:'记忆是Agent核心组件保存短期对话上下文和长期知识经验。'},{q:'视觉大模型可以识别设备面板上的指示灯状态。',ans:true,exp:'视觉大模型具备图像理解能力可识别指示灯颜色数码管数值等。'}],essay:[{q:'描述AI Agent在设备运维中的潜在应用场景。',ref:'1.智能巡检Agent：读取传感数据+视觉识别状态→发现异常自动生成工单；2.故障诊断Agent：接收故障描述→检索知识库→分析日志→推荐排查步骤；3.备件管理Agent：监控库存→预测消耗→自动采购；4.培训Agent：定制学习路径→出题考核→跟踪进度。'},{q:'多模态大模型如何用于工业现场巡检？列出具体方案。',ref:'1.图像输入：拍摄设备面板指示灯仪表读数接线状态照片；2.文本输入：设备历史故障记录和正常运行参数；3.模型分析：识别指示灯颜色异常仪表读数异常接线松动等视觉问题；4.输出巡检报告标注异常点及建议处理措施。配合Agent框架实现自动拍照分析报告流水线。'}]}};
 
-function renderDashboard(){
-  var h='<h2>仪表盘</h2>';
-  // Stats cards
-  var totalDays=84, done=S.doneDays.length;
-  var streak=0, today=new Date(); today.setHours(0,0,0,0);
-  for(var i=0;i<84;i++){
-    var d=new Date(today); d.setDate(d.getDate()-i);
-    var ds=d.toISOString().slice(0,10);
-    var dayKey='w'+Math.floor(i/7+1)+'d'+(i%7+1);
-    var dayKey2='w'+(Math.floor((today-Date.parse('2025-12-01'))/86400000)+1)+'d1';
-    if(S.doneDays.indexOf(dayKey)>=0||S.doneDays.indexOf(dayKey2)>=0){streak++;break}
-  }
-  for(var i=1;i<84;i++){
-    var d2=new Date(today); d2.setDate(d2.getDate()-i);
-    var dk='w'+Math.floor(i/7+1)+'d'+(i%7+1);
-    if(S.doneDays.indexOf(dk)<0)break;
-    streak=i;
-  }
-  
-  // Quiz stats
-  var qh=S.quizHistory||[], totalQ=0, correctQ=0;
-  var qByType={}; 
-  qh.forEach(function(q){
-    totalQ+=q.total; correctQ+=q.correct;
-    if(!qByType[q.type])qByType[q.type]={correct:0,total:0,recent:[]};
-    qByType[q.type].correct+=q.correct;
-    qByType[q.type].total+=q.total;
-    qByType[q.type].recent.push(q);
+var quizWeek=null,quizSubTab='choice',quizAnswers={};
+
+function getWeekQuizStats(wk){
+  var h=S.quizHistory||[],wkRecs=h.filter(function(r){return r.week===wk});
+  if(!wkRecs.length)return null;
+  var last=wkRecs[wkRecs.length-1];
+  var totalC=0,totalB=0,totalE=0,corrC=0,corrB=0,doneE=0;
+  wkRecs.forEach(function(r){
+    if(r.choice){corrC+=r.choice.correct||0;totalC+=r.choice.total||0}
+    if(r.bool){corrB+=r.bool.correct||0;totalB+=r.bool.total||0}
+    if(r.essay){doneE+=r.essay.done||0;totalE+=r.essay.total||0}
   });
-  var qPct=totalQ?Math.round(correctQ/totalQ*100):0;
-  
+  return {last:last,corrC:corrC,totalC:totalC,corrB:corrB,totalB:totalB,doneE:doneE,totalE:totalE};
+}
+
+function getAllQuizStats(){
+  var h=S.quizHistory||[],totalC=0,totalB=0,totalE=0,corrC=0,corrB=0,doneE=0;
+  h.forEach(function(r){
+    if(r.choice){corrC+=r.choice.correct||0;totalC+=r.choice.total||0}
+    if(r.bool){corrB+=r.bool.correct||0;totalB+=r.bool.total||0}
+    if(r.essay){doneE+=r.essay.done||0;totalE+=r.essay.total||0}
+  });
+  return {corrC:corrC,totalC:totalC,corrB:corrB,totalB:totalB,doneE:doneE,totalE:totalE};
+}
+
+function renderPractice(){
+  quizWeek=null;
+  var h='<h2>练习题</h2><p class="ts mb12">共11周练习题，每周包含选择题(5题)、判断题(5题)、问答题(2题)</p>';
+  h+='<div class="week-select-grid">';
+  var wkNames=['','通信协议','PLC编程','AGV基础','故障诊断','AI工具','工控选型','实训计划','电路图','大模型入门','大模型进阶','多模态智能体'];
+  for(var w=1;w<=11;w++){
+    var wk='w'+w,stats=getWeekQuizStats(wk);
+    if(stats){
+      var allQ=(stats.totalC||0)+(stats.totalB||0),allC=(stats.corrC||0)+(stats.corrB||0);
+      var pct=allQ?Math.round(allC/allQ*100):0;
+      var cls=pct>=80?'good':pct>=50?'medium':'bad';
+      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27\x27+wk+\x27\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat '+cls+'">'+pct+'%</div><div class="ws-detail">正确'+allC+'/'+allQ+'</div></div>';
+    }else{
+      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27\x27+wk+\x27\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat" style="color:#8892b0">未答题</div></div>';
+    }
+  }
+  h+='</div>'; G('mainContent').innerHTML=h;
+}
+
+function startWeekQuiz(wk){
+  quizWeek=wk;quizSubTab='choice';quizAnswers={};
+  var qz=WEEK_QUIZZES[wk];
+  if(!qz){toast('题目数据未找到');return}
+  renderQuizContent();
+}
+
+function renderQuizContent(){
+  var qz=WEEK_QUIZZES[quizWeek];
+  var h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">';
+  h+='<button class="btn btn-s" onclick="renderPractice()">\u2190 返回周选择</button>';
+  h+='<span style="color:#ccd6f6;font-weight:600;font-size:.95rem">第'+quizWeek.slice(1)+'周 \u00b7 '+qz.title+'</span></div>';
+  h+='<div class="quiz-nav-tabs">';
+  h+='<div class="quiz-nav-tab'+(quizSubTab==='choice'?' active':'')+'" onclick="switchQuizTab(\x27choice\x27)">选择题 (5题)</div>';
+  h+='<div class="quiz-nav-tab'+(quizSubTab==='bool'?' active':'')+'" onclick="switchQuizTab(\x27bool\x27)">判断题 (5题)</div>';
+  h+='<div class="quiz-nav-tab'+(quizSubTab==='essay'?' active':'')+'" onclick="switchQuizTab(\x27essay\x27)">问答题 (2题)</div>';
+  h+='</div><div id="quizContentArea"></div>';
+  G('mainContent').innerHTML=h; renderQuizSubTab();
+}
+
+function switchQuizTab(t){quizSubTab=t;quizAnswers={};renderQuizContent();}
+
+function renderQuizSubTab(){
+  var qz=WEEK_QUIZZES[quizWeek],qs=qz[quizSubTab],h='';
+  if(!qs||!qs.length){document.getElementById('quizContentArea').innerHTML='<p class="tc ts">暂无此类型题目</p>';return}
+  qs.forEach(function(q,i){
+    h+='<div class="pq" id="pq'+i+'"><div class="qt">Q'+(i+1)+': '+q.q+'</div>';
+    if(quizSubTab==='choice'){
+      h+='<div class="po">';
+      q.opts.forEach(function(o,j){
+        h+='<div class="popt" onclick="pickQuizAns(\x27+i+\x27,\x27+j+\x27)" id="opt_'+i+'_'+j+'">'+o+'</div>';
+      });
+      h+='</div>';
+    }else if(quizSubTab==='bool'){
+      h+='<div class="po"><div class="popt" onclick="pickQuizAns(\x27+i+\x27,0)" id="opt_'+i+'_0">\u2713 正确</div><div class="popt" onclick="pickQuizAns(\x27+i+\x27,1)" id="opt_'+i+'_1">\u2717 错误</div></div>';
+    }else{
+      h+='<textarea id="essay'+i+'" style="height:80px;margin-top:6px" placeholder="输入你的回答，提交后与参考答案对比..."></textarea>';
+    }
+    h+='<div class="prac-feedback" id="fb'+i+'" style="display:none"></div></div>';
+  });
+  if(quizSubTab!=='essay')h+='<button class="btn mt12" onclick="submitQuiz()">提交并查看结果</button>';
+  else h+='<button class="btn mt12" onclick="checkEssay()">对比参考答案</button>';
+  h+='<div id="quizScoreR" class="tc mt12" style="font-size:1.1rem;font-weight:bold;color:var(--accent)"></div>';
+  document.getElementById('quizContentArea').innerHTML=h;
+}
+
+function pickQuizAns(i,ansIdx){
+  var pq=document.getElementById('pq'+i),opts=pq.querySelectorAll('.popt');
+  quizAnswers[i]=ansIdx;
+  opts.forEach(function(o,j){o.classList.toggle('sel',j===ansIdx);});
+}
+
+function submitQuiz(){
+  var qs=WEEK_QUIZZES[quizWeek][quizSubTab],s=0,t=qs.length;
+  qs.forEach(function(q,i){
+    var pq=document.getElementById('pq'+i),fb=document.getElementById('fb'+i);
+    var opts=pq.querySelectorAll('.popt'),ua=quizAnswers[i];
+    opts.forEach(function(o){o.classList.remove('correct','wrong');});
+    if(ua===undefined){
+      if(fb){fb.className='prac-feedback er';fb.innerHTML='\u2717 未作答';fb.style.display='block'}
+      return;
+    }
+    if(quizSubTab==='choice'){
+      if(ua===q.ans){s++;
+        opts[ua].classList.add('correct');
+        if(fb){fb.className='prac-feedback ok';fb.innerHTML='\u2713 正确';fb.style.display='block'}
+      }else{
+        opts[ua].classList.add('wrong');opts[q.ans].classList.add('correct');
+        var et='\u2717 正确答案：'+q.opts[q.ans];
+        if(q.exp)et+='<br>'+q.exp;
+        if(fb){fb.className='prac-feedback er';fb.innerHTML=et;fb.style.display='block'}
+      }
+    }else if(quizSubTab==='bool'){
+      var ub=ua===0;
+      if(ub===q.ans){s++;
+        opts[ua].classList.add('correct');
+        if(fb){fb.className='prac-feedback ok';fb.innerHTML='\u2713 正确';fb.style.display='block'}
+      }else{
+        opts[ua].classList.add('wrong');opts[q.ans?0:1].classList.add('correct');
+        var et2='\u2717 正确答案：'+(q.ans?'正确':'错误');
+        if(q.exp)et2+='<br>'+q.exp;
+        if(fb){fb.className='prac-feedback er';fb.innerHTML=et2;fb.style.display='block'}
+      }
+    }
+  });
+  var pct=t?Math.round(s/t*100):0;
+  document.getElementById('quizScoreR').textContent='得分：'+s+'/'+t+' ('+pct+'%)';
+  S.quizHistory=S.quizHistory||[];
+  var qidx=-1;
+  for(var qi=0;qi<S.quizHistory.length;qi++){if(S.quizHistory[qi].week===quizWeek){qidx=qi;break;}}
+  if(qidx>=0){S.quizHistory[qidx][quizSubTab]={correct:s,total:t};S.quizHistory[qidx].date=new Date().toISOString().slice(0,10);}
+  else{var nr={week:quizWeek,date:new Date().toISOString().slice(0,10)};nr[quizSubTab]={correct:s,total:t};S.quizHistory.push(nr);}
+  if(S.quizHistory.length>200)S.quizHistory=S.quizHistory.slice(-100);
+  saveS();
+}
+
+function checkEssay(){
+  var qs=WEEK_QUIZZES[quizWeek].essay;
+  qs.forEach(function(q,i){
+    var fb=document.getElementById('fb'+i);
+    if(fb){
+      fb.className='prac-feedback';
+      fb.innerHTML='<div style="background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:12px;margin-top:8px"><b style="color:#60A5FA">参考答案：</b><br>'+q.ref+'</div>';
+      fb.style.display='block';
+    }
+  });
+  document.getElementById('quizScoreR').innerHTML='已显示参考答案，请自行对照评分';
+  S.quizHistory=S.quizHistory||[];
+  var qidx=-1;
+  for(var qi=0;qi<S.quizHistory.length;qi++){if(S.quizHistory[qi].week===quizWeek){qidx=qi;break;}}
+  if(qidx>=0){S.quizHistory[qidx].essay={done:qs.length,total:qs.length};S.quizHistory[qidx].date=new Date().toISOString().slice(0,10);}
+  else{S.quizHistory.push({week:quizWeek,date:new Date().toISOString().slice(0,10),essay:{done:qs.length,total:qs.length}});}
+  if(S.quizHistory.length>200)S.quizHistory=S.quizHistory.slice(-100);
+  saveS();
+}
+
+// ====== 计划总览 ======
+function renderPlan(){
+  var h='<h2>计划总览</h2>';
+  // Stats
+  var totalDays=84,done=0;
+  for(var i=1;i<=11;i++){
+    LDATA['w'+i].d.forEach(function(_,j){
+      if(S.doneDays.indexOf('w'+i+'d'+(j+1))>=0)done++;
+    });
+  }
+  var pct=Math.round(done/totalDays*100);
+  // Streak
+  var streak=0;
+  var sds=S.doneDays.slice().map(function(k){
+    return parseInt(k.charAt(1))*7+parseInt(k.substring(3));
+  }).sort(function(a,b){return b-a;});
+  for(var i=0;i<sds.length;i++){
+    if(i===0){streak=1;continue}
+    if(sds[i-1]-sds[i]===1)streak++;else break;
+  }
+  // Quiz
+  var qh=S.quizHistory||[],tQ=0,cQ=0;
+  qh.forEach(function(q){
+    if(q.choice){tQ+=q.choice.total||0;cQ+=q.choice.correct||0}
+    if(q.bool){tQ+=q.bool.total||0;cQ+=q.bool.correct||0}
+    if(q.essay){tQ+=q.essay.total||0}
+  });
+  var qP=tQ?Math.round(cQ/tQ*100):0;
+  var qCl=qP>=80?'db-stat-green':qP>=50?'db-stat-orange':'db-stat-red';
+  // Cards
   h+='<div class="db-grid">';
-  h+='<div class="db-card"><div class="db-val">'+Math.round(done/84*100)+'%</div><div class="db-label">总学习进度</div></div>';
-  h+='<div class="db-card"><div class="db-val">'+done+'<span style="font-size:.9rem;font-weight:400">/84 天</span></div><div class="db-label">已完成天数</div></div>';
-  h+='<div class="db-card"><div class="db-val">'+qPct+'%</div><div class="db-label">练习题正确率 ('+correctQ+'/'+totalQ+')</div></div>';
-  h+='<div class="db-card"><div class="db-val">'+streak+'<span style="font-size:.9rem;font-weight:400"> 天</span></div><div class="db-label">当前连续学习</div></div>';
+  h+='<div class="db-card"><div class="db-ring"><canvas id="ringCanvas" width="90" height="90"></canvas><div class="db-ring-text"><div class="db-val">'+pct+'%</div><div class="db-label">总学习进度 · 84天计划</div></div></div></div>';
+  h+='<div class="db-card"><div class="db-val">'+done+'</div><div class="db-label">已完成天数</div></div>';
+  h+='<div class="db-card"><div class="db-val '+qCl+'">'+qP+'%</div><div class="db-label">练习题正确率</div></div>';
+  h+='<div class="db-card"><div class="db-val">'+streak+'<span style="font-size:1rem"> 天</span></div><div class="db-label">当前连续</div></div>';
   h+='</div>';
-  
   // Weekly progress
-  h+='<div class="db-section"><h3>每周学习进度</h3>';
-  var wkNames=['','通信协议','PLC编程','AGV基础','故障诊断','AI工具','工控选型','实训项目','电路图','大模型入门','大模型进阶','多模态智能体'];
+  h+='<div class="wk-section"><h3>每周学习进度</h3><div class="wk-bar-list">';
+  var wkN=['','通信协议','PLC编程','AGV基础','故障诊断','AI工具','工控选型','实训计划','电路图','大模型入门','大模型进阶','多模态智能体'];
   for(var w=1;w<=11;w++){
     var d=0;
-    for(var j=1;j<=7;j++){
-      if(S.doneDays.indexOf('w'+w+'d'+j)>=0)d++;
+    for(var j=1;j<=7;j++){if(S.doneDays.indexOf('w'+w+'d'+j)>=0)d++;}
+    var wp=Math.round(d/7*100),isC=(S.curWeek===w);
+    h+='<div class="wk-bar'+(isC?' cur-wk':'')+'"><div class="wk-label">W'+w+'</div><div class="wk-track"><div class="wk-fill" style="width:'+wp+'%"></div></div><div class="wk-pct">'+d+'/7</div></div>';
+  }
+  h+='</div></div>';
+  // Quiz scores
+  h+='<div class="db-section"><h3>练习题成绩</h3><div class="quiz-week-grid">';
+  for(var w=1;w<=11;w++){
+    var wk='w'+w;
+    var wkR=(S.quizHistory||[]).filter(function(r){return r.week===wk;});
+    if(wkR.length>0){
+      var tC2=0,sC2=0;
+      wkR.forEach(function(r){
+        if(r.choice){tC2+=r.choice.total||0;sC2+=r.choice.correct||0}
+        if(r.bool){tC2+=r.bool.total||0;sC2+=r.bool.correct||0}
+      });
+      var wpp=tC2?Math.round(sC2/tC2*100):0;
+      var cls=wpp>=80?'db-stat-green':wpp>=50?'db-stat-orange':'db-stat-red';
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score '+cls+'">'+wpp+'%</div><div class="qw-detail">'+sC2+'/'+tC2+' 正确</div></div>';
+    }else{
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score" style="color:#8892b0">-</div><div class="qw-detail">未答题</div></div>';
     }
-    var pct=Math.round(d/7*100);
-    h+='<div class="wk-bar"><div class="wk-label">W'+w+'</div><div class="wk-track"><div class="wk-fill" style="width:'+pct+'%"></div></div><div class="wk-pct">'+d+'/7</div></div>';
   }
-  h+='</div>';
-  
-  // Quiz performance
-  h+='<div class="db-section"><h3>练习题成绩</h3>';
-  var typeNames={choice:'选择题',bool:'判断题',scene:'场景题'};
-  if(Object.keys(qByType).length===0){
-    h+='<p class="ts">还没有答题记录，去 <span style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="switchTab(\x27practice\x27)">练习题</span> 做几道吧。</p>';
-  }else{
-    h+='<div class="quiz-summary">';
-    Object.keys(qByType).forEach(function(t){
-      var d=qByType[t], p=d.total?Math.round(d.correct/d.total*100):0;
-      var cls=p>=80?'good':p>=50?'medium':'bad';
-      h+='<div class="quiz-type-card"><div class="qt-name">'+(typeNames[t]||t)+'</div><div class="qt-stat '+cls+'">'+p+'%</div><div class="ts" style="margin-top:4px">'+d.correct+'/'+d.total+' 正确</div>';
-      if(d.recent.length>0){
-        var last=d.recent[d.recent.length-1];
-        h+='<div class="ts" style="font-size:.65rem;margin-top:2px">最近：'+last.date+'</div>';
-      }
-      h+='</div>';
-    });
-    h+='</div>';
-  }
-  h+='</div>';
-  
-  // AI Templates
-  h+='<div class="db-section"><h3>AI 模板推荐</h3>';
-  h+='<p class="ts mb12">根据你的学习进度智能推荐模板，点击使用</p>';
-  
-  // Dynamic templates based on progress
-  var templates=[];
-  var curWk=S.curWeek||1;
-  
-  // Always available
-  templates.push({t:'学习计划定制',d:'根据当前学习周数和进度，制定个性化学习计划',tag:'基础',id:1});
-  templates.push({t:'故障排查助手',d:'输入设备类型和故障现象，获得排查步骤',tag:'基础',id:0});
-  
-  // Week-specific templates
-  if(curWk>=2&&curWk<=3) templates.push({t:'Modbus通信调试',d:'Modbus RTU/TCP通信故障诊断与调试模板',tag:'通信',id:2});
-  if(curWk>=3) templates.push({t:'PLC程序审查',d:'检查PLC程序的规范性、安全性和优化建议',tag:'PLC',id:3});
-  if(curWk>=4) templates.push({t:'AGV调度优化',d:'AGV路径规划、任务调度与避障策略分析',tag:'AGV',id:4});
-  if(curWk>=5) templates.push({t:'AI辅助排障',d:'利用AI分析故障日志，推荐修复方案',tag:'AI',id:5});
-  if(curWk>=7) templates.push({t:'HMI画面设计建议',d:'人机界面布局、配色和交互优化建议',tag:'HMI',id:6});
-  if(curWk>=8) templates.push({t:'电路图分析',d:'电气原理图自动分析与解读',tag:'电路',id:7});
-  if(curWk>=9) templates.push({t:'大模型Prompt优化',d:'优化大模型提示词，提升回复质量',tag:'AI',id:8});
-  if(curWk>=10) templates.push({t:'模型微调方案',d:'根据任务类型推荐微调策略和超参数',tag:'AI',id:9});
-  templates.push({t:'代码调试助手',d:'编程环境、错误信息和期望行为分析',tag:'通用',id:10});
-  templates.push({t:'学习总结生成',d:'根据已完成的学习内容，自动生成知识总结',tag:'通用',id:11});
-  
-  h+='<div class="template-grid">';
-  templates.forEach(function(tp){
-    h+='<div class="tp-card" onclick="useTemplate('+tp.id+')"><div class="tp-title">'+tp.t+'</div><div class="tp-desc">'+tp.d+'</div><span class="tp-tag">'+tp.tag+'</span></div>';
+  h+='</div></div>';
+  // AI templates
+  h+='<div class="db-section"><h3>AI 模板推荐</h3><p class="ts mb12">根据学习进度智能推荐</p><div class="template-grid">';
+  var cw=S.curWeek||1;
+  var tps=[{t:'故障排查助手',d:'输入故障现象获得排查步骤',tag:'基础',id:0}];
+  tps.push({t:'学习计划定制',d:'制定个性化学习计划',tag:'基础',id:1});
+  if(cw>=1)tps.push({t:'Modbus通信调试',d:'Modbus RTU/TCP调试模板',tag:'通信',id:2});
+  if(cw>=2)tps.push({t:'PLC程序审查',d:'PLC程序规范性检查',tag:'PLC',id:3});
+  if(cw>=3)tps.push({t:'AGV调度优化',d:'AGV路径规划分析',tag:'AGV',id:4});
+  if(cw>=4)tps.push({t:'AI辅助排障',d:'AI分析故障日志',tag:'AI',id:5});
+  if(cw>=7)tps.push({t:'电路图分析',d:'电气原理图解读',tag:'电路',id:7});
+  if(cw>=8)tps.push({t:'Prompt优化',d:'优化提示词提升质量',tag:'AI',id:8});
+  tps.forEach(function(tp){
+    h+='<div class="tp-card" onclick="switchTab(\x27ai\x27);setTimeout(function(){var ps=document.querySelectorAll(\x27pre\x27);if(ps.length>\x27+tp.id+\x27)ps[\x27+tp.id+\x27].click();},200)"><div class="tp-title">'+tp.t+'</div><div class="tp-desc">'+tp.d+'</div><span class="tp-tag">'+tp.tag+'</span></div>';
   });
-  h+='</div>';
-  h+='<button class="btn btn-s btn-gen mt12" onclick="switchTab(\x27ai\x27)">查看全部模板</button>';
-  h+='</div>';
-  
+  h+='</div><button class="btn btn-s btn-gen mt12" onclick="switchTab(\x27ai\x27)">查看全部模板</button></div>';
   G('mainContent').innerHTML=h;
-}
-
-function useTemplate(id){
-  // Navigate to AI tab with specific template
-  switchTab('ai');
-  setTimeout(function(){
-    var pres=document.querySelectorAll('#tab-ai pre, #mainContent pre');
-    if(pres.length>id) pres[id].click();
-  },200);
+  // Draw ring chart
+  var rc=document.getElementById('ringCanvas');
+  if(rc){var ctx=rc.getContext('2d'),cw=rc.width,ch=rc.height,x=cw/2,y=ch/2,r=35,lw=8;
+    ctx.clearRect(0,0,cw,ch);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle='#2a2a4a';ctx.lineWidth=lw;ctx.stroke();
+    ctx.beginPath();ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+Math.PI*2*pct/100);ctx.strokeStyle='#3B82F6';ctx.lineWidth=lw;ctx.lineCap='round';ctx.stroke();
+    ctx.fillStyle='#06b6d4';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pct+'%',x,y);}
 }
 
 
@@ -652,7 +777,7 @@ function assembleChunks(fileId,buf){
 function renderManual(){
   var h='<h2>操作手册 <span class="ts">(v11 文件共享 | 刷新不丢文件)</span></h2>'
   h+='<div class="card"><h3>上传操作文档</h3>'
-  h+='<div class="upload-area" onclick="G(\'fupload\').click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传文档（PDF/Word）<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
+  h+='<div class="upload-area" onclick="G(\\x27fupload\\x27).click()"><div style="font-size:2rem;margin-bottom:8px">&#128193;</div>点击上传文档（PDF/Word）<br><span class="ts">上传后自动持久化到浏览器存储，刷新/重启浏览器不丢失</span></div>'
   h+='<input type="file" id="fupload" accept=".pdf,.doc,.docx" multiple class="hide" onchange="uploadFiles(this.files)"></div>'
 
   // 本地已就绪（dataCache 中有数据）
@@ -661,7 +786,7 @@ function renderManual(){
     h+='<div class="card"><h3>本机已存档</h3><div class="file-explorer">'
     readyFiles.forEach(function(f){
       var icon='&#128196;';if(f.name.toLowerCase().endsWith('.pdf'))icon='&#128218;';else if(f.name.toLowerCase().endsWith('.doc')||f.name.toLowerCase().endsWith('.docx'))icon='&#128221;';else if(f.name.toLowerCase().endsWith('.xls')||f.name.toLowerCase().endsWith('.xlsx')||f.name.toLowerCase().endsWith('.csv'))icon='&#128202;'
-      h+='<div class="file-item"><span class="file-icon">'+icon+'</span><div class="file-info"><div class="file-name ready" onclick="openManual(\''+f.fileId+'\')">'+f.name+'</div><div class="file-meta">'+fmtSize(f.size)+'</div></div><div class="file-actions"><span class="tag tag-ok">已存档</span><button class="btn btn-r btn-sm" onclick="delManual(\''+f.fileId+'\')">删除</button></div></div>'
+      h+='<div class="file-item"><span class="file-icon">'+icon+'</span><div class="file-info"><div class="file-name ready" onclick="openManual(\\x27\x27+f.fileId+\x27\\x27)">'+f.name+'</div><div class="file-meta">'+fmtSize(f.size)+'</div></div><div class="file-actions"><span class="tag tag-ok">已存档</span><button class="btn btn-r btn-sm" onclick="delManual(\\x27\x27+f.fileId+\x27\\x27)">删除</button></div></div>'
     })
     h+='</div></div>'
   }
