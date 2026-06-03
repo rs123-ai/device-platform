@@ -409,9 +409,9 @@ function renderPractice(){
       var allQ=(stats.totalC||0)+(stats.totalB||0),allC=(stats.corrC||0)+(stats.corrB||0);
       var pct=allQ?Math.round(allC/allQ*100):0;
       var cls=pct>=80?'good':pct>=50?'medium':'bad';
-      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27\x27+wk+\x27\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat '+cls+'">'+pct+'%</div><div class="ws-detail">正确'+allC+'/'+allQ+'</div></div>';
+      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27'+wk+'\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat '+cls+'">'+pct+'%</div><div class="ws-detail">正确'+allC+'/'+allQ+'</div></div>';
     }else{
-      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27\x27+wk+\x27\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat" style="color:#8892b0">未答题</div></div>';
+      h+='<div class="week-select-card" onclick="startWeekQuiz(\x27'+wk+'\x27)"><div class="ws-week">第'+w+'周</div><div class="ws-title">'+wkNames[w]+'</div><div class="ws-stat" style="color:#8892b0">未答题</div></div>';
     }
   }
   h+='</div>'; G('mainContent').innerHTML=h;
@@ -592,9 +592,9 @@ function renderPlan(){
       });
       var wpp=tC2?Math.round(sC2/tC2*100):0;
       var cls=wpp>=80?'db-stat-green':wpp>=50?'db-stat-orange':'db-stat-red';
-      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score '+cls+'">'+wpp+'%</div><div class="qw-detail">'+sC2+'/'+tC2+' 正确</div></div>';
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27'+wk+'\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score '+cls+'">'+wpp+'%</div><div class="qw-detail">'+sC2+'/'+tC2+' 正确</div></div>';
     }else{
-      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27\x27+wk+\x27\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score" style="color:#8892b0">-</div><div class="qw-detail">未答题</div></div>';
+      h+='<div class="quiz-week-card" onclick="switchTab(\x27practice\x27);setTimeout(function(){startWeekQuiz(\x27'+wk+'\x27)},100)"><div class="qw-week">第'+w+'周</div><div class="qw-title">'+wkN[w]+'</div><div class="qw-score" style="color:#8892b0">-</div><div class="qw-detail">未答题</div></div>';
     }
   }
   h+='</div></div>';
@@ -960,6 +960,54 @@ restoreDataCache().then(function(){
 })
 setTimeout(function(){if(!mqttOn)mqttConnect()},3000)
 setTimeout(function(){if(!mqttOn)mqttConnect()},8000)
+
+function addLog(){var prob=G('lprob').value.trim();if(!prob){toast('请填写故障现象');return}var log={id:'L'+Date.now()+Math.random().toString(36).slice(2,6),date:G('ldate').value,dev:G('ldev').value,problem:prob,detail:G('ldet').value.trim(),solution:G('lsol').value.trim(),status:G('lstat').value,author:MY_NAME,uid:MY_UID,time:Date.now()};S.logs.unshift(log);saveS();showLogs();G('lprob').value='';G('ldet').value='';G('lsol').value='';if(mqttOn)mqttC.publish('dm/log',JSON.stringify({type:'add',log:log}),{qos:1});toast('日志已记录')}
+
+function setLogF(f){logFilter=f;showLogs()}
+
+function showLogs(){var logs=S.logs||[],q=(G('lsearch')?G('lsearch').value:'').toLowerCase();if(logFilter==='mine')logs=logs.filter(function(l){return l.uid===MY_UID});else if(logFilter==='urgent')logs=logs.filter(function(l){return l.status==='help'||l.status==='pending'});if(q)logs=logs.filter(function(l){return l.problem.toLowerCase().indexOf(q)>=0||l.dev.toLowerCase().indexOf(q)>=0||(l.detail||'').toLowerCase().indexOf(q)>=0});if(!logs.length){G('logList').innerHTML='<p class="tc ts">暂无日志</p>';return}G('logList').innerHTML=logs.slice(0,80).map(function(l){var sc=l.status==='resolved'?'tag-ok':l.status==='help'?'tag-err':'tag-warn',st={pending:'待跟进',resolved:'已解决',help:'需协助'}[l.status];return '<div class="log-row"><div class="lm"><span>'+l.date+'</span><span>'+l.dev+'</span><span class="tag '+sc+'">'+st+'</span><span>'+l.author+'</span><button class="btn btn-r btn-sm" style="margin-left:auto" onclick="delLog(\''+l.id+'\')">删除</button></div><div class="lp">'+l.problem+'</div>'+(l.detail?'<div class="ts">排查：'+l.detail+'</div>':'')+(l.solution?'<div class="ts mt4">方案：'+l.solution+'</div>':'')+'</div>'}).join('')}
+
+function exportCSV(){var csv='\uFEFF日期,设备类型,故障现象,排查过程,解决方案,状态,记录人\n';S.logs.forEach(function(l){csv+=l.date+','+l.dev+',"'+l.problem+'","'+(l.detail||'')+'","'+(l.solution||'')+'",'+l.status+','+l.author+'\n'});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='日志_'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
+
+function downloadTemplate(){
+  var t='日期,设备名称,故障现象,排查过程,解决方案,状态,负责人\n';
+  t+='2025-06-15,PLC(S7-1200),通讯模块报错,检查网络连接和IP配置,更换通讯模块并重新配置,resolved,张三\n';
+  var b=new Blob(['\uFEFF'+t],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='工作日志导入模板.csv';a.click()
+}
+
+function importCSV(input){
+  var f=input.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    var added=0;
+    var lines=e.target.result.split(/\r?\n/);
+    for(var i=1;i<lines.length;i++){
+      var cols=lines[i].split(',');
+      if(cols.length<3||!cols[2].trim())continue;
+      var log={
+        id:'IM'+Date.now()+'_'+i,
+        date:cols[0].trim()||new Date().toISOString().slice(0,10),
+        dev:cols[1].trim()||'其他',
+        problem:cols[2].trim(),
+        detail:(cols[3]||'').trim(),
+        solution:(cols[4]||'').trim(),
+        status:(cols[5]||'pending').trim()||'pending',
+        author:(cols[6]||MY_NAME).trim()||MY_NAME,
+        uid:MY_UID,
+        time:Date.now()
+      };
+      S.logs.push(log);added++
+    }
+    if(added>0){saveS();showLogs();toast('已导入'+added+'条日志')}
+    else{toast('未识别到有效数据')}
+  };
+  r.readAsText(f,'utf-8')
+}
+
+function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('已复制')}).catch(function(){toast('复制失败')})}
+
+
 </script>
 </body>
 </html>
