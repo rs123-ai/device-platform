@@ -166,6 +166,16 @@ pre{background:var(--bg);padding:10px;border-radius:var(--radius-sm);border:1px 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 <script>
+// === Script block 1: external src=https://unpkg.com/mqtt/dist/mqtt.min.js ===
+// (external, not included)
+
+// === Script block 2: external src=https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js ===
+// (external, not included)
+
+// === Script block 3: external src=https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js ===
+// (external, not included)
+
+// === Script block 4 ===
 // ====== 基础 ======
 function G(id){return document.getElementById(id)}
 function toast(msg){var d=document.createElement('div');d.style.cssText='position:fixed;top:16px;right:16px;background:var(--accent);color:var(--bg);padding:10px 20px;border-radius:var(--radius-sm);z-index:9999;font-weight:500;animation:toastIn 2.6s forwards;max-width:420px';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
@@ -827,7 +837,7 @@ function renderAI(){
   h+='</div>';
   h+='<pre id="aiDetailContent" style="background:#0a0a1a;color:#a8b2d1;padding:16px;border-radius:8px;font-size:.75rem;line-height:1.6;overflow-x:auto;white-space:pre-wrap;max-height:500px;overflow-y:auto"></pre>';
   h+='</div>';
-  document.getElementById('main').innerHTML=h;
+  G('mainContent').innerHTML=h;
   var g=document.getElementById('aiTemplateGrid');
   g.innerHTML='';
   for(var i=0;i<AIDATA.length;i++){
@@ -972,6 +982,91 @@ function searchF(){
   if(q)list=FAULTS.filter(function(f){return f.t.toLowerCase().indexOf(q)>=0||f.c.toLowerCase().indexOf(q)>=0||f.s.toLowerCase().indexOf(q)>=0})
   var h=list.length?list.map(function(f){return '<div class="log-row"><div class="lm"><span class="tag tag-warn">'+f.c+'</span></div><div class="lp">'+f.t+'</div><div class="ts">'+f.s+'</div></div>'}).join(''):'<p class="tc ts">无匹配结果</p>'
   if(G('fResults'))G('fResults').innerHTML=h
+}
+
+
+// ====== 工作日志 ======
+function renderLog(){
+  var logs=S.logs||[];
+  var h='<h2>工作日志 <span class="ts">('+logs.length+'条)</span></h2>';
+  h+='<div style="margin-bottom:12px">';
+  h+='<button class="btn btn-s" onclick="addLogEntry()">+ 添加日志</button>';
+  h+=' <button class="btn btn-s" onclick="exportB()">导出备份</button>';
+  h+='</div>';
+  if(logs.length===0){
+    h+='<p class="tc ts">暂无日志，点击"添加日志"开始记录</p>';
+  }else{
+    h+='<div style="display:flex;flex-direction:column;gap:8px">';
+    logs.slice().reverse().forEach(function(l){
+      var cls=l.status==='resolved'?'tag-ok':'tag-warn';
+      h+='<div class="card" style="padding:12px">';
+      h+='<div class="fx" style="margin-bottom:6px">';
+      h+='<span class="tag '+cls+'">'+l.status+'</span>';
+      h+='<span class="ts" style="margin-left:8px">'+l.date+'</span>';
+      h+='<span class="ts" style="margin-left:auto">'+l.dev+'</span>';
+      h+='</div>';
+      h+='<div style="color:var(--text);font-weight:500;margin-bottom:4px">'+l.problem+'</div>';
+      if(l.solution){h+='<div class="ts" style="margin-top:4px">解决方案：'+l.solution+'</div>';}
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  G('mainContent').innerHTML=h;
+}
+function showLogs(){renderLog()}
+function addLogEntry(){
+  var dev=prompt('设备/区域名称：');if(!dev)return;
+  var problem=prompt('问题描述：');if(!problem)return;
+  var detail=prompt('详细信息（可选）：')||'';
+  var solution=prompt('解决方案（可选）：')||'';
+  var status=confirm('是否已解决？')?'resolved':'pending';
+  var entry={id:'MP'+(Date.now()%100000),date:new Date().toISOString().slice(0,10),dev:dev,problem:problem,detail:detail,solution:solution,status:status,author:'local',time:Date.now()};
+  S.logs.push(entry);saveS();
+  if(CURTAB==='log')renderLog();
+  toast('日志已添加');
+}
+
+// ====== 备份/导入 ======
+function renderBackup(){
+  var h='<h2>备份与导入</h2>';
+  h+='<div class="card" style="margin-bottom:12px">';
+  h+='<h3>导出备份</h3>';
+  h+='<p class="ts mb12">将学习进度、日志、练习题记录导出为 JSON 文件</p>';
+  h+='<button class="btn" onclick="exportB()">导出备份文件</button>';
+  h+='</div>';
+  h+='<div class="card" style="margin-bottom:12px">';
+  h+='<h3>导入备份</h3>';
+  h+='<p class="ts mb12">从备份文件恢复学习进度、日志和练习题记录</p>';
+  h+='<input type="file" id="importFile" accept=".json" style="display:none" onchange="importB(this)">';
+  h+='<button class="btn" onclick="G(\'importFile\').click()">选择备份文件导入</button>';
+  h+='</div>';
+  h+='<div class="card">';
+  h+='<h3>数据状态</h3>';
+  h+='<p class="ts">已学天数：'+(S.doneDays||[]).length+' 天</p>';
+  h+='<p class="ts">日志条数：'+(S.logs||[]).length+' 条</p>';
+  h+='<p class="ts">练习题记录：'+(S.quizHistory||[]).length+' 条</p>';
+  h+='<p class="ts">手册文件：'+(S.manualFiles||[]).length+' 个</p>';
+  h+='</div>';
+  G('mainContent').innerHTML=h;
+}
+function importB(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(data.curWeek!==undefined)S.curWeek=data.curWeek;
+      if(data.doneDays)S.doneDays=data.doneDays;
+      if(data.logs)S.logs=data.logs;
+      if(data.quizHistory)S.quizHistory=data.quizHistory;
+      if(data.manualFiles)S.manualFiles=data.manualFiles;
+      saveS();
+      toast('备份导入成功');
+      if(CURTAB==='backup')renderBackup();
+      else switchTab(CURTAB);
+    }catch(err){toast('备份文件格式错误：'+err.message)}
+  };
+  reader.readAsText(file);
 }
 
 // ====== MQTT 连接 ======
